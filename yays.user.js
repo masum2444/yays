@@ -16,8 +16,8 @@ function YAYS(unsafeWindow) {
  */
 var Meta = {
 	title:       'Yays! (Yet Another Youtube Script)',
-	version:     '1.4.4',
-	releasedate: 'Sep 5, 2010',
+	version:     '1.5',
+	releasedate: 'Dec 24, 2010',
 	site:        'http://eugenox.appspot.com/script/yays',
 	namespace:   'yays'
 };
@@ -102,7 +102,7 @@ _.dictionary = (function() {
 		// hungarian - magyar
 		case 'hu':
 			return combine(vocabulary, [
-				'Automatikus lej\xE1tsz\xE1s', 'BE', 'KI', 'AUTO', 'Automatikus lej\xE1tsz\xE1s ki-, bekapcsol\xE1sa',
+				'Automatikus lej\xE1tsz\xE1s', 'BE', 'KI', 'AUTO \u03B2', 'Automatikus lej\xE1tsz\xE1s ki-, bekapcsol\xE1sa',
 				'Min\u0151s\xE9g', 'AUTO', 'ALACSONY', 'K\xD6ZEPES', 'MAGAS', 'LEGMAGASABB', 'Vide\xF3k alap\xE9rtelmezett felbont\xE1sa',
 				'Be\xE1ll\xEDt\xE1sok', 'Lej\xE1tsz\xF3 be\xE1ll\xEDt\xE1sai'
 			]);
@@ -110,7 +110,7 @@ _.dictionary = (function() {
 		// dutch - nederlands (Mike-RaWare @userscripts.org)
 		case 'nl':
 			return combine(vocabulary, [
-				'Auto spelen', 'AAN', 'UIT', 'AUTOMATISCH', 'Stel automatisch afspelen in',
+				'Auto spelen', 'AAN', 'UIT', 'AUTOMATISCH \u03B2', 'Stel automatisch afspelen in',
 				'Kwaliteit', 'AUTOMATISCH', 'LAAG', 'GEMIDDELD', 'HOOG', undefined, 'Stel standaard videokwaliteit in',
 				undefined, undefined
 			]);
@@ -118,7 +118,7 @@ _.dictionary = (function() {
 		// spanish - español (yonane @userscripts.org)
 		case 'es':
 			return combine(vocabulary, [
-				'Reproducci\xF3n Autom\xE1tica', undefined, undefined, 'AUTO', 'Modificar Reproducci\xF3n Autom\xE1tica',
+				'Reproducci\xF3n Autom\xE1tica', undefined, undefined, 'AUTO \u03B2', 'Modificar Reproducci\xF3n Autom\xE1tica',
 				'Calidad', 'AUTO', 'BAJA', 'MEDIA', 'ALTA', undefined, 'Usar calidad por defecto',
 				undefined, undefined
 			]);
@@ -126,7 +126,7 @@ _.dictionary = (function() {
 		// german - deutsch (xemino @userscripts.org)
 		case 'de':
 			return combine(vocabulary, [
-				'Automatische Wiedergabe', 'AN', 'AUS', 'AUTO', 'Automatische Wiedergabe umschalten',
+				'Automatische Wiedergabe', 'AN', 'AUS', 'AUTO \u03B2', 'Automatische Wiedergabe umschalten',
 				'Qualit\xE4t', 'AUTO', 'NIEDRIG', 'MITTEL', 'HOCH', undefined, 'Standard Video Qualit\xE4t setzen',
 				undefined, undefined
 			]);
@@ -134,7 +134,7 @@ _.dictionary = (function() {
 		// brazilian portuguese - português brasileiro (Pitukinha @userscripts.org)
 		case 'pt':
 			return combine(vocabulary, [
-				'Reprodu\xE7\xE3o Autom\xE1tica', 'LIGADO', 'DESLIGADO', 'AUTOM\xC1TICO', 'Modificar Reprodu\xE7\xE3o Autom\xE1tica',
+				'Reprodu\xE7\xE3o Autom\xE1tica', 'LIGADO', 'DESLIGADO', 'AUTOM\xC1TICO \u03B2', 'Modificar Reprodu\xE7\xE3o Autom\xE1tica',
 				'Qualidade', 'AUTOM\xC1TICO', 'BAIXA', 'M\xC9DIO', 'BOA', undefined, 'Defini\xE7\xE3o padr\xE3o de v\xEDdeo',
 				'Configura\xE7\xF5es', 'Configura\xE7\xE3o do usu\xE1rio'
 			]);
@@ -570,7 +570,7 @@ var AutoPlay = new PlayerFunction('auto_play', {
 		button.handler = createCallback(this._step, this);
 
 		button.refresh = function() {
-			this.indicator.data = _(['ON', 'OFF', 'AUTO'][AutoPlay.get()]);
+			this.indicator.data = _(['ON', 'OFF', 'AUTO \u03B2'][AutoPlay.get()]);
 		};
 
 		return button;
@@ -688,7 +688,7 @@ AABJRU5ErkJggg=='}
 					});
 		
 					DH.content(DH.getById('watch-actions-area'), [{
-						attributes: {'class': 'close'},
+						attributes: {'class': 'close', title: 'Close'},
 						children: {
 							tag: 'img',
 							attributes: {'class': 'master-sprite close-button', src: 'http://s.ytimg.com/yt/img/pixel-vfl73.gif', onclick: 'yt.www.watch.watch5.hide()'}
@@ -702,7 +702,7 @@ k7+twjAQh7+ziBsEFB7lUVNmAdjBDQtkAjJAmuxgJoBXUWSTQOMIid5+BSJSXghKOMmSz77fd39k\
 C8DxeIzee6aYMYbtdivinIsiwmazYbVajRJ777lcLiilmDVNQ5qmKKV4PB6jAFprftZrfs9nZgDz\
 +ZwQwqQWlosFwBOglOoFZFnW8Q+Hw1uQAhCRznqJ8zwnz/MW+D+urUBrPdjrJ38QUBRFu9/v972z\
 HiBJkreX1loAyrIcHObs06Q/CTtDHDJrbVvFV4Ax9nULr4enAO73++TMt9vtCTDGcDqduF6vo4Qh\
-BOq6pqoqjDEIgHMueu8REWKMo7/zbreTP/cyU+OquYT5AAAAAElFTkSuQmCC'},
+BOq6pqoqjDEIgHMueu8REWKMo7/zbreTP/cyU+OquYT5AAAAAElFTkSuQmCC', title: 'About'},
 						listeners: {click: function() { unsafeWindow.open(Meta.site); }}
 					}, {
 						attributes: {id: 'yays_settings-panel'},
