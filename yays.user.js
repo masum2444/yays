@@ -1,12 +1,14 @@
 // ==UserScript==
 // @name        Yays! (Yet Another Youtube Script)
 // @description Control autoplaying and playback quality on YouTube.
-// @version     1.4.4
+// @version     1.5
 // @author      eugenox_gmail_com
 // @license     (CC) BY-SA-3.0 http://creativecommons.org/licenses/by-sa/3.0/
 // @namespace   youtube
 // @include     http://*.youtube.*/*
+// @include     https://*.youtube.*/*
 // @include     http://youtube.*/*
+// @include     https://youtube.*/*
 // ==/UserScript==
 
 function YAYS(unsafeWindow) {
@@ -657,7 +659,7 @@ if (DH.getById('watch-actions') !== null) {
 
 	DH.appendAfter(DH.getById('watch-flag'), {
 		tag: 'button',
-		style: {marginLeft: '3px', padding: '0 3px'},
+		style: {marginLeft: '3px', padding: '0 4px'},
 		attributes: {id: 'yays_settings-button', type: 'button', 'class': 'yt-uix-button yt-uix-tooltip yt-uix-tooltip-reverse', title: _('Player settings')},
 		children: {
 				tag: 'img',
