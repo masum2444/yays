@@ -612,8 +612,12 @@ var VideoQuality = new PlayerFunction('video_quality', {
 			default:
 				return;
 		}
-
-		this._player.setPlaybackQuality(quality);
+		
+		setTimeout(createCallback(function() {
+		
+			this._player.setPlaybackQuality(quality);
+		
+		}, this), 1);
 	},
 
 	createButton: function() {
