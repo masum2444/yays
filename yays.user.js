@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Yays! (Yet Another Youtube Script)
 // @description Control autoplaying and playback quality on YouTube.
-// @version     1.5.1
+// @version     1.5.2
 // @author      eugenox_gmail_com
 // @license     (CC) BY-SA-3.0 http://creativecommons.org/licenses/by-sa/3.0/
 // @namespace   youtube
@@ -18,8 +18,8 @@ function YAYS(unsafeWindow) {
  */
 var Meta = {
 	title:       'Yays! (Yet Another Youtube Script)',
-	version:     '1.5.1',
-	releasedate: 'Feb 5, 2011',
+	version:     '1.5.2',
+	releasedate: 'Apr 16, 2011',
 	site:        'http://eugenox.appspot.com/script/yays',
 	namespace:   'yays'
 };
@@ -124,7 +124,7 @@ _.dictionary = (function() {
 				'Calidad', 'AUTO', 'BAJA', 'MEDIA', 'ALTA', undefined, 'Usar calidad por defecto',
 				undefined, undefined
 			]);
-		
+
 		// german - deutsch (xemino @userscripts.org)
 		case 'de':
 			return combine(vocabulary, [
@@ -132,7 +132,7 @@ _.dictionary = (function() {
 				'Qualit\xE4t', 'AUTO', 'NIEDRIG', 'MITTEL', 'HOCH', undefined, 'Standard Video Qualit\xE4t setzen',
 				undefined, undefined
 			]);
-		
+
 		// brazilian portuguese - português brasileiro (Pitukinha @userscripts.org)
 		case 'pt':
 			return combine(vocabulary, [
@@ -163,19 +163,19 @@ var DH = {
 				def = copyProperties(def, {tag: 'div', style: null, attributes: null, listeners: null, children: null});
 
 				var node = this.createElement(def.tag);
-				
+
 				if (def.style !== null)
 					this.style(node, def.style);
-				
+
 				if (def.attributes !== null)
 					this.attributes(node, def.attributes);
-				
+
 				if (def.listeners !== null)
 					this.listeners(node, def.listeners);
-				
+
 				if (def.children !== null)
 					this.append(node, def.children);
-				
+
 				return node;
 
 			case '[object String]':
@@ -197,7 +197,7 @@ var DH = {
 	append: function(node, children) {
 		each(function(i, child) { node.appendChild(this.build(child)); }, [].concat(children), this);
 	},
-	
+
 	appendAfter: function(node, children) {
 		var parent = node.parentNode, sibling = node.nextSibling;
 		if (sibling) {
@@ -230,7 +230,24 @@ var DH = {
 	attributes: function(node, attributes) {
 		each(node.setAttribute, attributes, node);
 	},
-	
+
+	addClass: function(node, clss) {
+		var classAttribute = node.getAttribute('class') || '';
+		if (classAttribute.indexOf(clss) == -1) {
+			node.setAttribute('class', classAttribute.concat(' ', clss));
+		}
+	},
+
+	delClass: function(node, clss) {
+		if (node.hasAttribute('class')) {
+			node.setAttribute('class', node.getAttribute('class').replace(new RegExp('\\s*'.concat(clss, '\\s*'), 'g'), ' '));
+		}
+	},
+
+	hasClass: function(node, clss) {
+		return node.hasAttribute('class') && node.getAttribute('class').indexOf(clss) != -1;
+	},
+
 	listeners: function(node, listeners) {
 		each(function(type, listener) { this.on(node, type, listener); }, listeners, this);
 	},
@@ -238,7 +255,7 @@ var DH = {
 	on: function(node, type, listener) {
 		node.addEventListener(type, listener, false);
 	},
-	
+
 	un: function(node, type, listener) {
 		node.removeEventListener(type, listener, false);
 	}
@@ -264,9 +281,9 @@ var Config = (function(namespace) {
 			}
 		};
 	}
-	
+
 	var prefix = namespace ? namespace + '.' : '';
-	
+
 	// HTML5
 	if (typeof unsafeWindow.localStorage == 'object') {
 		return {
@@ -283,7 +300,7 @@ var Config = (function(namespace) {
 
 		set: function(key, value) {
 			key = prefix + key;
-			
+
 			if (new RegExp('(?:^|; *)' + key + '=\\w+(?:$|;)').test(document.cookie)) {
 				document.cookie = key + '=' + value;
 			}
@@ -412,11 +429,11 @@ var JSONRequest = (function(namespace) {
 			}]
 		}));
 	}
-	
+
 	function removePopup() {
 		document.body.removeChild(popup);
 	}
-	
+
 	function openSite() {
 		removePopup();
 		unsafeWindow.open(Meta.site);
@@ -432,7 +449,7 @@ function Button(labelText, tooltipText) {
 		node = DH.build(this._dom.node),
 		label = DH.build(this._dom.label),
 		indicator = DH.build(this._dom.indicator);
-	
+
 	DH.attributes(node, { title: tooltipText });
 	DH.append(label, labelText);
 	DH.append(node, [label, indicator]);
@@ -446,9 +463,9 @@ function Button(labelText, tooltipText) {
 
 Button.prototype = {
 	indicator: null,
-	
+
 	_node: null,
-	
+
 	_dom: {
 		node: {
 			tag: 'button',
@@ -468,7 +485,7 @@ Button.prototype = {
 			children: ''
 		}
 	},
-	
+
 	_onClick: function(event) {
 		this.handler();
 		this.refresh();
@@ -521,29 +538,29 @@ PlayerFunction.init = function(player) {
  */
 var AutoPlay = new PlayerFunction('auto_play', {
 	_applied: false,
-	
+
 	_step: function() {
 		this.set((this.get() + 1) % 3);
 	},
-	
+
 	_onFocus: function() {
 		if (this._applied) {
 			setTimeout(createCallback(function() { this._player.playVideo(); }, this), 500);
 		}
-		
+
 		this._applied = true;
 	},
-	
+
 	init: function() {
 		switch (this.get()) {
 			case 0: // ON
 				this._applied = true;
 				break;
-			
+
 			case 1: // OFF
 				this._applied = false;
 				break;
-			
+
 			case 2: // AUTO
 				// Video opened in the same window.
 				if (unsafeWindow.history.length > 1) {
@@ -553,12 +570,12 @@ var AutoPlay = new PlayerFunction('auto_play', {
 				else {
 					var onFocus = createCallback(function () {
 						this._onFocus();
-			
+
 						DH.un(unsafeWindow, 'focus', onFocus);
 					}, this);
-		
+
 					DH.on(unsafeWindow, 'focus', onFocus);
-					
+
 					this._applied = false;
 				}
 				break;
@@ -612,11 +629,11 @@ var VideoQuality = new PlayerFunction('video_quality', {
 			default:
 				return;
 		}
-		
+
 		setTimeout(createCallback(function() {
-		
+
 			this._player.setPlaybackQuality(quality);
-		
+
 		}, this), 1);
 	},
 
@@ -688,48 +705,56 @@ AABJRU5ErkJggg=='}
 		},
 		listeners: {
 			click: function() {
-				if (DH.getById('yays_settings-panel')) {
-					DH.attributes(DH.getById('watch-actions-area-container'), {
-						'class': 'collapsed'
-					});
-			
-					DH.content(DH.getById('watch-actions-area'), '...');
+				var
+					container = DH.getById('watch-actions-area-container'),
+					panel = DH.getById('yays_settings-panel');
+
+				function isHidden(node) { return node.nodeType != 1 || DH.hasClass(node, 'hid'); }
+
+				if (isHidden(panel) || isHidden(container)) {
+					DH.delClass(container, 'hid');
+					container.style.display = 'block';
+
+					each(function(i, node) {
+						! isHidden(node) && DH.hasClass(node, 'watch-actions-panel') && DH.addClass(node, ' hid');
+					}, DH.getById('watch-actions-area').childNodes);
+
+					DH.delClass(panel, 'hid');
+					panel.style.display = 'block';
 				}
 				else {
-					DH.attributes(DH.getById('watch-actions-area-container'), {
-						'class': '',
-						style: 'height: auto'
-					});
-		
-					DH.content(DH.getById('watch-actions-area'), [{
-						attributes: {'class': 'close', title: 'Close'},
-						children: {
-							tag: 'img',
-							attributes: {'class': 'master-sprite close-button', src: 'http://s.ytimg.com/yt/img/pixel-vfl73.gif', onclick: 'yt.www.watch.watch5.hide()'}
-						}
-					}, {
-						tag: 'img',
-						style: {cssFloat: 'right', cursor: 'pointer'},
-						attributes: {src: 'data:image/png;base64,\
+					DH.addClass(container, 'hid');
+					container.style.display = 'none';
+
+					DH.addClass(panel, 'hid');
+					panel.style.display = 'none';
+				}
+			}
+		}
+	});
+
+	DH.prepend(DH.getById('watch-actions-area'), [{
+		attributes: {id: 'yays_settings-panel', 'class': 'watch-actions-panel'},
+		style: {position: 'relative', padding: '5px 0'},
+		children: [{
+			tag: 'img',
+			style: {position: 'absolute', top: '0', right: '20px', cursor: 'pointer'},
+			attributes: {src: 'data:image/png;base64,\
 iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAQRJREFUOMud\
 k7+twjAQh7+ziBsEFB7lUVNmAdjBDQtkAjJAmuxgJoBXUWSTQOMIid5+BSJSXghKOMmSz77fd39k\
 C8DxeIzee6aYMYbtdivinIsiwmazYbVajRJ777lcLiilmDVNQ5qmKKV4PB6jAFprftZrfs9nZgDz\
 +ZwQwqQWlosFwBOglOoFZFnW8Q+Hw1uQAhCRznqJ8zwnz/MW+D+urUBrPdjrJ38QUBRFu9/v972z\
 HiBJkreX1loAyrIcHObs06Q/CTtDHDJrbVvFV4Ax9nULr4enAO73++TMt9vtCTDGcDqduF6vo4Qh\
 BOq6pqoqjDEIgHMueu8REWKMo7/zbreTP/cyU+OquYT5AAAAAElFTkSuQmCC', title: 'About'},
-						listeners: {click: function() { unsafeWindow.open(Meta.site); }}
-					}, {
-						attributes: {id: 'yays_settings-panel'},
-						style: {textAlign: 'center', margin: '5px 0'},
-						children: [
-							VideoQuality.createButton().render(),
-							AutoPlay.createButton().render()
-						]
-					}]);
-				}
-			}
-		}
-	});
+			listeners: {click: function() { unsafeWindow.open(Meta.site); }}
+		}, {
+			style: {textAlign: 'center'},
+			children: [
+				VideoQuality.createButton().render(),
+				AutoPlay.createButton().render()
+			]
+		}]
+	}]);
 
 	unsafeWindow.onYouTubePlayerReady = extendFunction(unsafeWindow.onYouTubePlayerReady, onPlayerReady);
 	onPlayerReady();
@@ -764,15 +789,15 @@ co7jgi7wC1N5OUtzk3BUAAAAAElFTkSuQmCC)'}
 							children: _('Settings'),
 							listeners: {
 								mousedown: function() {
-									each(function(index, element) {
-										var panelName = (new RegExp('^playnav-panel-tab-(\\w+)').exec(element.getAttribute('id')) || [, null])[1];
+									each(function(i, node) {
+										var panelName = (new RegExp('^playnav-panel-tab-(\\w+)').exec(node.getAttribute('id') || '') || [, null])[1];
 										if (panelName) {
-											element.setAttribute('class', '');
+											DH.delClass(node, 'panel-tab-selected');
 											DH.getById('playnav-panel-' + panelName).style.display = 'none';
 										}
 									}, DH.getById('playnav-bottom-links-clip').getElementsByTagName('td'));
 
-									DH.getById('playnav-panel-tab-yays_settings').setAttribute('class', 'panel-tab-selected');
+									DH.addClass(DH.getById('playnav-panel-tab-yays_settings'), 'panel-tab-selected');
 									DH.getById('playnav-panel-yays_settings').style.display = 'block';
 								}
 							}
