@@ -97,7 +97,7 @@ _.dictionary = (function() {
 	var vocabulary = [
 		'Auto play', 'ON', 'OFF', 'AUTO', 'Toggle video autoplay',
 		'Quality', 'AUTO', 'LOW', 'MEDIUM', 'HIGH', 'HIGHEST', 'Set default video quality',
-		'Settings', 'Player settings'
+		'Settings', 'Player settings', 'Help'
 	];
 
 	switch ((document.documentElement.lang || 'en').substr(0, 2)) {
@@ -106,7 +106,7 @@ _.dictionary = (function() {
 			return combine(vocabulary, [
 				'Automatikus lej\xE1tsz\xE1s', 'BE', 'KI', 'AUTO \u03B2', 'Automatikus lej\xE1tsz\xE1s ki-, bekapcsol\xE1sa',
 				'Min\u0151s\xE9g', 'AUTO', 'ALACSONY', 'K\xD6ZEPES', 'MAGAS', 'LEGMAGASABB', 'Vide\xF3k alap\xE9rtelmezett felbont\xE1sa',
-				'Be\xE1ll\xEDt\xE1sok', 'Lej\xE1tsz\xF3 be\xE1ll\xEDt\xE1sai'
+				'Be\xE1ll\xEDt\xE1sok', 'Lej\xE1tsz\xF3 be\xE1ll\xEDt\xE1sai', 'Súgó'
 			]);
 
 		// dutch - nederlands (Mike-RaWare @userscripts.org)
@@ -114,7 +114,7 @@ _.dictionary = (function() {
 			return combine(vocabulary, [
 				'Auto spelen', 'AAN', 'UIT', 'AUTOMATISCH \u03B2', 'Stel automatisch afspelen in',
 				'Kwaliteit', 'AUTOMATISCH', 'LAAG', 'GEMIDDELD', 'HOOG', undefined, 'Stel standaard videokwaliteit in',
-				undefined, undefined
+				undefined, undefined, undefined
 			]);
 
 		// spanish - español (yonane @userscripts.org)
@@ -122,7 +122,7 @@ _.dictionary = (function() {
 			return combine(vocabulary, [
 				'Reproducci\xF3n Autom\xE1tica', undefined, undefined, 'AUTO \u03B2', 'Modificar Reproducci\xF3n Autom\xE1tica',
 				'Calidad', 'AUTO', 'BAJA', 'MEDIA', 'ALTA', undefined, 'Usar calidad por defecto',
-				undefined, undefined
+				undefined, undefined, undefined
 			]);
 
 		// german - deutsch (xemino @userscripts.org)
@@ -130,7 +130,7 @@ _.dictionary = (function() {
 			return combine(vocabulary, [
 				'Automatische Wiedergabe', 'AN', 'AUS', 'AUTO \u03B2', 'Automatische Wiedergabe umschalten',
 				'Qualit\xE4t', 'AUTO', 'NIEDRIG', 'MITTEL', 'HOCH', undefined, 'Standard Video Qualit\xE4t setzen',
-				undefined, undefined
+				undefined, undefined, undefined
 			]);
 
 		// brazilian portuguese - português brasileiro (Pitukinha @userscripts.org)
@@ -138,7 +138,7 @@ _.dictionary = (function() {
 			return combine(vocabulary, [
 				'Reprodu\xE7\xE3o Autom\xE1tica', 'LIGADO', 'DESLIGADO', 'AUTOM\xC1TICO \u03B2', 'Modificar Reprodu\xE7\xE3o Autom\xE1tica',
 				'Qualidade', 'AUTOM\xC1TICO', 'BAIXA', 'M\xC9DIO', 'BOA', undefined, 'Defini\xE7\xE3o padr\xE3o de v\xEDdeo',
-				'Configura\xE7\xF5es', 'Configura\xE7\xE3o do usu\xE1rio'
+				'Configura\xE7\xF5es', 'Configura\xE7\xE3o do usu\xE1rio', undefined
 			]);
 
 		// greek - Έλληνες (TastyTeo @userscripts.org)
@@ -146,7 +146,7 @@ _.dictionary = (function() {
 			return combine(vocabulary, [
 				'\u0391\u03C5\u03C4\u03CC\u03BC\u03B1\u03C4\u03B7 \u03B1\u03BD\u03B1\u03C0\u03B1\u03C1\u03B1\u03B3\u03C9\u03B3\u03AE', '\u0395\u039D\u0395\u03A1\u0393\u039F', '\u0391\u039D\u0395\u039D\u0395\u03A1\u0393\u039F', '\u0391\u03A5\u03A4\u039F\u039C\u0391\u03A4\u0397 \u03B2', '\u0395\u03BD\u03B1\u03BB\u03BB\u03B1\u03B3\u03AE \u03B1\u03C5\u03C4\u03CC\u03BC\u03B1\u03C4\u03B7\u03C2 \u03B1\u03BD\u03B1\u03C0\u03B1\u03C1\u03B1\u03B3\u03C9\u03B3\u03AE\u03C2',
 				'\u03A0\u03BF\u03B9\u03CC\u03C4\u03B7\u03C4\u03B1', '\u0391\u03A5\u03A4\u039F\u039C\u0391\u03A4\u0397', '\u03A7\u0391\u039C\u0397\u039B\u0397', '\u039A\u0391\u039D\u039F\u039D\u0399\u039A\u0397', '\u03A5\u03A8\u0397\u039B\u0397', '\u03A0\u039F\u039B\u03A5 \u03A5\u03A8\u0397\u039B\u0397', '\u039F\u03C1\u03B9\u03C3\u03BC\u03CC\u03C2 \u03C0\u03C1\u03BF\u03B5\u03C0\u03B9\u03BB\u03B5\u03B3\u03BC\u03AD\u03BD\u03B7\u03C2 \u03C0\u03BF\u03B9\u03CC\u03C4\u03B7\u03C4\u03B1\u03C2 \u03B2\u03AF\u03BD\u03C4\u03B5\u03BF',
-				'\u0395\u03C0\u03B9\u03BB\u03BF\u03B3\u03AD\u03C2', '\u0395\u03C0\u03B9\u03BB\u03BF\u03B3\u03AD\u03C2 Player'
+				'\u0395\u03C0\u03B9\u03BB\u03BF\u03B3\u03AD\u03C2', '\u0395\u03C0\u03B9\u03BB\u03BF\u03B3\u03AD\u03C2 Player', undefined
 			]);
 	}
 
@@ -745,7 +745,7 @@ k7+twjAQh7+ziBsEFB7lUVNmAdjBDQtkAjJAmuxgJoBXUWSTQOMIid5+BSJSXghKOMmSz77fd39k\
 C8DxeIzee6aYMYbtdivinIsiwmazYbVajRJ777lcLiilmDVNQ5qmKKV4PB6jAFprftZrfs9nZgDz\
 +ZwQwqQWlosFwBOglOoFZFnW8Q+Hw1uQAhCRznqJ8zwnz/MW+D+urUBrPdjrJ38QUBRFu9/v972z\
 HiBJkreX1loAyrIcHObs06Q/CTtDHDJrbVvFV4Ax9nULr4enAO73++TMt9vtCTDGcDqduF6vo4Qh\
-BOq6pqoqjDEIgHMueu8REWKMo7/zbreTP/cyU+OquYT5AAAAAElFTkSuQmCC', title: 'About'},
+BOq6pqoqjDEIgHMueu8REWKMo7/zbreTP/cyU+OquYT5AAAAAElFTkSuQmCC', title: _('Help')},
 			listeners: {click: function() { unsafeWindow.open(Meta.site); }}
 		}, {
 			style: {textAlign: 'center'},
