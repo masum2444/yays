@@ -80,6 +80,8 @@ function createCallback(func, scope) {
 var emptyFunction = function() { return; };
 
 function extendFunction(func, extension) {
+	if (! func) return extension;
+
 	return function() {
 		try { func.apply(this, arguments); } catch (ex) { }
 		extension.apply(this, arguments);
@@ -95,7 +97,7 @@ function _(text) {
 
 _.dictionary = (function() {
 	var vocabulary = [
-		'Auto play', 'ON', 'OFF', 'AUTO', 'Toggle video autoplay',
+		'Auto play', 'ON', 'OFF', 'AUTO \u03B2', 'Toggle video autoplay',
 		'Quality', 'AUTO', 'LOW', 'MEDIUM', 'HIGH', 'HIGHEST', 'Set default video quality',
 		'Settings', 'Player settings', 'Help'
 	];
@@ -282,7 +284,7 @@ var Config = (function(namespace) {
 		};
 	}
 
-	var prefix = namespace ? namespace + '.' : '';
+	var prefix = namespace + '.';
 
 	// HTML5
 	if (typeof unsafeWindow.localStorage == 'object') {
@@ -534,7 +536,7 @@ PlayerFunction.init = function(player) {
 };
 
 /*
- * AUTOPLAY
+ * Prevent autoplaying.
  */
 var AutoPlay = new PlayerFunction('auto_play', {
 	_applied: false,
@@ -605,7 +607,7 @@ var AutoPlay = new PlayerFunction('auto_play', {
 });
 
 /*
- * VIDEO QUALITY
+ * Set video quality.
  */
 var VideoQuality = new PlayerFunction('video_quality', {
 	_step: function() {
@@ -864,5 +866,6 @@ else {
 	scriptNode.text = '(' + YAYS.toString() + ')(window);';
 
 	document.body.appendChild(scriptNode);
+	document.body.removeChild(scriptNode);
 }
 
