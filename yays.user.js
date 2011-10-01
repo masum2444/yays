@@ -9,6 +9,7 @@
 // @include     https://*.youtube.*/*
 // @include     http://youtube.*/*
 // @include     https://youtube.*/*
+// @run-at      document-end
 // ==/UserScript==
 
 function YAYS(unsafeWindow) {
@@ -19,7 +20,7 @@ function YAYS(unsafeWindow) {
 var Meta = {
 	title:       'Yays! (Yet Another Youtube Script)',
 	version:     '1.5.2',
-	releasedate: 'Apr 16, 2011',
+	releasedate: 'Sep 25, 2011',
 	site:        'http://eugenox.appspot.com/script/yays',
 	namespace:   'yays'
 };
@@ -45,7 +46,7 @@ function each(callback, iterable, scope) {
 }
 
 function map() {
-	var args = Array.prototype.constructor.apply([], arguments), callback = args.shift() || createCallback(Array.prototype.constructor, []), buffer = [];
+	var args = Array.prototype.constructor.apply([], arguments), callback = args.shift() || bind(Array.prototype.constructor, []), buffer = [];
 
 	if (args.length > 1) {
 		var len = Math.max.apply(Math, map(function(arg) { return arg.length; }, args)), getter = function(arg) { return arg[i]; };
@@ -68,16 +69,14 @@ function combine(keys, values) {
 	return object;
 }
 
+function bind(func, scope) {
+	return function() { return func.apply(scope, arguments); };
+}
+
 function copyProperties(src, target) {
 	for (var key in src) target[key] = src[key];
 	return target;
 }
-
-function createCallback(func, scope) {
-	return function() { return func.apply(scope, arguments); };
-}
-
-var emptyFunction = function() { return; };
 
 function extendFunction(func, extension) {
 	if (! func) return extension;
@@ -87,6 +86,8 @@ function extendFunction(func, extension) {
 		extension.apply(this, arguments);
 	};
 }
+
+function emptyFunction() { return; };
 
 /*
  * i18n
@@ -108,7 +109,7 @@ _.dictionary = (function() {
 			return combine(vocabulary, [
 				'Automatikus lej\xE1tsz\xE1s', 'BE', 'KI', 'AUTO \u03B2', 'Automatikus lej\xE1tsz\xE1s ki-, bekapcsol\xE1sa',
 				'Min\u0151s\xE9g', 'AUTO', 'ALACSONY', 'K\xD6ZEPES', 'MAGAS', 'LEGMAGASABB', 'Vide\xF3k alap\xE9rtelmezett felbont\xE1sa',
-				'Be\xE1ll\xEDt\xE1sok', 'Lej\xE1tsz\xF3 be\xE1ll\xEDt\xE1sai', 'Súgó'
+				'Be\xE1ll\xEDt\xE1sok', 'Lej\xE1tsz\xF3 be\xE1ll\xEDt\xE1sai', 'S\xFAg\xF3'
 			]);
 
 		// dutch - nederlands (Mike-RaWare @userscripts.org)
@@ -196,9 +197,9 @@ var DH = {
 		}
 	},
 
-	getById: createCallback(unsafeWindow.document.getElementById, unsafeWindow.document),
-	createElement: createCallback(unsafeWindow.document.createElement, unsafeWindow.document),
-	createTextNode: createCallback(unsafeWindow.document.createTextNode, unsafeWindow.document),
+	getById: bind(unsafeWindow.document.getElementById, unsafeWindow.document),
+	createElement: bind(unsafeWindow.document.createElement, unsafeWindow.document),
+	createTextNode: bind(unsafeWindow.document.createTextNode, unsafeWindow.document),
 
 	style: function(node, style) {
 		copyProperties(style, node.style);
@@ -250,7 +251,7 @@ var DH = {
 
 	delClass: function(node, clss) {
 		if (node.hasAttribute('class')) {
-			node.setAttribute('class', node.getAttribute('class').replace(new RegExp('\\s*'.concat(clss, '\\s*'), 'g'), ' '));
+			node.setAttribute('class', node.getAttribute('class').replace(new RegExp(''.concat('\\s*', clss, '\\s*'), 'g'), ' '));
 		}
 	},
 
@@ -305,17 +306,17 @@ var Config = (function(namespace) {
 	// Cookie
 	return {
 		get: function(key) {
-			return (document.cookie.match(new RegExp('(?:^|; *)' + prefix + key + '=(\\w+)(?:$|;)')) || [, null])[1];
+			return (document.cookie.match(new RegExp(''.concat('(?:^|; *)', prefix, key, '=(\\w+)(?:$|;)'))) || [, null])[1];
 		},
 
 		set: function(key, value) {
 			key = prefix + key;
 
-			if (new RegExp('(?:^|; *)' + key + '=\\w+(?:$|;)').test(document.cookie)) {
-				document.cookie = key + '=' + value;
+			if (new RegExp(''.concat('(?:^|; *)', key, '=\\w+(?:$|;)')).test(document.cookie)) {
+				document.cookie = ''.concat(key, '=', value);
 			}
 			else {
-				document.cookie = key + '=' + value + '; path=/; expires=' + new Date(new Date().valueOf() + 365 * 24 * 3600 * 1000).toUTCString();
+				document.cookie = ''.concat(key, '=', value, '; path=/; expires=', new Date(new Date().valueOf() + 365 * 24 * 3600 * 1000).toUTCString());
 			}
 		}
 	};
@@ -327,9 +328,9 @@ var Config = (function(namespace) {
 var JSONRequest = (function(namespace) {
 	function buildURL(base, parameters) {
 		var queryParams = [];
-		each(function(key, value) { queryParams.push(key + '=' + encodeURIComponent(value)); }, parameters);
+		each(function(key, value) { queryParams.push(''.concat(key, '=', encodeURIComponent(value))); }, parameters);
 
-		return base + '?' + queryParams.join('&');
+		return ''.concat(base, '?', queryParams.join('&'));
 	}
 
 	var RequestClass;
@@ -342,13 +343,13 @@ var JSONRequest = (function(namespace) {
 			GM_xmlhttpRequest({
 				method: 'GET',
 				url: buildURL(url, parameters),
-				onload: createCallback(this._onLoad, this)
+				onload: bind(this._onLoad, this)
 			});
 		};
 
 		RequestClass.prototype = {
 			_onLoad: function(response) {
-				this._callback(eval('(' + response.responseText + ')'));
+				this._callback(eval(''.concat('(', response.responseText, ')')));
 			}
 		};
 	}
@@ -358,9 +359,9 @@ var JSONRequest = (function(namespace) {
 
 		RequestClass = function(url, parameters, callback) {
 			this._callback = callback;
-			this._id = unsafeWindow[namespace].JSONRequest.push(createCallback(this._onLoad, this)) - 1;
+			this._id = unsafeWindow[namespace].JSONRequest.push(bind(this._onLoad, this)) - 1;
 
-			parameters.callback = namespace + '.JSONRequest[' + this._id + ']';
+			parameters.callback = ''.concat(namespace, '.JSONRequest[', this._id, ']');
 
 			this._scriptTag = document.body.appendChild(DH.build({
 				tag: 'script',
@@ -464,7 +465,7 @@ function Button(labelText, tooltipText) {
 	DH.append(label, labelText);
 	DH.append(node, [label, indicator]);
 
-	DH.on(node, 'click', createCallback(this._onClick, this));
+	DH.on(node, 'click', bind(this._onClick, this));
 
 	this._node = node;
 
@@ -555,7 +556,7 @@ var AutoPlay = new PlayerFunction('auto_play', {
 
 	_onFocus: function() {
 		if (this._applied) {
-			setTimeout(createCallback(function() { this._player.playVideo(); }, this), 500);
+			setTimeout(bind(function() { this._player.playVideo(); }, this), 500);
 		}
 
 		this._applied = true;
@@ -578,7 +579,7 @@ var AutoPlay = new PlayerFunction('auto_play', {
 				}
 				// Video opened in new window/tab.
 				else {
-					var onFocus = createCallback(function () {
+					var onFocus = bind(function () {
 						this._onFocus();
 
 						DH.un(unsafeWindow, 'focus', onFocus);
@@ -604,7 +605,7 @@ var AutoPlay = new PlayerFunction('auto_play', {
 	createButton: function() {
 		var button = new Button(_('Auto play'), _('Toggle video autoplay'));
 
-		button.handler = createCallback(this._step, this);
+		button.handler = bind(this._step, this);
 
 		button.refresh = function() {
 			this.indicator.data = _(['ON', 'OFF', 'AUTO \u03B2'][AutoPlay.get()]);
@@ -640,7 +641,7 @@ var VideoQuality = new PlayerFunction('video_quality', {
 				return;
 		}
 
-		setTimeout(createCallback(function() {
+		setTimeout(bind(function() {
 
 			this._player.setPlaybackQuality(quality);
 
@@ -650,7 +651,7 @@ var VideoQuality = new PlayerFunction('video_quality', {
 	createButton: function() {
 		var button = new Button(_('Quality'), _('Set default video quality'));
 
-		button.handler = createCallback(this._step, this);
+		button.handler = bind(this._step, this);
 
 		button.refresh = function() {
 			this.indicator.data = _(['AUTO', 'LOW', 'MEDIUM', 'HIGH', 'HIGHEST'][VideoQuality.get()]);
@@ -664,9 +665,7 @@ var VideoQuality = new PlayerFunction('video_quality', {
  * PLAYER STATE CHANGE callback
  */
 unsafeWindow[Meta.namespace].onPlayerStateChange = function() {
-
 	AutoPlay.apply();
-
 };
 
 /*
@@ -675,16 +674,21 @@ unsafeWindow[Meta.namespace].onPlayerStateChange = function() {
 function onPlayerReady() {
 	var player = DH.getById('movie_player');
 
-	if (player && typeof player.getPlayerState == 'function') {
+	if (player) {
+		// Unwrap the player object
+		if (typeof XPCNativeWrapper == 'function' && typeof XPCNativeWrapper.unwrap == 'function')
+			player = XPCNativeWrapper.unwrap(player);
 
-		PlayerFunction.init(player);
+		if (typeof player.getPlayerState == 'function') {
+			PlayerFunction.init(player);
 
-		VideoQuality.apply();
-		AutoPlay.apply();
+			VideoQuality.apply();
+			AutoPlay.apply();
 
-		player.addEventListener('onStateChange', Meta.namespace + '.onPlayerStateChange()');
+			player.addEventListener('onStateChange', Meta.namespace + '.onPlayerStateChange()');
 
-		return true;
+			return true;
+		}
 	}
 
 	return false;
@@ -692,10 +696,10 @@ function onPlayerReady() {
 
 /*
  * PER-SITE
+ *
+ * WATCH page
  */
-// WATCH page
 if (DH.getById('watch-actions') !== null) {
-
 	DH.appendAfter(DH.getById('watch-flag'), {
 		tag: 'button',
 		style: {marginLeft: '3px', padding: '0 4px'},
@@ -745,10 +749,10 @@ AABJRU5ErkJggg=='}
 
 	DH.prepend(DH.getById('watch-actions-area'), [{
 		attributes: {id: 'yays_settings-panel', 'class': 'watch-actions-panel'},
-		style: {position: 'relative', padding: '5px 0'},
+		style: {position: 'relative'},
 		children: [{
 			tag: 'img',
-			style: {position: 'absolute', top: '0', right: '20px', cursor: 'pointer'},
+			style: {position: 'absolute', top: '0', right: '15px', marginTop: '-5px', cursor: 'pointer'},
 			attributes: {src: 'data:image/png;base64,\
 iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAQRJREFUOMud\
 k7+twjAQh7+ziBsEFB7lUVNmAdjBDQtkAjJAmuxgJoBXUWSTQOMIid5+BSJSXghKOMmSz77fd39k\
@@ -768,11 +772,11 @@ BOq6pqoqjDEIgHMueu8REWKMo7/zbreTP/cyU+OquYT5AAAAAElFTkSuQmCC', title: _('Help')}
 
 	unsafeWindow.onYouTubePlayerReady = extendFunction(unsafeWindow.onYouTubePlayerReady, onPlayerReady);
 	onPlayerReady();
-
 }
-// CHANNEL page
+/*
+ * CHANNEL page
+ */
 else if (DH.getById('playnav-video-details') !== null) {
-
 	// Create and append tab
 	DH.append(DH.getById('playnav-bottom-links-clip').getElementsByTagName('tr')[0], {
 		tag: 'td',
@@ -854,7 +858,6 @@ co7jgi7wC1N5OUtzk3BUAAAAAElFTkSuQmCC)'}
 
 	unsafeWindow.onChannelPlayerReady = extendFunction(unsafeWindow.onChannelPlayerReady, onPlayerReady);
 	onPlayerReady();
-
 }
 
 } // YAYS
@@ -871,7 +874,7 @@ if (new RegExp('Firefox/\\d', 'i').test(navigator.userAgent)) {
 else {
 	var scriptNode = document.createElement('script');
 	scriptNode.setAttribute('type', 'text/javascript');
-	scriptNode.text = '(' + YAYS.toString() + ')(window);';
+	scriptNode.text = ''.concat('(', YAYS.toString(), ')(window);');
 
 	document.body.appendChild(scriptNode);
 	document.body.removeChild(scriptNode);
