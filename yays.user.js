@@ -82,12 +82,20 @@ function extendFunction(func, extension) {
 	if (! func) return extension;
 
 	return function() {
-		try { func.apply(this, arguments); } catch (ex) { }
+		try {
+			func.apply(this, arguments);
+		}
+		catch (ex) { }
+
 		extension.apply(this, arguments);
 	};
 }
 
 function emptyFunction() { return; };
+
+function debug() {
+	unsafeWindow.console.debug.apply(unsafeWindow.console, arguments);
+}
 
 /*
  * i18n
@@ -595,7 +603,11 @@ var AutoPlay = new PlayerFunction('auto_play', {
 
 	apply: function() {
 		if (! this._applied && this._player.getPlayerState() == 1) {
-			this._player.seekTo(0, true);
+			try {
+				this._player.seekTo(0, true);
+			}
+			catch (ex) { }
+
 			this._player.pauseVideo();
 
 			this._applied = true;
@@ -792,9 +804,9 @@ else if (DH.getById('playnav-video-details') !== null) {
 					children: [{
 						attributes: {'class': 'playnav-panel-tab-icon'},
 						style: {marginTop: '2px', height: '10px', backgroundImage: 'url(data:image/png;base64,\
-iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAEdJREFUGNON\
-kFEOADAEQ9udyf1P0DvZl0RsRL+kHqJAkSSX5NU/GfgNRc0OyjIzctoYEACwAtGo/sFS+9PbZ54o\
-co7jgi7wC1N5OUtzk3BUAAAAAElFTkSuQmCC)'}
+iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAAXNSR0IArs4c6QAAAGRJREFUGNON\
+kMENwDAIA49s0a4Rduwc3cddIxmj/RCpQjxyUj52wAAkFGS9hXlJGqH1eEgaki4AWwJwUDPd/bRf\
+5Fv9cncDsJinZyMVPo1NtqPbb5mS5a3oO7az1GmGV3YoD/4BWtI5q0QK+u4AAAAASUVORK5CYII='}
 					}, {
 						attributes: {'class': 'playnav-bottom-link'},
 						children: {
