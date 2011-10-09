@@ -73,12 +73,12 @@ function bind(func, scope) {
 	return function() { return func.apply(scope, arguments); };
 }
 
-function copyProperties(src, target) {
+function copy(src, target) {
 	for (var key in src) target[key] = src[key];
 	return target;
 }
 
-function extendFunction(func, extension) {
+function extendFn(func, extension) {
 	if (! func) return extension;
 
 	return function() {
@@ -91,7 +91,14 @@ function extendFunction(func, extension) {
 	};
 }
 
-function emptyFunction() { return; };
+function emptyFn() { return; };
+
+function buildURL(base, parameters) {
+	var queryParams = [];
+	each(function(key, value) { queryParams.push(key.concat('=', encodeURIComponent(value))); }, parameters);
+
+	return base.concat('?', queryParams.join('&'));
+}
 
 function debug() {
 	unsafeWindow.console.debug.apply(unsafeWindow.console, arguments);
@@ -179,7 +186,7 @@ var DH = {
 	build: function(def) {
 		switch (Object.prototype.toString.call(def)) {
 			case '[object Object]':
-				def = copyProperties(def, {tag: 'div', style: null, attributes: null, listeners: null, children: null});
+				def = copy(def, {tag: 'div', style: null, attributes: null, listeners: null, children: null});
 
 				var node = this.createElement(def.tag);
 
@@ -210,17 +217,19 @@ var DH = {
 	createTextNode: bind(unsafeWindow.document.createTextNode, unsafeWindow.document),
 
 	style: function(node, style) {
-		copyProperties(style, node.style);
+		copy(style, node.style);
 	},
 
 	append: function(node, children) {
 		each(function(i, child) { node.appendChild(this.build(child)); }, [].concat(children), this);
+		node.normalize();
 	},
 
-	appendAfter: function(node, children) {
+	insertAfter: function(node, children) {
 		var parent = node.parentNode, sibling = node.nextSibling;
 		if (sibling) {
 			each(function(i, child) { parent.insertBefore(this.build(child), sibling); }, [].concat(children), this);
+			parent.normalize();
 		}
 		else {
 			this.append(parent, children);
@@ -259,7 +268,7 @@ var DH = {
 
 	delClass: function(node, clss) {
 		if (node.hasAttribute('class')) {
-			node.setAttribute('class', node.getAttribute('class').replace(new RegExp(''.concat('\\s*', clss, '\\s*'), 'g'), ' '));
+			node.setAttribute('class', node.getAttribute('class').replace(new RegExp('\\s*'.concat(clss, '\\s*'), 'g'), ' '));
 		}
 	},
 
@@ -314,17 +323,17 @@ var Config = (function(namespace) {
 	// Cookie
 	return {
 		get: function(key) {
-			return (document.cookie.match(new RegExp(''.concat('(?:^|; *)', prefix, key, '=(\\w+)(?:$|;)'))) || [, null])[1];
+			return (document.cookie.match(new RegExp('(?:^|; *)'.concat(prefix, key, '=(\\w+)(?:$|;)'))) || [, null])[1];
 		},
 
 		set: function(key, value) {
 			key = prefix + key;
 
-			if (new RegExp(''.concat('(?:^|; *)', key, '=\\w+(?:$|;)')).test(document.cookie)) {
-				document.cookie = ''.concat(key, '=', value);
+			if (new RegExp('(?:^|; *)'.concat(key, '=\\w+(?:$|;)')).test(document.cookie)) {
+				document.cookie = key.concat('=', value);
 			}
 			else {
-				document.cookie = ''.concat(key, '=', value, '; path=/; expires=', new Date(new Date().valueOf() + 365 * 24 * 3600 * 1000).toUTCString());
+				document.cookie = key.concat('=', value, '; path=/; expires=', new Date(new Date().valueOf() + 365 * 24 * 3600 * 1000).toUTCString());
 			}
 		}
 	};
@@ -334,13 +343,6 @@ var Config = (function(namespace) {
  * JSONRequest class.
  */
 var JSONRequest = (function(namespace) {
-	function buildURL(base, parameters) {
-		var queryParams = [];
-		each(function(key, value) { queryParams.push(''.concat(key, '=', encodeURIComponent(value))); }, parameters);
-
-		return ''.concat(base, '?', queryParams.join('&'));
-	}
-
 	var RequestClass;
 
 	// Greasemonkey XHR
@@ -357,7 +359,7 @@ var JSONRequest = (function(namespace) {
 
 		RequestClass.prototype = {
 			_onLoad: function(response) {
-				this._callback(eval(''.concat('(', response.responseText, ')')));
+				this._callback(eval('('.concat(response.responseText, ')')));
 			}
 		};
 	}
@@ -369,7 +371,7 @@ var JSONRequest = (function(namespace) {
 			this._callback = callback;
 			this._id = unsafeWindow[namespace].JSONRequest.push(bind(this._onLoad, this)) - 1;
 
-			parameters.callback = ''.concat(namespace, '.JSONRequest[', this._id, ']');
+			parameters.callback = namespace.concat('.JSONRequest[', this._id, ']');
 
 			this._scriptTag = document.body.appendChild(DH.build({
 				tag: 'script',
@@ -397,7 +399,6 @@ var JSONRequest = (function(namespace) {
  * Check for update.
  */
 (function () {
-
 	if (new Date().valueOf() - new Number(Config.get('update_checked_at')).valueOf() < 24 * 3600 * 1000) return;
 
 	var popup = null;
@@ -405,23 +406,26 @@ var JSONRequest = (function(namespace) {
 	new JSONRequest(Meta.site + '/changelog', {version: Meta.version}, function (changelog) {
 		Config.set('update_checked_at', new String(new Date().valueOf()).valueOf());
 
-		if (changelog && changelog.length) popup = renderPopup(changelog);
+		if (changelog && changelog.length) {
+			popup = renderPopup(changelog);
+		}
 	});
 
 	function renderPopup(changelog) {
 		return document.body.appendChild(DH.build({
 			style: {
-				position: 'fixed', top: '20px', right: '20px', zIndex: 1000, padding: '5px', background: '#f5f5f5', border: '1px solid #c3c3c3',
-				color: '#202020', fontSize: '11px', fontFamily: 'Arial,Nimbus Sans L,sans-serif', lineHeight: '11px'
+				position: 'fixed', top: '15px', right: '15px', zIndex: 1000, padding: '4px 8px', backgroundColor: '#ffffff', border: '1px solid #cccccc',
+				color: '#202020', fontSize: '11px', fontFamily: 'Arial,Nimbus Sans L,sans-serif', lineHeight: '11px',
+				MozBoxShadow: '2px 2px 4px rgb(71, 71, 71)'
 			},
 			children: [{
-				style: {margin: '2px 0', textAlign: 'center', fontWeight: 'bold'},
+				style: {textAlign: 'center', fontWeight: 'bold'},
 				children: Meta.title
 			}, {
 				style: {marginBottom: '6px', textAlign: 'center'},
 				children: 'UserScript update notification.'
 			}, {
-				children: ['You are using version ', {tag: 'b', children: Meta.version}, {tag: 'i', children: [' (', Meta.releasedate, ')']}, '. Consider updating to the newest version.']
+				children: ['You are using version ', {tag: 'b', children: Meta.version}, ', released on ', {tag: 'i', children: Meta.releasedate}, '.', {tag: 'br'}, 'Please update to the newest version.']
 			}, {
 				style: {margin: '5px'},
 				children: map(function(entry) {
@@ -438,13 +442,14 @@ var JSONRequest = (function(namespace) {
 				children: map(function(text, handler) {
 					var node = DH.build({
 						tag: 'span',
-						style: {border: '1px solid #cccccc', padding: '3px 10px', margin: '0 5px', cursor: 'pointer', backgroundColor: '#e5e5e5'},
+						attributes: {'class': 'yt-uix-button'},
+						style: {margin: '0 5px', padding: '3px 10px'},
 						children: text,
 						listeners: {click: handler}
 					});
 
 					return node;
-				}, ['Update', 'Later'], [openSite, removePopup])
+				}, ['Update', 'Later'], [openDownloadSite, removePopup])
 			}]
 		}));
 	}
@@ -453,11 +458,10 @@ var JSONRequest = (function(namespace) {
 		document.body.removeChild(popup);
 	}
 
-	function openSite() {
+	function openDownloadSite() {
 		removePopup();
-		unsafeWindow.open(Meta.site);
+		unsafeWindow.open(buildURL(Meta.site + '/download', {version: Meta.version}));
 	}
-
 })();
 
 /*
@@ -501,7 +505,7 @@ Button.prototype = {
 			tag: 'span',
 			style: {fontWeight: 'bold', marginLeft: '5px'},
 			attributes: {'class': 'yt-uix-button-content'},
-			children: ''
+			children: '-'
 		}
 	},
 
@@ -515,22 +519,22 @@ Button.prototype = {
 		return this._node;
 	},
 
-	handler: emptyFunction,
-	refresh: emptyFunction
+	handler: emptyFn,
+	refresh: emptyFn
 };
 
 /*
- * PLAYERFUNCTION class.
+ * PlayerOption class.
  */
-function PlayerFunction(configKey, overrides) {
-	copyProperties(overrides, this);
+function PlayerOption(configKey, overrides) {
+	copy(overrides, this);
 
 	this._configKey = configKey;
 
-	PlayerFunction.functions.push(this);
+	PlayerOption.functions.push(this);
 }
 
-PlayerFunction.prototype = {
+PlayerOption.prototype = {
 	_player: null,
 
 	get: function() {
@@ -541,13 +545,13 @@ PlayerFunction.prototype = {
 		Config.set(this._configKey, value);
 	},
 
-	init: emptyFunction,
-	apply: emptyFunction
+	init: emptyFn,
+	apply: emptyFn
 };
 
-PlayerFunction.functions = [];
+PlayerOption.functions = [];
 
-PlayerFunction.init = function(player) {
+PlayerOption.init = function(player) {
 	this.prototype._player = player;
 	each(function(i, func) { func.init(); }, this.functions);
 };
@@ -555,7 +559,7 @@ PlayerFunction.init = function(player) {
 /*
  * Prevent autoplaying.
  */
-var AutoPlay = new PlayerFunction('auto_play', {
+var AutoPlay = new PlayerOption('auto_play', {
 	_applied: false,
 
 	_step: function() {
@@ -630,7 +634,7 @@ var AutoPlay = new PlayerFunction('auto_play', {
 /*
  * Set video quality.
  */
-var VideoQuality = new PlayerFunction('video_quality', {
+var VideoQuality = new PlayerOption('video_quality', {
 	_step: function() {
 		this.set((this.get() + 1) % 5);
 	},
@@ -674,25 +678,26 @@ var VideoQuality = new PlayerFunction('video_quality', {
 });
 
 /*
- * PLAYER STATE CHANGE callback
+ * Player state change callback
  */
 unsafeWindow[Meta.namespace].onPlayerStateChange = function() {
 	AutoPlay.apply();
 };
 
 /*
- * PLAYER READY callback
+ * Player ready callback
  */
 function onPlayerReady() {
 	var player = DH.getById('movie_player');
 
 	if (player) {
 		// Unwrap the player object
-		if (typeof XPCNativeWrapper == 'function' && typeof XPCNativeWrapper.unwrap == 'function')
+		if (typeof XPCNativeWrapper == 'function' && typeof XPCNativeWrapper.unwrap == 'function') {
 			player = XPCNativeWrapper.unwrap(player);
+		}
 
 		if (typeof player.getPlayerState == 'function') {
-			PlayerFunction.init(player);
+			PlayerOption.init(player);
 
 			VideoQuality.apply();
 			AutoPlay.apply();
@@ -707,12 +712,12 @@ function onPlayerReady() {
 }
 
 /*
- * PER-SITE
+ * Per-site
  *
- * WATCH page
+ * Watch page
  */
 if (DH.getById('watch-actions') !== null) {
-	DH.appendAfter(DH.getById('watch-flag'), {
+	DH.insertAfter(DH.getById('watch-flag'), {
 		tag: 'button',
 		style: {marginLeft: '3px', padding: '0 4px'},
 		attributes: {id: 'yays_settings-button', type: 'button', 'class': 'yt-uix-button yt-uix-tooltip yt-uix-tooltip-reverse', title: _('Player settings')},
@@ -782,11 +787,11 @@ BOq6pqoqjDEIgHMueu8REWKMo7/zbreTP/cyU+OquYT5AAAAAElFTkSuQmCC', title: _('Help')}
 		}]
 	}]);
 
-	unsafeWindow.onYouTubePlayerReady = extendFunction(unsafeWindow.onYouTubePlayerReady, onPlayerReady);
+	unsafeWindow.onYouTubePlayerReady = extendFn(unsafeWindow.onYouTubePlayerReady, onPlayerReady);
 	onPlayerReady();
 }
 /*
- * CHANNEL page
+ * Channel page
  */
 else if (DH.getById('playnav-video-details') !== null) {
 	// Create and append tab
@@ -846,7 +851,7 @@ kMENwDAIA49s0a4Rduwc3cddIxmj/RCpQjxyUj52wAAkFGS9hXlJGqH1eEgaki4AWwJwUDPd/bRf\
 	});
 
 	// Other tab clicked
-	unsafeWindow.playnav.selectPanel = extendFunction(unsafeWindow.playnav.selectPanel, function () {
+	unsafeWindow.playnav.selectPanel = extendFn(unsafeWindow.playnav.selectPanel, function () {
 		DH.getById('playnav-panel-tab-yays_settings').setAttribute('class', '');
 		DH.getById('playnav-panel-yays_settings').style.display = 'none';
 	});
@@ -868,14 +873,14 @@ kMENwDAIA49s0a4Rduwc3cddIxmj/RCpQjxyUj52wAAkFGS9hXlJGqH1eEgaki4AWwJwUDPd/bRf\
 		}
 	});
 
-	unsafeWindow.onChannelPlayerReady = extendFunction(unsafeWindow.onChannelPlayerReady, onPlayerReady);
+	unsafeWindow.onChannelPlayerReady = extendFn(unsafeWindow.onChannelPlayerReady, onPlayerReady);
 	onPlayerReady();
 }
 
 } // YAYS
 
 /*
- * DETECT browser, and run YAYS() accordingly.
+ * Detect browser, and run YAYS() accordingly.
  */
 
 // Firefox
@@ -886,7 +891,7 @@ if (new RegExp('Firefox/\\d', 'i').test(navigator.userAgent)) {
 else {
 	var scriptNode = document.createElement('script');
 	scriptNode.setAttribute('type', 'text/javascript');
-	scriptNode.text = ''.concat('(', YAYS.toString(), ')(window);');
+	scriptNode.text = '('.concat(YAYS.toString(), ')(window);');
 
 	document.body.appendChild(scriptNode);
 	document.body.removeChild(scriptNode);
