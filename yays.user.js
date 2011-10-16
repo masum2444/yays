@@ -638,7 +638,7 @@ var AutoPlay = new PlayerOption('auto_play', {
 
 			case 2: // AUTO
 				// Video opened in the same window.
-				if (unsafeWindow.history.length > 1) {
+				if (this._focused || unsafeWindow.history.length > 1) {
 					this._applied = true;
 				}
 				// Video opened in new window/tab.
