@@ -12,6 +12,8 @@
 // @run-at      document-end
 // ==/UserScript==
 
+const MOVIE_PLAYER = 'movie_player';
+
 function YAYS(unsafeWindow) {
 
 /*
@@ -20,25 +22,15 @@ function YAYS(unsafeWindow) {
 var Meta = {
 	title:       'Yays! (Yet Another Youtube Script)',
 	version:     '1.5.3',
-	releasedate: 'Okt 16, 2011',
+	releasedate: 'Oct 16, 2011',
 	site:        'http://eugenox.appspot.com/script/yays',
-	namespace:   'yays'
+	ns:          'yays'
 };
 
 /*
  * Script context.
  */
-var Context = (function(namespace) {
-	var ns = unsafeWindow[namespace] = {};
-
-	return {
-		ns: namespace,
-
-		reg: function(name, value) {
-			ns[name] = value;
-		}
-	};
-})(Meta.namespace);
+unsafeWindow[Meta.ns] = {};
 
 /*
  * Utility functions.
@@ -347,7 +339,7 @@ var Config = (function(namespace) {
 			}
 		}
 	};
-})(Context.ns);
+})(Meta.ns);
 
 /*
  * Create JSON or JSONp requests.
@@ -409,7 +401,6 @@ var JSONRequest = (function(namespace) {
 				}
 			};
 
-			// We can't rely on Context, because of reusability reasons.
 			unsafeWindow[namespace].JSONRequests = requests;
 
 			return Impl;
@@ -423,7 +414,7 @@ var JSONRequest = (function(namespace) {
 	Request.prototype = new Impl();
 
 	return Request;
-})(Context.ns);
+})(Meta.ns);
 
 /*
  * Check for update.
@@ -725,15 +716,15 @@ var VideoQuality = new PlayerOption('video_quality', {
 /*
  * Player state change callback
  */
-Context.reg('onPlayerStateChange', function() {
+unsafeWindow[Meta.ns].onPlayerStateChange = function() {
 	AutoPlay.apply();
-});
+};
 
 /*
  * Player ready callback
  */
 function onPlayerReady() {
-	var player = DH.getById('movie_player');
+	var player = DH.getById(MOVIE_PLAYER);
 
 	if (player) {
 		// Unwrap the player object
@@ -747,7 +738,7 @@ function onPlayerReady() {
 			VideoQuality.apply();
 			AutoPlay.apply();
 
-			player.addEventListener('onStateChange', Context.ns + '.onPlayerStateChange()');
+			player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange()');
 
 			return true;
 		}
@@ -924,20 +915,20 @@ kMENwDAIA49s0a4Rduwc3cddIxmj/RCpQjxyUj52wAAkFGS9hXlJGqH1eEgaki4AWwJwUDPd/bRf\
 } // YAYS
 
 /*
- * Detect browser, and run YAYS() accordingly.
+ * Run YAYS if the page has a player embedded.
  */
+if (document.getElementById(MOVIE_PLAYER)) {
+	// Firefox
+	if (new RegExp('Firefox/\\d', 'i').test(navigator.userAgent)) {
+		YAYS(unsafeWindow);
+	}
+	// Chrome, Opera, Safari
+	else {
+		var scriptNode = document.createElement('script');
+		scriptNode.setAttribute('type', 'text/javascript');
+		scriptNode.text = '('.concat(YAYS.toString(), ')(window);');
 
-// Firefox
-if (new RegExp('Firefox/\\d', 'i').test(navigator.userAgent)) {
-	YAYS(unsafeWindow);
+		document.body.appendChild(scriptNode);
+		document.body.removeChild(scriptNode);
+	}
 }
-// Chrome, Opera, Safari
-else {
-	var scriptNode = document.createElement('script');
-	scriptNode.setAttribute('type', 'text/javascript');
-	scriptNode.text = '('.concat(YAYS.toString(), ')(window);');
-
-	document.body.appendChild(scriptNode);
-	document.body.removeChild(scriptNode);
-}
-
