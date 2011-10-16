@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Yays! (Yet Another Youtube Script)
 // @description Control autoplaying and playback quality on YouTube.
-// @version     1.5.2
+// @version     1.5.3
 // @author      eugenox_gmail_com
 // @license     (CC) BY-SA-3.0 http://creativecommons.org/licenses/by-sa/3.0/
 // @namespace   youtube
@@ -181,7 +181,7 @@ _.dictionary = (function() {
 		case 'fr':
 			return combine(vocabulary, [
 				'Lecture Auto', undefined, undefined, undefined, 'Lecture auto ON/OFF',
-				'Qualité', undefined, 'BASSE', 'MOYENNE', 'HAUTE', 'LA PLUS HAUTE', 'Qualité par défaut',
+				'Qualit\xE9', undefined, 'BASSE', 'MOYENNE', 'HAUTE', 'LA PLUS HAUTE', 'Qualit\xE9 par d\xE9faut',
 				'Options', 'Option du lecteur', undefined
 			]);
 	}
@@ -428,7 +428,7 @@ var JSONRequest = (function(namespace) {
 /*
  * Check for update.
  */
-(function () {
+(function() {
 	if (new Date().valueOf() - new Number(Config.get('update_checked_at')).valueOf() < 24 * 3600 * 1000) return;
 
 	var popup = null;
@@ -497,29 +497,8 @@ var JSONRequest = (function(namespace) {
 /*
  * Button class.
  */
-function Button(labelText, tooltipText, callbacks) {
-	var
-		node = DH.build(this._dom.node),
-		label = DH.build(this._dom.label),
-		indicator = DH.build(this._dom.indicator);
-
-	DH.attributes(node, { title: tooltipText });
-	DH.append(label, labelText);
-	DH.append(node, [label, indicator]);
-
-	DH.on(node, 'click', bind(this._onClick, this));
-
-	this._node = node;
-	this._indicator = indicator.firstChild;
-
-	copy(callbacks, this);
-}
-
-Button.prototype = {
-	_indicator: null,
-	_node: null,
-
-	_dom: {
+var Button = (function() {
+	var def = {
 		node: {
 			tag: 'button',
 			style: {margin: '0 0 0 5px'},
@@ -537,25 +516,50 @@ Button.prototype = {
 			attributes: {'class': 'yt-uix-button-content'},
 			children: '-'
 		}
-	},
+	};
 
-	_refresh: function() {
-		this._indicator.data = this.refresh();
-	},
+	function Button(labelText, tooltipText, callbacks) {
+		var
+			node = DH.build(def.node),
+			label = DH.build(def.label),
+			indicator = DH.build(def.indicator);
 
-	_onClick: function(event) {
-		this.handler();
-		this._refresh();
-	},
+		DH.attributes(node, { title: tooltipText });
+		DH.append(label, labelText);
+		DH.append(node, [label, indicator]);
 
-	render: function() {
-		this._refresh();
-		return this._node;
-	},
+		DH.on(node, 'click', bind(this._onClick, this));
 
-	handler: emptyFn,
-	refresh: emptyFn
-};
+		this._node = node;
+		this._indicator = indicator.firstChild;
+
+		copy(callbacks, this);
+	}
+
+	Button.prototype = {
+		_indicator: null,
+		_node: null,
+
+		_refresh: function() {
+			this._indicator.data = this.refresh();
+		},
+
+		_onClick: function(event) {
+			this.handler();
+			this._refresh();
+		},
+
+		render: function() {
+			this._refresh();
+			return this._node;
+		},
+
+		handler: emptyFn,
+		refresh: emptyFn
+	};
+
+	return Button;
+})();
 
 /*
  * PlayerOption class.
