@@ -46,7 +46,10 @@ function each(callback, iterable, scope) {
 }
 
 function map() {
-	var args = Array.prototype.constructor.apply([], arguments), callback = args.shift() || bind(Array.prototype.constructor, []), buffer = [];
+	var
+		args = Array.prototype.constructor.apply([], arguments),
+		callback = args.shift() || bind(Array.prototype.constructor, []),
+		buffer = [];
 
 	if (args.length > 1) {
 		var len = Math.max.apply(Math, map(function(arg) { return arg.length; }, args)), getter = function(arg) { return arg[i]; };
@@ -74,7 +77,9 @@ function bind(func, scope) {
 }
 
 function copy(src, target) {
-	for (var key in src) target[key] = src[key];
+	for (var key in src)
+		target[key] = src[key];
+
 	return target;
 }
 
@@ -85,7 +90,7 @@ function extendFn(func, extension) {
 		try {
 			func.apply(this, arguments);
 		}
-		catch (ex) { }
+		catch (ex) {}
 
 		extension.apply(this, arguments);
 	};
@@ -93,11 +98,11 @@ function extendFn(func, extension) {
 
 function emptyFn() { return; };
 
-function buildURL(base, parameters) {
-	var queryParams = [];
-	each(function(key, value) { queryParams.push(key.concat('=', encodeURIComponent(value))); }, parameters);
+function buildURL(path, parameters) {
+	var query = [];
+	each(function(key, value) { query.push(key.concat('=', encodeURIComponent(value))); }, parameters);
 
-	return base.concat('?', queryParams.join('&'));
+	return path.concat('?', query.join('&'));
 }
 
 function debug() {
@@ -107,76 +112,78 @@ function debug() {
 /*
  * i18n
  */
-function _(text) {
-	return _.dictionary[text] || text;
-}
+var _ = (function() {
+	var dictionary = (function() {
+		var vocabulary = [
+			'Auto play', 'ON', 'OFF', 'AUTO \u03B2', 'Toggle video autoplay',
+			'Quality', 'AUTO', 'LOW', 'MEDIUM', 'HIGH', 'HIGHEST', 'Set default video quality',
+			'Settings', 'Player settings', 'Help'
+		];
 
-_.dictionary = (function() {
-	var vocabulary = [
-		'Auto play', 'ON', 'OFF', 'AUTO \u03B2', 'Toggle video autoplay',
-		'Quality', 'AUTO', 'LOW', 'MEDIUM', 'HIGH', 'HIGHEST', 'Set default video quality',
-		'Settings', 'Player settings', 'Help'
-	];
+		switch ((document.documentElement.lang || 'en').substr(0, 2)) {
+			// hungarian - magyar
+			case 'hu':
+				return combine(vocabulary, [
+					'Automatikus lej\xE1tsz\xE1s', 'BE', 'KI', 'AUTO \u03B2', 'Automatikus lej\xE1tsz\xE1s ki-, bekapcsol\xE1sa',
+					'Min\u0151s\xE9g', 'AUTO', 'ALACSONY', 'K\xD6ZEPES', 'MAGAS', 'LEGMAGASABB', 'Vide\xF3k alap\xE9rtelmezett felbont\xE1sa',
+					'Be\xE1ll\xEDt\xE1sok', 'Lej\xE1tsz\xF3 be\xE1ll\xEDt\xE1sai', 'S\xFAg\xF3'
+				]);
 
-	switch ((document.documentElement.lang || 'en').substr(0, 2)) {
-		// hungarian - magyar
-		case 'hu':
-			return combine(vocabulary, [
-				'Automatikus lej\xE1tsz\xE1s', 'BE', 'KI', 'AUTO \u03B2', 'Automatikus lej\xE1tsz\xE1s ki-, bekapcsol\xE1sa',
-				'Min\u0151s\xE9g', 'AUTO', 'ALACSONY', 'K\xD6ZEPES', 'MAGAS', 'LEGMAGASABB', 'Vide\xF3k alap\xE9rtelmezett felbont\xE1sa',
-				'Be\xE1ll\xEDt\xE1sok', 'Lej\xE1tsz\xF3 be\xE1ll\xEDt\xE1sai', 'S\xFAg\xF3'
-			]);
+			// dutch - nederlands (Mike-RaWare @userscripts.org)
+			case 'nl':
+				return combine(vocabulary, [
+					'Auto spelen', 'AAN', 'UIT', 'AUTOMATISCH \u03B2', 'Stel automatisch afspelen in',
+					'Kwaliteit', 'AUTOMATISCH', 'LAAG', 'GEMIDDELD', 'HOOG', undefined, 'Stel standaard videokwaliteit in',
+					undefined, undefined, undefined
+				]);
 
-		// dutch - nederlands (Mike-RaWare @userscripts.org)
-		case 'nl':
-			return combine(vocabulary, [
-				'Auto spelen', 'AAN', 'UIT', 'AUTOMATISCH \u03B2', 'Stel automatisch afspelen in',
-				'Kwaliteit', 'AUTOMATISCH', 'LAAG', 'GEMIDDELD', 'HOOG', undefined, 'Stel standaard videokwaliteit in',
-				undefined, undefined, undefined
-			]);
+			// spanish - español (yonane @userscripts.org)
+			case 'es':
+				return combine(vocabulary, [
+					'Reproducci\xF3n Autom\xE1tica', undefined, undefined, 'AUTO \u03B2', 'Modificar Reproducci\xF3n Autom\xE1tica',
+					'Calidad', 'AUTO', 'BAJA', 'MEDIA', 'ALTA', undefined, 'Usar calidad por defecto',
+					undefined, undefined, undefined
+				]);
 
-		// spanish - español (yonane @userscripts.org)
-		case 'es':
-			return combine(vocabulary, [
-				'Reproducci\xF3n Autom\xE1tica', undefined, undefined, 'AUTO \u03B2', 'Modificar Reproducci\xF3n Autom\xE1tica',
-				'Calidad', 'AUTO', 'BAJA', 'MEDIA', 'ALTA', undefined, 'Usar calidad por defecto',
-				undefined, undefined, undefined
-			]);
+			// german - deutsch (xemino @userscripts.org)
+			case 'de':
+				return combine(vocabulary, [
+					'Automatische Wiedergabe', 'AN', 'AUS', 'AUTO \u03B2', 'Automatische Wiedergabe umschalten',
+					'Qualit\xE4t', 'AUTO', 'NIEDRIG', 'MITTEL', 'HOCH', undefined, 'Standard Video Qualit\xE4t setzen',
+					undefined, undefined, undefined
+				]);
 
-		// german - deutsch (xemino @userscripts.org)
-		case 'de':
-			return combine(vocabulary, [
-				'Automatische Wiedergabe', 'AN', 'AUS', 'AUTO \u03B2', 'Automatische Wiedergabe umschalten',
-				'Qualit\xE4t', 'AUTO', 'NIEDRIG', 'MITTEL', 'HOCH', undefined, 'Standard Video Qualit\xE4t setzen',
-				undefined, undefined, undefined
-			]);
+			// brazilian portuguese - português brasileiro (Pitukinha @userscripts.org)
+			case 'pt':
+				return combine(vocabulary, [
+					'Reprodu\xE7\xE3o Autom\xE1tica', 'LIGADO', 'DESLIGADO', 'AUTOM\xC1TICO \u03B2', 'Modificar Reprodu\xE7\xE3o Autom\xE1tica',
+					'Qualidade', 'AUTOM\xC1TICO', 'BAIXA', 'M\xC9DIO', 'BOA', undefined, 'Defini\xE7\xE3o padr\xE3o de v\xEDdeo',
+					'Configura\xE7\xF5es', 'Configura\xE7\xE3o do usu\xE1rio', undefined
+				]);
 
-		// brazilian portuguese - português brasileiro (Pitukinha @userscripts.org)
-		case 'pt':
-			return combine(vocabulary, [
-				'Reprodu\xE7\xE3o Autom\xE1tica', 'LIGADO', 'DESLIGADO', 'AUTOM\xC1TICO \u03B2', 'Modificar Reprodu\xE7\xE3o Autom\xE1tica',
-				'Qualidade', 'AUTOM\xC1TICO', 'BAIXA', 'M\xC9DIO', 'BOA', undefined, 'Defini\xE7\xE3o padr\xE3o de v\xEDdeo',
-				'Configura\xE7\xF5es', 'Configura\xE7\xE3o do usu\xE1rio', undefined
-			]);
+			// greek - Έλληνες (TastyTeo @userscripts.org)
+			case 'el':
+				return combine(vocabulary, [
+					'\u0391\u03C5\u03C4\u03CC\u03BC\u03B1\u03C4\u03B7 \u03B1\u03BD\u03B1\u03C0\u03B1\u03C1\u03B1\u03B3\u03C9\u03B3\u03AE', '\u0395\u039D\u0395\u03A1\u0393\u039F', '\u0391\u039D\u0395\u039D\u0395\u03A1\u0393\u039F', '\u0391\u03A5\u03A4\u039F\u039C\u0391\u03A4\u0397 \u03B2', '\u0395\u03BD\u03B1\u03BB\u03BB\u03B1\u03B3\u03AE \u03B1\u03C5\u03C4\u03CC\u03BC\u03B1\u03C4\u03B7\u03C2 \u03B1\u03BD\u03B1\u03C0\u03B1\u03C1\u03B1\u03B3\u03C9\u03B3\u03AE\u03C2',
+					'\u03A0\u03BF\u03B9\u03CC\u03C4\u03B7\u03C4\u03B1', '\u0391\u03A5\u03A4\u039F\u039C\u0391\u03A4\u0397', '\u03A7\u0391\u039C\u0397\u039B\u0397', '\u039A\u0391\u039D\u039F\u039D\u0399\u039A\u0397', '\u03A5\u03A8\u0397\u039B\u0397', '\u03A0\u039F\u039B\u03A5 \u03A5\u03A8\u0397\u039B\u0397', '\u039F\u03C1\u03B9\u03C3\u03BC\u03CC\u03C2 \u03C0\u03C1\u03BF\u03B5\u03C0\u03B9\u03BB\u03B5\u03B3\u03BC\u03AD\u03BD\u03B7\u03C2 \u03C0\u03BF\u03B9\u03CC\u03C4\u03B7\u03C4\u03B1\u03C2 \u03B2\u03AF\u03BD\u03C4\u03B5\u03BF',
+					'\u0395\u03C0\u03B9\u03BB\u03BF\u03B3\u03AD\u03C2', '\u0395\u03C0\u03B9\u03BB\u03BF\u03B3\u03AD\u03C2 Player', undefined
+				]);
 
-		// greek - Έλληνες (TastyTeo @userscripts.org)
-		case 'el':
-			return combine(vocabulary, [
-				'\u0391\u03C5\u03C4\u03CC\u03BC\u03B1\u03C4\u03B7 \u03B1\u03BD\u03B1\u03C0\u03B1\u03C1\u03B1\u03B3\u03C9\u03B3\u03AE', '\u0395\u039D\u0395\u03A1\u0393\u039F', '\u0391\u039D\u0395\u039D\u0395\u03A1\u0393\u039F', '\u0391\u03A5\u03A4\u039F\u039C\u0391\u03A4\u0397 \u03B2', '\u0395\u03BD\u03B1\u03BB\u03BB\u03B1\u03B3\u03AE \u03B1\u03C5\u03C4\u03CC\u03BC\u03B1\u03C4\u03B7\u03C2 \u03B1\u03BD\u03B1\u03C0\u03B1\u03C1\u03B1\u03B3\u03C9\u03B3\u03AE\u03C2',
-				'\u03A0\u03BF\u03B9\u03CC\u03C4\u03B7\u03C4\u03B1', '\u0391\u03A5\u03A4\u039F\u039C\u0391\u03A4\u0397', '\u03A7\u0391\u039C\u0397\u039B\u0397', '\u039A\u0391\u039D\u039F\u039D\u0399\u039A\u0397', '\u03A5\u03A8\u0397\u039B\u0397', '\u03A0\u039F\u039B\u03A5 \u03A5\u03A8\u0397\u039B\u0397', '\u039F\u03C1\u03B9\u03C3\u03BC\u03CC\u03C2 \u03C0\u03C1\u03BF\u03B5\u03C0\u03B9\u03BB\u03B5\u03B3\u03BC\u03AD\u03BD\u03B7\u03C2 \u03C0\u03BF\u03B9\u03CC\u03C4\u03B7\u03C4\u03B1\u03C2 \u03B2\u03AF\u03BD\u03C4\u03B5\u03BF',
-				'\u0395\u03C0\u03B9\u03BB\u03BF\u03B3\u03AD\u03C2', '\u0395\u03C0\u03B9\u03BB\u03BF\u03B3\u03AD\u03C2 Player', undefined
-			]);
+			// french - français (eXa @userscripts.org)
+			case 'fr':
+				return combine(vocabulary, [
+					'Lecture Auto', undefined, undefined, undefined, 'Lecture auto ON/OFF',
+					'Qualit\xE9', undefined, 'BASSE', 'MOYENNE', 'HAUTE', 'LA PLUS HAUTE', 'Qualit\xE9 par d\xE9faut',
+					'Options', 'Option du lecteur', undefined
+				]);
+		}
 
-		// french - français (eXa @userscripts.org)
-		case 'fr':
-			return combine(vocabulary, [
-				'Lecture Auto', undefined, undefined, undefined, 'Lecture auto ON/OFF',
-				'Qualit\xE9', undefined, 'BASSE', 'MOYENNE', 'HAUTE', 'LA PLUS HAUTE', 'Qualit\xE9 par d\xE9faut',
-				'Options', 'Option du lecteur', undefined
-			]);
+		return {};
+	})();
+
+	return function(text) {
+		return dictionary[text] || text;
 	}
-
-	return {};
 })();
 
 /*
@@ -347,7 +354,7 @@ var JSONRequest = (function(namespace) {
 
 	// Greasemonkey XHR
 	if (typeof GM_xmlhttpRequest == 'function') {
-		Impl = emptyFn;
+		Impl = function() {};
 
 		Impl.prototype = {
 			_doRequest: function(url, parameters, callback) {
@@ -368,9 +375,7 @@ var JSONRequest = (function(namespace) {
 	// Script tag
 	else {
 		Impl = (function() {
-			var Impl = emptyFn;
-
-			var requests = [];
+			var requests = [], Impl = function() {};
 
 			Impl.prototype = {
 				_callback: null,
@@ -382,7 +387,7 @@ var JSONRequest = (function(namespace) {
 
 					parameters.callback = namespace.concat('.JSONRequests[', this._id, ']');
 
-					this._scriptTag = document.body.appendChild(DH.build({
+					this._scriptNode = document.body.appendChild(DH.build({
 						tag: 'script',
 						attributes: {
 							type: 'text/javascript',
@@ -394,7 +399,7 @@ var JSONRequest = (function(namespace) {
 				_onLoad: function(response) {
 					this._callback(response);
 
-					document.body.removeChild(this._scriptTag);
+					document.body.removeChild(this._scriptNode);
 					delete requests[this._id];
 				}
 			};
@@ -418,12 +423,12 @@ var JSONRequest = (function(namespace) {
  * Check for update.
  */
 (function() {
-	if (new Date().valueOf() - new Number(Config.get('update_checked_at')).valueOf() < 24 * 3600 * 1000) return;
+	if (new Date().valueOf() - Number(Config.get('update_checked_at')) < 24 * 3600 * 1000) return;
 
 	var popup = null;
 
 	new JSONRequest(Meta.site + '/changelog', {version: Meta.version}, function (changelog) {
-		Config.set('update_checked_at', new String(new Date().valueOf()).valueOf());
+		Config.set('update_checked_at', new Date().valueOf());
 
 		if (changelog && changelog.length) {
 			popup = renderPopup(changelog);
@@ -459,15 +464,13 @@ var JSONRequest = (function(namespace) {
 			}, {
 				style: {textAlign: 'center', padding: '10px'},
 				children: map(function(text, handler) {
-					var node = DH.build({
+					return DH.build({
 						tag: 'span',
 						attributes: {'class': 'yt-uix-button'},
 						style: {margin: '0 5px', padding: '3px 10px'},
 						children: text,
 						listeners: {click: handler}
 					});
-
-					return node;
 				}, ['Update', 'Later'], [openDownloadSite, removePopup])
 			}]
 		}));
@@ -513,7 +516,7 @@ var Button = (function() {
 			label = DH.build(def.label),
 			indicator = DH.build(def.indicator);
 
-		DH.attributes(node, { title: tooltipText });
+		DH.attributes(node, {title: tooltipText});
 		DH.append(label, labelText);
 		DH.append(node, [label, indicator]);
 
@@ -553,35 +556,39 @@ var Button = (function() {
 /*
  * PlayerOption class.
  */
-function PlayerOption(configKey, overrides) {
-	copy(overrides, this);
+var PlayerOption = (function() {
+	var instances = [];
 
-	this._configKey = configKey;
+	function PlayerOption(configKey, overrides) {
+		copy(overrides, this);
 
-	PlayerOption.functions.push(this);
-}
+		this._configKey = configKey;
 
-PlayerOption.prototype = {
-	_player: null,
+		instances.push(this);
+	}
 
-	get: function() {
-		return Number(Config.get(this._configKey));
-	},
+	PlayerOption.init = function(player) {
+		this.prototype._player = player;
+		each(function(i, instance) { instance.init(); }, instances);
+	};
 
-	set: function(value) {
-		Config.set(this._configKey, value);
-	},
+	PlayerOption.prototype = {
+		_player: null,
 
-	init: emptyFn,
-	apply: emptyFn
-};
+		get: function() {
+			return Number(Config.get(this._configKey));
+		},
 
-PlayerOption.functions = [];
+		set: function(value) {
+			Config.set(this._configKey, value);
+		},
 
-PlayerOption.init = function(player) {
-	this.prototype._player = player;
-	each(function(i, func) { func.init(); }, this.functions);
-};
+		init: emptyFn,
+		apply: emptyFn
+	};
+
+	return PlayerOption;
+})();
 
 /*
  * Prevent autoplaying.
@@ -650,7 +657,7 @@ var AutoPlay = new PlayerOption('auto_play', {
 			try {
 				this._player.seekTo(0, true);
 			}
-			catch (ex) { }
+			catch (ex) {}
 
 			this._player.pauseVideo();
 
@@ -697,9 +704,7 @@ var VideoQuality = new PlayerOption('video_quality', {
 		}
 
 		setTimeout(bind(function() {
-
 			this._player.setPlaybackQuality(quality);
-
 		}, this), 1);
 	},
 
@@ -883,7 +888,7 @@ kMENwDAIA49s0a4Rduwc3cddIxmj/RCpQjxyUj52wAAkFGS9hXlJGqH1eEgaki4AWwJwUDPd/bRf\
 		}
 	});
 
-	// Other tab clicked
+	// Hide when other tab clicked
 	unsafeWindow.playnav.selectPanel = extendFn(unsafeWindow.playnav.selectPanel, function () {
 		DH.getById('playnav-panel-tab-yays_settings').setAttribute('class', '');
 		DH.getById('playnav-panel-yays_settings').style.display = 'none';
