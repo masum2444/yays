@@ -19,16 +19,26 @@ function YAYS(unsafeWindow) {
  */
 var Meta = {
 	title:       'Yays! (Yet Another Youtube Script)',
-	version:     '1.5.2',
-	releasedate: 'Sep 25, 2011',
+	version:     '1.5.3',
+	releasedate: 'Okt 16, 2011',
 	site:        'http://eugenox.appspot.com/script/yays',
 	namespace:   'yays'
 };
 
 /*
- * Script namespace.
+ * Script context.
  */
-unsafeWindow[Meta.namespace] = {};
+var Context = (function(namespace) {
+	var ns = unsafeWindow[namespace] = {};
+
+	return {
+		ns: namespace,
+
+		reg: function(name, value) {
+			ns[name] = value;
+		}
+	};
+})(Meta.namespace);
 
 /*
  * Utility functions.
@@ -337,27 +347,29 @@ var Config = (function(namespace) {
 			}
 		}
 	};
-})(Meta.namespace);
+})(Context.ns);
 
 /*
- * JSONRequest class.
+ * Create JSON or JSONp requests.
  */
 var JSONRequest = (function(namespace) {
-	var RequestClass;
+	var Impl;
 
 	// Greasemonkey XHR
 	if (typeof GM_xmlhttpRequest == 'function') {
-		RequestClass = function(url, parameters, callback) {
-			this._callback = callback;
+		Impl = emptyFn;
 
-			GM_xmlhttpRequest({
-				method: 'GET',
-				url: buildURL(url, parameters),
-				onload: bind(this._onLoad, this)
-			});
-		};
+		Impl.prototype = {
+			_doRequest: function(url, parameters, callback) {
+				this._callback = callback;
 
-		RequestClass.prototype = {
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: buildURL(url, parameters),
+					onload: bind(this._onLoad, this)
+				});
+			},
+
 			_onLoad: function(response) {
 				this._callback(eval('('.concat(response.responseText, ')')));
 			}
@@ -365,35 +377,53 @@ var JSONRequest = (function(namespace) {
 	}
 	// Script tag
 	else {
-		unsafeWindow[namespace].JSONRequest = [];
+		Impl = (function() {
+			var Impl = emptyFn;
 
-		RequestClass = function(url, parameters, callback) {
-			this._callback = callback;
-			this._id = unsafeWindow[namespace].JSONRequest.push(bind(this._onLoad, this)) - 1;
+			var requests = [];
 
-			parameters.callback = namespace.concat('.JSONRequest[', this._id, ']');
+			Impl.prototype = {
+				_callback: null,
+				_id: null,
 
-			this._scriptTag = document.body.appendChild(DH.build({
-				tag: 'script',
-				attributes: {
-					type: 'text/javascript',
-					src: buildURL(url, parameters)
+				_doRequest: function(url, parameters, callback) {
+					this._callback = callback;
+					this._id = requests.push(bind(this._onLoad, this)) - 1;
+
+					parameters.callback = namespace.concat('.JSONRequests[', this._id, ']');
+
+					this._scriptTag = document.body.appendChild(DH.build({
+						tag: 'script',
+						attributes: {
+							type: 'text/javascript',
+							src: buildURL(url, parameters)
+						}
+					}));
+				},
+
+				_onLoad: function(response) {
+					this._callback(response);
+
+					document.body.removeChild(this._scriptTag);
+					delete requests[this._id];
 				}
-			}));
-		};
+			};
 
-		RequestClass.prototype = {
-			_onLoad: function(response) {
-				this._callback(response);
+			// We can't rely on Context, because of reusability reasons.
+			unsafeWindow[namespace].JSONRequests = requests;
 
-				document.body.removeChild(this._scriptTag);
-				delete unsafeWindow[namespace].JSONRequest[this._id];
-			}
-		};
+			return Impl;
+		})();
 	}
 
-	return RequestClass;
-})(Meta.namespace);
+	function Request(url, parameters, callback) {
+		this._doRequest(url, parameters, callback);
+	}
+
+	Request.prototype = new Impl();
+
+	return Request;
+})(Context.ns);
 
 /*
  * Check for update.
@@ -467,7 +497,7 @@ var JSONRequest = (function(namespace) {
 /*
  * Button class.
  */
-function Button(labelText, tooltipText) {
+function Button(labelText, tooltipText, callbacks) {
 	var
 		node = DH.build(this._dom.node),
 		label = DH.build(this._dom.label),
@@ -480,13 +510,13 @@ function Button(labelText, tooltipText) {
 	DH.on(node, 'click', bind(this._onClick, this));
 
 	this._node = node;
+	this._indicator = indicator.firstChild;
 
-	this.indicator = indicator.firstChild;
+	copy(callbacks, this);
 }
 
 Button.prototype = {
-	indicator: null,
-
+	_indicator: null,
 	_node: null,
 
 	_dom: {
@@ -509,13 +539,17 @@ Button.prototype = {
 		}
 	},
 
+	_refresh: function() {
+		this._indicator.data = this.refresh();
+	},
+
 	_onClick: function(event) {
 		this.handler();
-		this.refresh();
+		this._refresh();
 	},
 
 	render: function() {
-		this.refresh();
+		this._refresh();
 		return this._node;
 	},
 
@@ -561,17 +595,35 @@ PlayerOption.init = function(player) {
  */
 var AutoPlay = new PlayerOption('auto_play', {
 	_applied: false,
+	_focused: false,
+	_timer: null,
 
 	_step: function() {
 		this.set((this.get() + 1) % 3);
 	},
 
-	_onFocus: function() {
-		if (this._applied) {
-			setTimeout(bind(function() { this._player.playVideo(); }, this), 500);
-		}
+	_indicator: function() {
+		return _(['ON', 'OFF', 'AUTO \u03B2'][this.get()]);
+	},
 
-		this._applied = true;
+	_onFocus: function() {
+		if (this._applied && ! this._focused) {
+			this._timer = setTimeout(bind(function() {
+				this._player.playVideo();
+
+				this._focused = true;
+
+				this._timer = null;
+			}, this), 500);
+		}
+	},
+
+	_onBlur: function() {
+		if (this._timer !== null) {
+			clearTimeout(this._timer);
+
+			this._timer = null;
+		}
 	},
 
 	init: function() {
@@ -591,13 +643,8 @@ var AutoPlay = new PlayerOption('auto_play', {
 				}
 				// Video opened in new window/tab.
 				else {
-					var onFocus = bind(function () {
-						this._onFocus();
-
-						DH.un(unsafeWindow, 'focus', onFocus);
-					}, this);
-
-					DH.on(unsafeWindow, 'focus', onFocus);
+					DH.on(unsafeWindow, 'focus', bind(this._onFocus, this));
+					DH.on(unsafeWindow, 'blur', bind(this._onBlur, this));
 
 					this._applied = false;
 				}
@@ -619,15 +666,10 @@ var AutoPlay = new PlayerOption('auto_play', {
 	},
 
 	createButton: function() {
-		var button = new Button(_('Auto play'), _('Toggle video autoplay'));
-
-		button.handler = bind(this._step, this);
-
-		button.refresh = function() {
-			this.indicator.data = _(['ON', 'OFF', 'AUTO \u03B2'][AutoPlay.get()]);
-		};
-
-		return button;
+		return new Button(_('Auto play'), _('Toggle video autoplay'), {
+			handler: bind(this._step, this),
+			refresh: bind(this._indicator, this)
+		});
 	}
 });
 
@@ -637,6 +679,10 @@ var AutoPlay = new PlayerOption('auto_play', {
 var VideoQuality = new PlayerOption('video_quality', {
 	_step: function() {
 		this.set((this.get() + 1) % 5);
+	},
+
+	_indicator: function() {
+		return _(['AUTO', 'LOW', 'MEDIUM', 'HIGH', 'HIGHEST'][this.get()]);
 	},
 
 	_qualities: {highres: 5, hd1080: 4, hd720: 3, large: 2, medium: 1, small: 0},
@@ -665,24 +711,19 @@ var VideoQuality = new PlayerOption('video_quality', {
 	},
 
 	createButton: function() {
-		var button = new Button(_('Quality'), _('Set default video quality'));
-
-		button.handler = bind(this._step, this);
-
-		button.refresh = function() {
-			this.indicator.data = _(['AUTO', 'LOW', 'MEDIUM', 'HIGH', 'HIGHEST'][VideoQuality.get()]);
-		};
-
-		return button;
+		return new Button(_('Quality'), _('Set default video quality'), {
+			handler: bind(this._step, this),
+			refresh: bind(this._indicator, this)
+		});
 	}
 });
 
 /*
  * Player state change callback
  */
-unsafeWindow[Meta.namespace].onPlayerStateChange = function() {
+Context.reg('onPlayerStateChange', function() {
 	AutoPlay.apply();
-};
+});
 
 /*
  * Player ready callback
@@ -702,7 +743,7 @@ function onPlayerReady() {
 			VideoQuality.apply();
 			AutoPlay.apply();
 
-			player.addEventListener('onStateChange', Meta.namespace + '.onPlayerStateChange()');
+			player.addEventListener('onStateChange', Context.ns + '.onPlayerStateChange()');
 
 			return true;
 		}
