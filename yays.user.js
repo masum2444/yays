@@ -12,8 +12,6 @@
 // @run-at      document-end
 // ==/UserScript==
 
-const MOVIE_PLAYER = 'movie_player';
-
 function YAYS(unsafeWindow) {
 
 /*
@@ -724,7 +722,7 @@ unsafeWindow[Meta.ns].onPlayerStateChange = function() {
  * Player ready callback
  */
 function onPlayerReady() {
-	var player = DH.getById(MOVIE_PLAYER);
+	var player = DH.getById('movie_player');
 
 	if (player) {
 		// Unwrap the player object
@@ -917,7 +915,7 @@ kMENwDAIA49s0a4Rduwc3cddIxmj/RCpQjxyUj52wAAkFGS9hXlJGqH1eEgaki4AWwJwUDPd/bRf\
 /*
  * Run YAYS if the page has a player embedded.
  */
-if (document.getElementById(MOVIE_PLAYER)) {
+if (document.getElementById('movie_player')) {
 	// Firefox
 	if (new RegExp('Firefox/\\d', 'i').test(navigator.userAgent)) {
 		YAYS(unsafeWindow);
