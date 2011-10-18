@@ -19,7 +19,7 @@ function YAYS(unsafeWindow) {
  */
 var Meta = {
 	title:       'Yays! (Yet Another Youtube Script)',
-	version:     '1.5.3',
+	version:     '1.5.1',
 	releasedate: 'Oct 16, 2011',
 	site:        'http://eugenox.appspot.com/script/yays',
 	ns:          'yays'
@@ -423,12 +423,13 @@ var JSONRequest = (function(namespace) {
  * Check for update.
  */
 (function() {
-	if (new Date().valueOf() - Number(Config.get('update_checked_at')) < 24 * 3600 * 1000) return;
+	var now = new Date().valueOf();
+	if (now - Number(Config.get('update_checked_at')) < 24 * 3600 * 1000) return;
 
 	var popup = null;
 
 	new JSONRequest(Meta.site + '/changelog', {version: Meta.version}, function (changelog) {
-		Config.set('update_checked_at', new Date().valueOf());
+		Config.set('update_checked_at', now.toFixed());
 
 		if (changelog && changelog.length) {
 			popup = renderPopup(changelog);
@@ -580,7 +581,7 @@ var PlayerOption = (function() {
 		},
 
 		set: function(value) {
-			Config.set(this._configKey, value);
+			Config.set(this._configKey, Number(value));
 		},
 
 		init: emptyFn,
