@@ -19,7 +19,7 @@ function YAYS(unsafeWindow) {
  */
 var Meta = {
 	title:       'Yays! (Yet Another Youtube Script)',
-	version:     '1.5.1',
+	version:     '1.5.3',
 	releasedate: 'Oct 16, 2011',
 	site:        'http://eugenox.appspot.com/script/yays',
 	ns:          'yays'
@@ -52,9 +52,9 @@ function map() {
 		buffer = [];
 
 	if (args.length > 1) {
-		var len = Math.max.apply(Math, map(function(arg) { return arg.length; }, args)), getter = function(arg) { return arg[i]; };
+		var i = 0, len = Math.max.apply(Math, map(function(arg) { return arg.length; }, args)), getter = function(arg) { return arg[i]; };
 
-		for (var i = 0; i < len; i++)
+		for (; i < len; i++)
 			buffer.push(callback.apply(null, map(getter, args)));
 	}
 	else {
@@ -84,7 +84,8 @@ function copy(src, target) {
 }
 
 function extendFn(func, extension) {
-	if (! func) return extension;
+	if (! func)
+		return extension;
 
 	return function() {
 		try {
@@ -113,77 +114,75 @@ function debug() {
  * i18n
  */
 var _ = (function() {
-	var dictionary = (function() {
-		var vocabulary = [
-			'Auto play', 'ON', 'OFF', 'AUTO \u03B2', 'Toggle video autoplay',
-			'Quality', 'AUTO', 'LOW', 'MEDIUM', 'HIGH', 'HIGHEST', 'Set default video quality',
-			'Settings', 'Player settings', 'Help'
-		];
-
+	var
+	vocabulary = [
+		'Auto play', 'ON', 'OFF', 'AUTO \u03B2', 'Toggle video autoplay',
+		'Quality', 'AUTO', 'LOW', 'MEDIUM', 'HIGH', 'HIGHEST', 'Set default video quality',
+		'Settings', 'Player settings', 'Help'
+	],
+	dictionary = combine(vocabulary, (function() {
 		switch ((document.documentElement.lang || 'en').substr(0, 2)) {
 			// hungarian - magyar
 			case 'hu':
-				return combine(vocabulary, [
+				return [
 					'Automatikus lej\xE1tsz\xE1s', 'BE', 'KI', 'AUTO \u03B2', 'Automatikus lej\xE1tsz\xE1s ki-, bekapcsol\xE1sa',
 					'Min\u0151s\xE9g', 'AUTO', 'ALACSONY', 'K\xD6ZEPES', 'MAGAS', 'LEGMAGASABB', 'Vide\xF3k alap\xE9rtelmezett felbont\xE1sa',
 					'Be\xE1ll\xEDt\xE1sok', 'Lej\xE1tsz\xF3 be\xE1ll\xEDt\xE1sai', 'S\xFAg\xF3'
-				]);
+				];
 
 			// dutch - nederlands (Mike-RaWare @userscripts.org)
 			case 'nl':
-				return combine(vocabulary, [
+				return [
 					'Auto spelen', 'AAN', 'UIT', 'AUTOMATISCH \u03B2', 'Stel automatisch afspelen in',
 					'Kwaliteit', 'AUTOMATISCH', 'LAAG', 'GEMIDDELD', 'HOOG', undefined, 'Stel standaard videokwaliteit in',
 					undefined, undefined, undefined
-				]);
+				];
 
 			// spanish - español (yonane @userscripts.org)
 			case 'es':
-				return combine(vocabulary, [
+				return [
 					'Reproducci\xF3n Autom\xE1tica', undefined, undefined, 'AUTO \u03B2', 'Modificar Reproducci\xF3n Autom\xE1tica',
 					'Calidad', 'AUTO', 'BAJA', 'MEDIA', 'ALTA', undefined, 'Usar calidad por defecto',
 					undefined, undefined, undefined
-				]);
+				];
 
 			// german - deutsch (xemino @userscripts.org)
 			case 'de':
-				return combine(vocabulary, [
+				return [
 					'Automatische Wiedergabe', 'AN', 'AUS', 'AUTO \u03B2', 'Automatische Wiedergabe umschalten',
 					'Qualit\xE4t', 'AUTO', 'NIEDRIG', 'MITTEL', 'HOCH', undefined, 'Standard Video Qualit\xE4t setzen',
 					undefined, undefined, undefined
-				]);
+				];
 
 			// brazilian portuguese - português brasileiro (Pitukinha @userscripts.org)
 			case 'pt':
-				return combine(vocabulary, [
+				return [
 					'Reprodu\xE7\xE3o Autom\xE1tica', 'LIGADO', 'DESLIGADO', 'AUTOM\xC1TICO \u03B2', 'Modificar Reprodu\xE7\xE3o Autom\xE1tica',
 					'Qualidade', 'AUTOM\xC1TICO', 'BAIXA', 'M\xC9DIO', 'BOA', undefined, 'Defini\xE7\xE3o padr\xE3o de v\xEDdeo',
 					'Configura\xE7\xF5es', 'Configura\xE7\xE3o do usu\xE1rio', undefined
-				]);
+				];
 
 			// greek - Έλληνες (TastyTeo @userscripts.org)
 			case 'el':
-				return combine(vocabulary, [
+				return [
 					'\u0391\u03C5\u03C4\u03CC\u03BC\u03B1\u03C4\u03B7 \u03B1\u03BD\u03B1\u03C0\u03B1\u03C1\u03B1\u03B3\u03C9\u03B3\u03AE', '\u0395\u039D\u0395\u03A1\u0393\u039F', '\u0391\u039D\u0395\u039D\u0395\u03A1\u0393\u039F', '\u0391\u03A5\u03A4\u039F\u039C\u0391\u03A4\u0397 \u03B2', '\u0395\u03BD\u03B1\u03BB\u03BB\u03B1\u03B3\u03AE \u03B1\u03C5\u03C4\u03CC\u03BC\u03B1\u03C4\u03B7\u03C2 \u03B1\u03BD\u03B1\u03C0\u03B1\u03C1\u03B1\u03B3\u03C9\u03B3\u03AE\u03C2',
 					'\u03A0\u03BF\u03B9\u03CC\u03C4\u03B7\u03C4\u03B1', '\u0391\u03A5\u03A4\u039F\u039C\u0391\u03A4\u0397', '\u03A7\u0391\u039C\u0397\u039B\u0397', '\u039A\u0391\u039D\u039F\u039D\u0399\u039A\u0397', '\u03A5\u03A8\u0397\u039B\u0397', '\u03A0\u039F\u039B\u03A5 \u03A5\u03A8\u0397\u039B\u0397', '\u039F\u03C1\u03B9\u03C3\u03BC\u03CC\u03C2 \u03C0\u03C1\u03BF\u03B5\u03C0\u03B9\u03BB\u03B5\u03B3\u03BC\u03AD\u03BD\u03B7\u03C2 \u03C0\u03BF\u03B9\u03CC\u03C4\u03B7\u03C4\u03B1\u03C2 \u03B2\u03AF\u03BD\u03C4\u03B5\u03BF',
 					'\u0395\u03C0\u03B9\u03BB\u03BF\u03B3\u03AD\u03C2', '\u0395\u03C0\u03B9\u03BB\u03BF\u03B3\u03AD\u03C2 Player', undefined
-				]);
+				];
 
 			// french - français (eXa @userscripts.org)
 			case 'fr':
-				return combine(vocabulary, [
+				return [
 					'Lecture Auto', undefined, undefined, undefined, 'Lecture auto ON/OFF',
 					'Qualit\xE9', undefined, 'BASSE', 'MOYENNE', 'HAUTE', 'LA PLUS HAUTE', 'Qualit\xE9 par d\xE9faut',
 					'Options', 'Option du lecteur', undefined
-				]);
+				];
 		}
 
-		return {};
-	})();
+		return [];
+	})());
 
-	return function(text) {
-		return dictionary[text] || text;
-	}
+	return function(text) { return dictionary[text] || text; };
 })();
 
 /*
@@ -423,17 +422,16 @@ var JSONRequest = (function(namespace) {
  * Check for update.
  */
 (function() {
-	var now = new Date().valueOf();
-	if (now - Number(Config.get('update_checked_at')) < 24 * 3600 * 1000) return;
+	if (new Date().valueOf() - Number(Config.get('update_checked_at')) < 24 * 3600 * 1000)
+		return;
 
 	var popup = null;
 
 	new JSONRequest(Meta.site + '/changelog', {version: Meta.version}, function (changelog) {
-		Config.set('update_checked_at', now.toFixed());
+		Config.set('update_checked_at', new Date().valueOf().toFixed());
 
-		if (changelog && changelog.length) {
+		if (changelog && changelog.length)
 			popup = renderPopup(changelog);
-		}
 	});
 
 	function renderPopup(changelog) {
@@ -613,7 +611,6 @@ var AutoPlay = new PlayerOption('auto_play', {
 				this._player.playVideo();
 
 				this._focused = true;
-
 				this._timer = null;
 			}, this), 500);
 		}
@@ -764,14 +761,15 @@ if (DH.getById('watch-actions') !== null) {
 		children: {
 				tag: 'img',
 				attributes: {src: 'data:image/png;base64,\
-iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAYBJREFUOMuN\
-k71qG0EUhb9ZSxjHbu4DuNkuTcBtapeppUcYSLAJCJKLH8BeVYFEmMwjeEuTMpV6EawygWk2/W3i\
-FAuOXXi0jMxu8OnucM49928cA6jr+tjMNIWV9/57H2/EMK7LstwDiDG+Bl78N0Fd15+A98DfyWSy\
-b2b3Ge8eIIRwmxJ98d6fArgk9sBXEcHMMDMARARgK844J977xSgRdvKyNsK+eGNgZgVAAeC9vwQ+\
-5qKM2Nf6map+BnAhhBvg8NFIcvEPYJoquBKRozw58AdoRsCrsiz7nKaq+isNbwr8zFsSkYP1ev2y\
-GNrh0zkMwYUQbszsUB6Rz6BrAdhqoWkagFvn3G+3eQwhfBCR+XNcY4xnqnrRbSGE8BZ4ljjhvKqq\
-0y4BcPfkSLaG2jTNpuzumIB/+R2EGONitVphZq333gFt5tjOZjMXY2yXyyUxxktVXeQVoKonQKGq\
-u+mpu87xeLyTOLtt2xbz+fxdt4WhJquqegN031lVv/XxHgDCcLpFjm2HsgAAAABJRU5ErkJggg=='}
+iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAZVJREFUOMuN\
+kz9qG0EYxX8z0mKRBIY9gA+QJpA2dcr0QifIYGNjEOQzPoCSrQKJMJMTLOmNq9whuBIkjRiLbcVA\
+bKQN2aSZXcZCG/ya5Zt5733/ZhU9KMvydQjhPIYfrLXf9vGGfQabzeY6z/MMYL1evwKe/NegLMuP\
+wBlwP5lMnm6329+j0SiL138BnHN30eiztfYUQEXxW8BprWmahhACAMYYgAdxwjmx1s6HkTBIBe23\
+RRq3CUIIGkADWGsvAUlFkdRl38GFiHwCUM65G+AQyNOSQwjfgXGs4Ksx5mVqDvwCbofAizzPaZpm\
+N8tYRH7G4Y2BH2lLWutnq9Xque5b4+4c+qCcczchhENjTJ6K0haABy1UVQVwp5RaqfbQOffOGFM8\
+Jqv3/kJE3ndbcM4dAY8SR8yKojjtDIA/7SPZt76qqtqy0Vq382nSd/DFez9fLpeEEGprrQLqJGM9\
+nU6V975eLBZ47y9FZJ5WgIicAFpEDuLRoL3LsmwQOQd1XevZbHbcbaGvyaIo3gDd7ywiV/t4/wCF\
+4b4Vp5/NzwAAAABJRU5ErkJggg=='}
 		},
 		listeners: {
 			click: function() {
