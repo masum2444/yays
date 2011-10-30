@@ -106,6 +106,13 @@ function buildURL(path, parameters) {
 	return path.concat('?', query.join('&'));
 }
 
+function parseJSON(data) {
+	if (JSON)
+		return JSON.parse(data);
+
+	return eval('('.concat(data, ')'));
+}
+
 function debug() {
 	unsafeWindow.console.debug.apply(unsafeWindow.console, arguments);
 }
@@ -346,7 +353,7 @@ var Config = (function(namespace) {
 })(Meta.ns);
 
 /*
- * Create JSON or JSONp requests.
+ * Create XHR or JSONP requests.
  */
 var JSONRequest = (function(namespace) {
 	var Impl;
@@ -367,24 +374,25 @@ var JSONRequest = (function(namespace) {
 			},
 
 			_onLoad: function(response) {
-				this._callback(eval('('.concat(response.responseText, ')')));
+				this._callback(parseJSON(response.responseText));
 			}
 		};
 	}
 	// Script tag
 	else {
 		Impl = (function() {
-			var requests = [], Impl = function() {};
+			var requests = [], requestsNs = 'jsonp', Impl = function() {};
 
 			Impl.prototype = {
 				_callback: null,
 				_id: null,
+				_scriptNode: null,
 
 				_doRequest: function(url, parameters, callback) {
 					this._callback = callback;
 					this._id = requests.push(bind(this._onLoad, this)) - 1;
 
-					parameters.callback = namespace.concat('.JSONRequests[', this._id, ']');
+					parameters.callback = namespace.concat('.', requestsNs, '[', this._id, ']');
 
 					this._scriptNode = document.body.appendChild(DH.build({
 						tag: 'script',
@@ -403,7 +411,7 @@ var JSONRequest = (function(namespace) {
 				}
 			};
 
-			unsafeWindow[namespace].JSONRequests = requests;
+			unsafeWindow[namespace][requestsNs] = requests;
 
 			return Impl;
 		})();
@@ -439,7 +447,7 @@ var JSONRequest = (function(namespace) {
 			style: {
 				position: 'fixed', top: '15px', right: '15px', zIndex: 1000, padding: '4px 8px', backgroundColor: '#ffffff', border: '1px solid #cccccc',
 				color: '#202020', fontSize: '11px', fontFamily: 'Arial,Nimbus Sans L,sans-serif', lineHeight: '11px',
-				MozBoxShadow: '2px 2px 4px rgb(71, 71, 71)'
+				MozBoxShadow: '2px 2px 4px rgb(71, 71, 71)', WebkitBoxShadow: '2px 2px 4px rgb(71, 71, 71)'
 			},
 			children: [{
 				style: {textAlign: 'center', fontWeight: 'bold'},
