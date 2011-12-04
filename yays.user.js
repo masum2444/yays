@@ -509,7 +509,7 @@ var Button = (function() {
 
 		indicator: {
 			tag: 'span',
-			style: {fontWeight: 'bold', marginLeft: '5px'},
+			style: {fontSize: '14px', marginLeft: '5px'},
 			attributes: {'class': 'yt-uix-button-content'},
 			children: '-'
 		}
@@ -731,7 +731,7 @@ unsafeWindow[Meta.ns].onPlayerStateChange = function() {
  * Player ready callback
  */
 function onPlayerReady() {
-	var player = DH.getById('movie_player');
+	var player = DH.getById('movie_player') || DH.getById('movie_player-flash');
 
 	if (player) {
 		// Unwrap the player object
@@ -810,13 +810,12 @@ csFg0+JttI0AAAAASUVORK5CYII='}
 		style: {position: 'relative'},
 		children: [{
 			tag: 'img',
-			style: {position: 'absolute', top: '0', right: '15px', marginTop: '-5px', cursor: 'pointer'},
+			style: {position: 'absolute', top: '0', right: '10px', marginTop: '-3px', cursor: 'pointer'},
 			attributes: {src: 'data:image/png;base64,\
-iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAAXNSR0IArs4c6QAAADxQTFRFuP0A\
-ZmZmmZmZmpqaqqqqrKysra2t3d7e4ODg5eXl5ubm5+fn6+vr7e3t7u7u7+/v9PT0+vr6/f39////\
-M861DwAAAAF0Uk5TAEDm2GYAAABjSURBVBjTdY/RDoAgCEW5opZlZvX//9pNy+yhszHYAcYQ8drh\
-RZyPW2O2TnRcOgYVjR8oSgekFBSJADVSosgEqJEzxX0AKIniKAA1N/HwP/G3slOsvQgq3k5vP7jr\
-XaOm4eQE70UL8vN+nNYAAAAASUVORK5CYII=', title: _('Help')},
+iVBORw0KGgoAAAANSUhEUgAAAAcAAAAJCAYAAAD+WDajAAAAAXNSR0IArs4c6QAAAHVJREFUGNN9\
+zT0OQVEUBODvPmIPotOq1OpTqEWlkYgN6MQCWITaCqjOoiQqKpr34lZvmpnMT6Zk5ggnbDDBE3cc\
+hzjj4I8x9pg2mOOFJWZVaVE6lZkDXLFtrVtTNS9V8MCuDlctf7COiLc+1J/fTkdEgaZv+QMwqxX9\
+qVmH8wAAAABJRU5ErkJggg==', title: _('Help')},
 			listeners: {click: function() { unsafeWindow.open(Meta.site); }}
 		}, {
 			style: {textAlign: 'center'},
@@ -919,21 +918,16 @@ zMzMyE/AMgAAAAF0Uk5TAEDm2GYAAAAgSURBVAjXY+BhYMhtYKhvYLBnYPh8AISADCAXKMjDAAB1\
 
 } // YAYS
 
-/*
- * Run YAYS if the page has a player embedded.
- */
-if (document.getElementById('movie_player')) {
-	// Firefox
-	if (new RegExp('Firefox/\\d', 'i').test(navigator.userAgent)) {
-		YAYS(unsafeWindow);
-	}
-	// Chrome, Opera, Safari
-	else {
-		var scriptNode = document.createElement('script');
-		scriptNode.setAttribute('type', 'text/javascript');
-		scriptNode.text = '('.concat(YAYS.toString(), ')(window);');
+// Firefox
+if (new RegExp('Firefox/\\d', 'i').test(navigator.userAgent)) {
+	YAYS(unsafeWindow);
+}
+// Chrome, Opera, Safari
+else {
+	var scriptNode = document.createElement('script');
+	scriptNode.setAttribute('type', 'text/javascript');
+	scriptNode.text = '('.concat(YAYS.toString(), ')(window);');
 
-		document.body.appendChild(scriptNode);
-		document.body.removeChild(scriptNode);
-	}
+	document.body.appendChild(scriptNode);
+	document.body.removeChild(scriptNode);
 }
