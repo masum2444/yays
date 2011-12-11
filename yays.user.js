@@ -50,7 +50,8 @@ function map() {
 		buffer = [];
 
 	if (args.length > 1) {
-		var i = 0, len = Math.max.apply(Math, map(function(arg) { return arg.length; }, args)), getter = function(arg) { return arg[i]; };
+		var i = 0, len = Math.max.apply(Math, map(function(arg) { return arg.length; }, args));
+		function getter(arg) { return arg[i]; }
 
 		for (; i < len; i++)
 			buffer.push(callback.apply(null, map(getter, args)));
@@ -105,7 +106,7 @@ function buildURL(path, parameters) {
 }
 
 function parseJSON(data) {
-	if (JSON)
+	if (typeof JSON != 'undefined')
 		return JSON.parse(data);
 
 	return eval('('.concat(data, ')'));
@@ -324,7 +325,7 @@ var Config = (function(namespace) {
 	var prefix = namespace + '.';
 
 	// HTML5
-	if (typeof unsafeWindow.localStorage == 'object') {
+	if (typeof unsafeWindow.localStorage != 'undefined') {
 		return {
 			get: function(key) { return unsafeWindow.localStorage.getItem(prefix + key); },
 			set: function(key, value) { return unsafeWindow.localStorage.setItem(prefix + key, value); }
@@ -443,22 +444,23 @@ var JSONRequest = (function(namespace) {
 	function renderPopup(changelog) {
 		return document.body.appendChild(DH.build({
 			style: {
-				position: 'fixed', top: '15px', right: '15px', zIndex: 1000, padding: '8px 10px 4px', backgroundColor: '#ffffff', border: '1px solid #cccccc',
+				position: 'fixed', top: '15px', right: '15px', zIndex: 1000, padding: '10px 15px 5px', backgroundColor: '#ffffff', border: '1px solid #cccccc',
 				color: '#333333', fontSize: '11px', fontFamily: 'Arial,Nimbus Sans L,sans-serif', lineHeight: '12px',
-				boxShadow: '0 1px 1px #cccccc'
+				boxShadow: '0 1px 2px #cccccc'
 			},
 			children: [{
 				style: {textAlign: 'center', fontWeight: 'bold'},
 				children: Meta.title
 			}, {
-				style: {marginBottom: '6px', textAlign: 'center'},
+				style: {color: '#a0a0a0', marginBottom: '5px', textAlign: 'center'},
 				children: 'UserScript update notification.'
 			}, {
+				style: {marginBottom: '5px'},
 				children: ['You are using version ', {tag: 'strong', children: Meta.version}, ', released on ', {tag: 'em', children: Meta.releasedate}, '.', {tag: 'br'}, 'Please update to the newest version.']
 			}, {
-				style: {margin: '5px 0'},
 				children: map(function(entry) {
 					return {
+						style: {marginBottom: '5px'},
 						children: [
 							{tag: 'strong', style: {fontSize: '11px'}, children: entry.version},
 							{tag: 'em', style: {marginLeft: '5px'}, children: entry.date},
@@ -467,7 +469,7 @@ var JSONRequest = (function(namespace) {
 					};
 				}, [].concat(changelog))
 			}, {
-				style: {textAlign: 'center', padding: '10px'},
+				style: {textAlign: 'center', padding: '10px 0'},
 				children: map(function(text, handler) {
 					return DH.build({
 						tag: 'span',
@@ -735,7 +737,7 @@ function onPlayerReady() {
 
 	if (player) {
 		// Unwrap the player object
-		if (typeof XPCNativeWrapper == 'function' && typeof XPCNativeWrapper.unwrap == 'function') {
+		if (typeof XPCNativeWrapper != 'undefined' && typeof XPCNativeWrapper.unwrap == 'function') {
 			player = XPCNativeWrapper.unwrap(player);
 		}
 
