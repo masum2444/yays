@@ -18,7 +18,7 @@ function YAYS(unsafeWindow) {
 var Meta = {
 	title:       'Yays! (Yet Another Youtube Script)',
 	version:     '1.5.3',
-	releasedate: 'Oct 16, 2011',
+	releasedate: 'Dec 11, 2011',
 	site:        'http://eugenox.appspot.com/script/yays',
 	ns:          'yays'
 };
@@ -443,9 +443,9 @@ var JSONRequest = (function(namespace) {
 	function renderPopup(changelog) {
 		return document.body.appendChild(DH.build({
 			style: {
-				position: 'fixed', top: '15px', right: '15px', zIndex: 1000, padding: '4px 8px', backgroundColor: '#ffffff', border: '1px solid #cccccc',
-				color: '#202020', fontSize: '11px', fontFamily: 'Arial,Nimbus Sans L,sans-serif', lineHeight: '11px',
-				MozBoxShadow: '2px 2px 4px rgb(71, 71, 71)', WebkitBoxShadow: '2px 2px 4px rgb(71, 71, 71)'
+				position: 'fixed', top: '15px', right: '15px', zIndex: 1000, padding: '8px 10px 4px', backgroundColor: '#ffffff', border: '1px solid #cccccc',
+				color: '#333333', fontSize: '11px', fontFamily: 'Arial,Nimbus Sans L,sans-serif', lineHeight: '12px',
+				boxShadow: '0 1px 1px #cccccc'
 			},
 			children: [{
 				style: {textAlign: 'center', fontWeight: 'bold'},
@@ -454,14 +454,14 @@ var JSONRequest = (function(namespace) {
 				style: {marginBottom: '6px', textAlign: 'center'},
 				children: 'UserScript update notification.'
 			}, {
-				children: ['You are using version ', {tag: 'b', children: Meta.version}, ', released on ', {tag: 'i', children: Meta.releasedate}, '.', {tag: 'br'}, 'Please update to the newest version.']
+				children: ['You are using version ', {tag: 'strong', children: Meta.version}, ', released on ', {tag: 'em', children: Meta.releasedate}, '.', {tag: 'br'}, 'Please update to the newest version.']
 			}, {
-				style: {margin: '5px'},
+				style: {margin: '5px 0'},
 				children: map(function(entry) {
 					return {
 						children: [
-							{tag: 'b', style: {fontSize: '11px'}, children: entry.version},
-							{tag: 'i', style: {marginLeft: '5px'}, children: entry.date},
+							{tag: 'strong', style: {fontSize: '11px'}, children: entry.version},
+							{tag: 'em', style: {marginLeft: '5px'}, children: entry.date},
 							{style: {padding: '0 0 2px 10px', whiteSpace: 'pre'}, children: [].concat(entry.note).join('\n')}
 						]
 					};
@@ -472,11 +472,11 @@ var JSONRequest = (function(namespace) {
 					return DH.build({
 						tag: 'span',
 						attributes: {'class': 'yt-uix-button'},
-						style: {margin: '0 5px', padding: '3px 10px'},
+						style: {margin: '0 5px', padding: '5px 10px'},
 						children: text,
 						listeners: {click: handler}
 					});
-				}, ['Update', 'Later'], [openDownloadSite, removePopup])
+				}, ['Update', 'Dismiss'], [openDownloadSite, removePopup])
 			}]
 		}));
 	}
@@ -746,13 +746,13 @@ function onPlayerReady() {
 			AutoPlay.apply();
 
 			player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange()');
-
-			return true;
 		}
 	}
-
-	return false;
 }
+
+unsafeWindow.onYouTubePlayerReady = extendFn(unsafeWindow.onYouTubePlayerReady, onPlayerReady);
+unsafeWindow.onChannelPlayerReady = extendFn(unsafeWindow.onChannelPlayerReady, onPlayerReady);
+onPlayerReady();
 
 /*
  * Per-site
@@ -825,12 +825,9 @@ qVmH8wAAAABJRU5ErkJggg==', title: _('Help')},
 			]
 		}]
 	}]);
-
-	unsafeWindow.onYouTubePlayerReady = extendFn(unsafeWindow.onYouTubePlayerReady, onPlayerReady);
-	onPlayerReady();
 }
 /*
- * Channel page
+ * Legacy channel page
  */
 else if (DH.getById('playnav-video-details') !== null) {
 	// Create and append tab
@@ -900,7 +897,7 @@ zMzMyE/AMgAAAAF0Uk5TAEDm2GYAAAAgSURBVAjXY+BhYMhtYKhvYLBnYPh8AISADCAXKMjDAAB1\
 		attributes: {id: 'playnav-panel-yays_settings', 'class': 'hid'},
 		children: {
 			children: [{
-				tag: 'b',
+				tag: 'strong',
 				children: _('Player settings')
 			}, {
 				style: {textAlign: 'center', marginTop: '5px'},
@@ -911,9 +908,6 @@ zMzMyE/AMgAAAAF0Uk5TAEDm2GYAAAAgSURBVAjXY+BhYMhtYKhvYLBnYPh8AISADCAXKMjDAAB1\
 			}]
 		}
 	});
-
-	unsafeWindow.onChannelPlayerReady = extendFn(unsafeWindow.onChannelPlayerReady, onPlayerReady);
-	onPlayerReady();
 }
 
 } // YAYS
