@@ -13,12 +13,12 @@
 function YAYS(unsafeWindow) {
 
 /*
- * Meta data
+ * Meta data.
  */
 var Meta = {
 	title:       'Yays! (Yet Another Youtube Script)',
 	version:     '1.5.3',
-	releasedate: 'Dec 11, 2011',
+	releasedate: 'Dec 17, 2011',
 	site:        'http://eugenox.appspot.com/script/yays',
 	ns:          'yays'
 };
@@ -200,7 +200,7 @@ var DH = {
 			case '[object Object]':
 				def = copy(def, {tag: 'div', style: null, attributes: null, listeners: null, children: null});
 
-				var node = this.createElement(def.tag);
+				var node = this.element(def.tag);
 
 				if (def.style !== null)
 					this.style(node, def.style);
@@ -217,16 +217,16 @@ var DH = {
 				return node;
 
 			case '[object String]':
-				return this.createTextNode(def);
+				return this.textNode(def);
 
 			default:
 				return def;
 		}
 	},
 
-	getById: bind(unsafeWindow.document.getElementById, unsafeWindow.document),
-	createElement: bind(unsafeWindow.document.createElement, unsafeWindow.document),
-	createTextNode: bind(unsafeWindow.document.createTextNode, unsafeWindow.document),
+	id: bind(unsafeWindow.document.getElementById, unsafeWindow.document),
+	element: bind(unsafeWindow.document.createElement, unsafeWindow.document),
+	textNode: bind(unsafeWindow.document.createTextNode, unsafeWindow.document),
 
 	style: function(node, style) {
 		copy(style, node.style);
@@ -445,7 +445,7 @@ var JSONRequest = (function(namespace) {
 		return document.body.appendChild(DH.build({
 			style: {
 				position: 'fixed', top: '15px', right: '15px', zIndex: 1000, padding: '10px 15px 5px', backgroundColor: '#ffffff', border: '1px solid #cccccc',
-				color: '#333333', fontSize: '11px', fontFamily: 'Arial,Nimbus Sans L,sans-serif', lineHeight: '12px',
+				color: '#333333', fontSize: '11px', fontFamily: 'Arial,sans-serif', lineHeight: '12px',
 				boxShadow: '0 1px 2px #cccccc'
 			},
 			children: [{
@@ -723,17 +723,17 @@ var VideoQuality = new PlayerOption('video_quality', {
 });
 
 /*
- * Player state change callback
+ * Player state change callback.
  */
 unsafeWindow[Meta.ns].onPlayerStateChange = function() {
 	AutoPlay.apply();
 };
 
 /*
- * Player ready callback
+ * Player ready callback.
  */
 function onPlayerReady() {
-	var player = DH.getById('movie_player') || DH.getById('movie_player-flash');
+	var player = DH.id('movie_player') || DH.id('movie_player-flash') || DH.id('video-player');
 
 	if (player) {
 		// Unwrap the player object
@@ -747,7 +747,7 @@ function onPlayerReady() {
 			VideoQuality.apply();
 			AutoPlay.apply();
 
-			player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange()');
+			player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange');
 		}
 	}
 }
@@ -759,10 +759,10 @@ onPlayerReady();
 /*
  * Per-site
  *
- * Watch page
+ * Watch page.
  */
-if (DH.getById('watch-actions') !== null) {
-	DH.insertAfter(DH.getById('watch-flag'), {
+if (DH.id('watch-actions') !== null) {
+	DH.insertAfter(DH.id('watch-flag'), {
 		tag: 'button',
 		style: {marginLeft: '3px', padding: '0 4px'},
 		attributes: {id: 'yays_settings-button', type: 'button', 'class': 'yt-uix-button yt-uix-tooltip yt-uix-tooltip-reverse', title: _('Player settings')},
@@ -780,8 +780,8 @@ csFg0+JttI0AAAAASUVORK5CYII='}
 		listeners: {
 			click: function() {
 				var
-					container = DH.getById('watch-actions-area-container'),
-					panel = DH.getById('yays_settings-panel');
+					container = DH.id('watch-actions-area-container'),
+					panel = DH.id('yays_settings-panel');
 
 				function isHidden(node) { return node.nodeType != 1 || DH.hasClass(node, 'hid'); }
 
@@ -791,7 +791,7 @@ csFg0+JttI0AAAAASUVORK5CYII='}
 
 					each(function(i, node) {
 						! isHidden(node) && DH.hasClass(node, 'watch-actions-panel') && DH.addClass(node, ' hid');
-					}, DH.getById('watch-actions-area').childNodes);
+					}, DH.id('watch-actions-area').childNodes);
 
 					DH.delClass(panel, 'hid');
 					panel.style.display = 'block';
@@ -807,7 +807,7 @@ csFg0+JttI0AAAAASUVORK5CYII='}
 		}
 	});
 
-	DH.prepend(DH.getById('watch-actions-area'), [{
+	DH.prepend(DH.id('watch-actions-area'), [{
 		attributes: {id: 'yays_settings-panel', 'class': 'watch-actions-panel'},
 		style: {position: 'relative'},
 		children: [{
@@ -829,11 +829,11 @@ qVmH8wAAAABJRU5ErkJggg==', title: _('Help')},
 	}]);
 }
 /*
- * Legacy channel page
+ * Legacy channel page.
  */
-else if (DH.getById('playnav-video-details') !== null) {
+else if (DH.id('playnav-video-details') !== null) {
 	// Create and append tab
-	DH.append(DH.getById('playnav-bottom-links-clip').getElementsByTagName('tr')[0], {
+	DH.append(DH.id('playnav-bottom-links-clip').getElementsByTagName('tr')[0], {
 		tag: 'td',
 		attributes: {id: 'playnav-panel-tab-yays_settings'},
 		children: {
@@ -862,12 +862,12 @@ zMzMyE/AMgAAAAF0Uk5TAEDm2GYAAAAgSURBVAjXY+BhYMhtYKhvYLBnYPh8AISADCAXKMjDAAB1\
 										var panelName = (new RegExp('^playnav-panel-tab-(\\w+)').exec(node.getAttribute('id') || '') || [, null])[1];
 										if (panelName) {
 											DH.delClass(node, 'panel-tab-selected');
-											DH.getById('playnav-panel-' + panelName).style.display = 'none';
+											DH.id('playnav-panel-' + panelName).style.display = 'none';
 										}
-									}, DH.getById('playnav-bottom-links-clip').getElementsByTagName('td'));
+									}, DH.id('playnav-bottom-links-clip').getElementsByTagName('td'));
 
-									DH.addClass(DH.getById('playnav-panel-tab-yays_settings'), 'panel-tab-selected');
-									DH.getById('playnav-panel-yays_settings').style.display = 'block';
+									DH.addClass(DH.id('playnav-panel-tab-yays_settings'), 'panel-tab-selected');
+									DH.id('playnav-panel-yays_settings').style.display = 'block';
 								}
 							}
 						}
@@ -888,14 +888,14 @@ zMzMyE/AMgAAAAF0Uk5TAEDm2GYAAAAgSURBVAjXY+BhYMhtYKhvYLBnYPh8AISADCAXKMjDAAB1\
 		}
 	});
 
-	// Hide when other tab clicked
+	// Hide when other tab clicked.
 	unsafeWindow.playnav.selectPanel = extendFn(unsafeWindow.playnav.selectPanel, function () {
-		DH.getById('playnav-panel-tab-yays_settings').setAttribute('class', '');
-		DH.getById('playnav-panel-yays_settings').style.display = 'none';
+		DH.id('playnav-panel-tab-yays_settings').setAttribute('class', '');
+		DH.id('playnav-panel-yays_settings').style.display = 'none';
 	});
 
-	// Create and append panel
-	DH.append(DH.getById('playnav-video-panel-inner'), {
+	// Create and append panel.
+	DH.append(DH.id('playnav-video-panel-inner'), {
 		attributes: {id: 'playnav-panel-yays_settings', 'class': 'hid'},
 		children: {
 			children: [{
@@ -920,10 +920,10 @@ if (new RegExp('Firefox/\\d', 'i').test(navigator.userAgent)) {
 }
 // Chrome, Opera, Safari
 else {
-	var scriptNode = document.createElement('script');
-	scriptNode.setAttribute('type', 'text/javascript');
-	scriptNode.text = '('.concat(YAYS.toString(), ')(window);');
+	var node = document.createElement('script');
+	node.setAttribute('type', 'text/javascript');
+	node.text = '('.concat(YAYS.toString(), ')(window);');
 
-	document.body.appendChild(scriptNode);
-	document.body.removeChild(scriptNode);
+	document.body.appendChild(node);
+	document.body.removeChild(node);
 }
