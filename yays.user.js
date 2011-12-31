@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Yays! (Yet Another Youtube Script)
 // @description Control autoplaying and playback quality on YouTube.
-// @version     1.5.3
+// @version     1.5.4
 // @author      eugenox_gmail_com
 // @license     (CC) BY-SA-3.0 http://creativecommons.org/licenses/by-sa/3.0/
 // @namespace   youtube
@@ -17,8 +17,8 @@ function YAYS(unsafeWindow) {
  */
 var Meta = {
 	title:       'Yays! (Yet Another Youtube Script)',
-	version:     '1.5.3',
-	releasedate: 'Dec 17, 2011',
+	version:     '1.5.4',
+	releasedate: 'Dec 24, 2011',
 	site:        'http://eugenox.appspot.com/script/yays',
 	ns:          'yays'
 };
@@ -183,6 +183,14 @@ var _ = (function() {
 					'Qualit\xE9', undefined, 'BASSE', 'MOYENNE', 'HAUTE', 'LA PLUS HAUTE', 'Qualit\xE9 par d\xE9faut',
 					'Options', 'Option du lecteur', undefined
 				];
+
+			// slovenian - slovenščina (Paranoia.Com @userscripts.org)
+			case 'sl':
+				return [
+					'Samodejno predvajanje', 'Vklju\u010Di', 'Izklju\u010Di', 'Samodejno', 'Vklop/izklop samodejnega predvajanja',
+					'Kakovost', 'Samodejno', 'Nizka', 'Srednja', 'Visoka', 'Najvi\u0161ja', 'Nastavi privzeto kakovost videa',
+					'Nastavitve', 'Nastavitve predvajalnika', 'Pomo\u010D'
+				];
 		}
 
 		return [];
@@ -272,9 +280,9 @@ var DH = {
 	},
 
 	addClass: function(node, clss) {
-		var classAttribute = node.getAttribute('class') || '';
-		if (classAttribute.indexOf(clss) == -1) {
-			node.setAttribute('class', classAttribute.concat(' ', clss));
+		var classAttr = node.getAttribute('class') || '';
+		if (classAttr.indexOf(clss) == -1) {
+			node.setAttribute('class', classAttr.concat(' ', clss));
 		}
 	},
 
@@ -605,12 +613,14 @@ var AutoPlay = new PlayerOption('auto_play', {
 	_focused: false,
 	_timer: null,
 
+	_states: ['ON', 'OFF', 'AUTO \u03B2'],
+
 	_step: function() {
 		this.set((this.get() + 1) % 3);
 	},
 
 	_indicator: function() {
-		return _(['ON', 'OFF', 'AUTO \u03B2'][this.get()]);
+		return _(this._states[this.get()]);
 	},
 
 	_onFocus: function() {
@@ -683,35 +693,47 @@ var AutoPlay = new PlayerOption('auto_play', {
  * Set video quality.
  */
 var VideoQuality = new PlayerOption('video_quality', {
+	_applied: false,
+
+	_states: ['AUTO', 'LOW', 'MEDIUM', 'HIGH', 'HIGHEST'],
+
+	_qualities: {highres: 5, hd1080: 4, hd720: 3, large: 2, medium: 1, small: 0},
+
 	_step: function() {
 		this.set((this.get() + 1) % 5);
 	},
 
 	_indicator: function() {
-		return _(['AUTO', 'LOW', 'MEDIUM', 'HIGH', 'HIGHEST'][this.get()]);
+		return _(this._states[this.get()]);
 	},
 
-	_qualities: {highres: 5, hd1080: 4, hd720: 3, large: 2, medium: 1, small: 0},
+	init: function() {
+		this._applied = ! this.get();
+	},
 
 	apply: function() {
-		var qualities = this._player.getAvailableQualityLevels(), quality = null;
+		if (! this._applied && this._player.getPlayerState() == 2) {
+			var qualities = this._player.getAvailableQualityLevels(), quality = null;
 
-		switch (this.get()) {
-			case 1: // LOW
-				quality = qualities.pop(); break;
-			case 2: // MEDIUM
-				while (this._qualities[quality = qualities.shift()] > this._qualities.large); break;
-			case 3: // HIGH
-				while (this._qualities[quality = qualities.shift()] > this._qualities.hd720); break;
-			case 4: // HIGHEST
-				quality = qualities.shift(); break;
-			default:
-				return;
+			this._applied = true;
+
+			switch (this.get()) {
+				case 1: // LOW
+					quality = qualities.pop(); break;
+				case 2: // MEDIUM
+					while (this._qualities[quality = qualities.shift()] > this._qualities.large); break;
+				case 3: // HIGH
+					while (this._qualities[quality = qualities.shift()] > this._qualities.hd720); break;
+				case 4: // HIGHEST
+					quality = qualities.shift(); break;
+				default:
+					return;
+			}
+
+			setTimeout(bind(function() {
+				this._player.setPlaybackQuality(quality);
+			}, this), 1);
 		}
-
-		setTimeout(bind(function() {
-			this._player.setPlaybackQuality(quality);
-		}, this), 1);
 	},
 
 	createButton: function() {
@@ -726,6 +748,7 @@ var VideoQuality = new PlayerOption('video_quality', {
  * Player state change callback.
  */
 unsafeWindow[Meta.ns].onPlayerStateChange = function() {
+	VideoQuality.apply();
 	AutoPlay.apply();
 };
 
@@ -743,9 +766,6 @@ function onPlayerReady() {
 
 		if (typeof player.getPlayerState == 'function') {
 			PlayerOption.init(player);
-
-			VideoQuality.apply();
-			AutoPlay.apply();
 
 			player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange');
 		}
