@@ -670,12 +670,12 @@ var AutoPlay = new PlayerOption('auto_play', {
 
 	apply: function() {
 		if (! this._applied && this._player.getPlayerState() == 1) {
+			this._player.pauseVideo();
+
 			try {
-				this._player.seekTo(0, true);
+				this._player.seekTo(0, false);
 			}
 			catch (ex) {}
-
-			this._player.pauseVideo();
 
 			this._applied = true;
 		}
