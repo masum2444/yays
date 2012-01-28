@@ -745,11 +745,58 @@ var VideoQuality = new PlayerOption('video_quality', {
 });
 
 /*
+ * Set player size.
+ */
+var PlayerSize = new PlayerOption('player_size', {
+	_states: ['AUTO', 'WIDE', 'WIDER'],
+
+	_step: function() {
+		this.set((this.get() + 1) % 3);
+	},
+
+	_indicator: function() {
+		return _(this._states[this.get()]);
+	},
+
+	apply: function() {
+		switch (this.get()) {
+			case 2: // WIDER
+				DH.append(document.body, {
+					tag: 'style',
+					type: 'text/css',
+					children: [
+						'#watch-video.medium #watch-player {',
+							'width: 970px !important;',
+							'height: 575px !important;',
+						'}'
+					]
+				});
+				// fallthrough;
+
+			case 1: // WIDE
+				DH.addClass(DH.id('watch-video'), 'medium');
+				DH.addClass(DH.id('page'), 'watch-wide');
+				break;
+
+			default:
+				return;
+		}
+	},
+
+	createButton: function() {
+		return new Button(_('Size'), _('Set default player size'), {
+			handler: bind(this._step, this),
+			refresh: bind(this._indicator, this)
+		});
+	}
+});
+
+/*
  * Player state change callback.
  */
 unsafeWindow[Meta.ns].onPlayerStateChange = function() {
-	VideoQuality.apply();
 	AutoPlay.apply();
+	VideoQuality.apply();
 };
 
 /*
@@ -842,11 +889,14 @@ qVmH8wAAAABJRU5ErkJggg==', title: _('Help')},
 		}, {
 			style: {textAlign: 'center'},
 			children: [
+				PlayerSize.createButton().render(),
 				VideoQuality.createButton().render(),
 				AutoPlay.createButton().render()
 			]
 		}]
 	}]);
+
+	PlayerSize.apply();
 }
 /*
  * Legacy channel page.
