@@ -124,6 +124,7 @@ var _ = (function() {
 	vocabulary = [
 		'Auto play', 'ON', 'OFF', 'AUTO \u03B2', 'Toggle video autoplay',
 		'Quality', 'AUTO', 'LOW', 'MEDIUM', 'HIGH', 'HIGHEST', 'Set default video quality',
+		'Size', 'WIDE', 'WIDER', 'Set default player size',
 		'Settings', 'Player settings', 'Help'
 	],
 	dictionary = combine(vocabulary, (function() {
@@ -133,6 +134,7 @@ var _ = (function() {
 				return [
 					'Automatikus lej\xE1tsz\xE1s', 'BE', 'KI', 'AUTO \u03B2', 'Automatikus lej\xE1tsz\xE1s ki-, bekapcsol\xE1sa',
 					'Min\u0151s\xE9g', 'AUTO', 'ALACSONY', 'K\xD6ZEPES', 'MAGAS', 'LEGMAGASABB', 'Vide\xF3k alap\xE9rtelmezett felbont\xE1sa',
+					'M\xE9ret', 'SZ\xC9LES', 'SZ\xC9LESEBB', 'Lej\xE1tsz\xF3 alap\xE9rtelmezett m\xE9rete',
 					'Be\xE1ll\xEDt\xE1sok', 'Lej\xE1tsz\xF3 be\xE1ll\xEDt\xE1sai', 'S\xFAg\xF3'
 				];
 
@@ -141,6 +143,7 @@ var _ = (function() {
 				return [
 					'Auto spelen', 'AAN', 'UIT', 'AUTOMATISCH \u03B2', 'Stel automatisch afspelen in',
 					'Kwaliteit', 'AUTOMATISCH', 'LAAG', 'GEMIDDELD', 'HOOG', undefined, 'Stel standaard videokwaliteit in',
+					undefined, undefined, undefined, undefined,
 					undefined, undefined, undefined
 				];
 
@@ -149,6 +152,7 @@ var _ = (function() {
 				return [
 					'Reproducci\xF3n Autom\xE1tica', undefined, undefined, 'AUTO \u03B2', 'Modificar Reproducci\xF3n Autom\xE1tica',
 					'Calidad', 'AUTO', 'BAJA', 'MEDIA', 'ALTA', undefined, 'Usar calidad por defecto',
+					undefined, undefined, undefined, undefined,
 					undefined, undefined, undefined
 				];
 
@@ -157,6 +161,7 @@ var _ = (function() {
 				return [
 					'Automatische Wiedergabe', 'AN', 'AUS', 'AUTO \u03B2', 'Automatische Wiedergabe umschalten',
 					'Qualit\xE4t', 'AUTO', 'NIEDRIG', 'MITTEL', 'HOCH', undefined, 'Standard Video Qualit\xE4t setzen',
+					undefined, undefined, undefined, undefined,
 					undefined, undefined, undefined
 				];
 
@@ -165,6 +170,7 @@ var _ = (function() {
 				return [
 					'Reprodu\xE7\xE3o Autom\xE1tica', 'LIGADO', 'DESLIGADO', 'AUTOM\xC1TICO \u03B2', 'Modificar Reprodu\xE7\xE3o Autom\xE1tica',
 					'Qualidade', 'AUTOM\xC1TICO', 'BAIXA', 'M\xC9DIO', 'BOA', undefined, 'Defini\xE7\xE3o padr\xE3o de v\xEDdeo',
+					undefined, undefined, undefined, undefined,
 					'Configura\xE7\xF5es', 'Configura\xE7\xE3o do usu\xE1rio', undefined
 				];
 
@@ -173,6 +179,7 @@ var _ = (function() {
 				return [
 					'\u0391\u03C5\u03C4\u03CC\u03BC\u03B1\u03C4\u03B7 \u03B1\u03BD\u03B1\u03C0\u03B1\u03C1\u03B1\u03B3\u03C9\u03B3\u03AE', '\u0395\u039D\u0395\u03A1\u0393\u039F', '\u0391\u039D\u0395\u039D\u0395\u03A1\u0393\u039F', '\u0391\u03A5\u03A4\u039F\u039C\u0391\u03A4\u0397 \u03B2', '\u0395\u03BD\u03B1\u03BB\u03BB\u03B1\u03B3\u03AE \u03B1\u03C5\u03C4\u03CC\u03BC\u03B1\u03C4\u03B7\u03C2 \u03B1\u03BD\u03B1\u03C0\u03B1\u03C1\u03B1\u03B3\u03C9\u03B3\u03AE\u03C2',
 					'\u03A0\u03BF\u03B9\u03CC\u03C4\u03B7\u03C4\u03B1', '\u0391\u03A5\u03A4\u039F\u039C\u0391\u03A4\u0397', '\u03A7\u0391\u039C\u0397\u039B\u0397', '\u039A\u0391\u039D\u039F\u039D\u0399\u039A\u0397', '\u03A5\u03A8\u0397\u039B\u0397', '\u03A0\u039F\u039B\u03A5 \u03A5\u03A8\u0397\u039B\u0397', '\u039F\u03C1\u03B9\u03C3\u03BC\u03CC\u03C2 \u03C0\u03C1\u03BF\u03B5\u03C0\u03B9\u03BB\u03B5\u03B3\u03BC\u03AD\u03BD\u03B7\u03C2 \u03C0\u03BF\u03B9\u03CC\u03C4\u03B7\u03C4\u03B1\u03C2 \u03B2\u03AF\u03BD\u03C4\u03B5\u03BF',
+					undefined, undefined, undefined, undefined,
 					'\u0395\u03C0\u03B9\u03BB\u03BF\u03B3\u03AD\u03C2', '\u0395\u03C0\u03B9\u03BB\u03BF\u03B3\u03AD\u03C2 Player', undefined
 				];
 
@@ -181,6 +188,7 @@ var _ = (function() {
 				return [
 					'Lecture Auto', undefined, undefined, undefined, 'Lecture auto ON/OFF',
 					'Qualit\xE9', undefined, 'BASSE', 'MOYENNE', 'HAUTE', 'LA PLUS HAUTE', 'Qualit\xE9 par d\xE9faut',
+					undefined, undefined, undefined, undefined,
 					'Options', 'Option du lecteur', undefined
 				];
 
@@ -189,6 +197,7 @@ var _ = (function() {
 				return [
 					'Samodejno predvajanje', 'Vklju\u010Di', 'Izklju\u010Di', 'Samodejno', 'Vklop/izklop samodejnega predvajanja',
 					'Kakovost', 'Samodejno', 'Nizka', 'Srednja', 'Visoka', 'Najvi\u0161ja', 'Nastavi privzeto kakovost videa',
+					undefined, undefined, undefined, undefined,
 					'Nastavitve', 'Nastavitve predvajalnika', 'Pomo\u010D'
 				];
 		}
@@ -442,7 +451,7 @@ var JSONRequest = (function(namespace) {
 
 	var popup = null;
 
-	new JSONRequest(Meta.site + '/changelog', {version: Meta.version}, function (changelog) {
+	new JSONRequest(Meta.site + '/changelog', {version: Meta.version}, function(changelog) {
 		Config.set('update_checked_at', new Date().valueOf().toFixed());
 
 		if (changelog && changelog.length)
@@ -657,7 +666,7 @@ var AutoPlay = new PlayerOption('auto_play', {
 				if (this._focused || unsafeWindow.history.length > 1) {
 					this._applied = true;
 				}
-				// Video opened in new window/tab.
+				// Video opened in a new window/tab.
 				else {
 					DH.on(unsafeWindow, 'focus', bind(this._onFocus, this));
 					DH.on(unsafeWindow, 'blur', bind(this._onBlur, this));
@@ -763,7 +772,7 @@ var PlayerSize = new PlayerOption('player_size', {
 			case 2: // WIDER
 				DH.append(document.body, {
 					tag: 'style',
-					type: 'text/css',
+					attributes: {type: 'text/css'},
 					children: [
 						'#watch-video.medium #watch-player {',
 							'width: 970px !important;',
@@ -771,7 +780,7 @@ var PlayerSize = new PlayerOption('player_size', {
 						'}'
 					]
 				});
-				// fallthrough;
+				// no break;
 
 			case 1: // WIDE
 				DH.addClass(DH.id('watch-video'), 'medium');
@@ -889,8 +898,8 @@ qVmH8wAAAABJRU5ErkJggg==', title: _('Help')},
 		}, {
 			style: {textAlign: 'center'},
 			children: [
-				PlayerSize.createButton().render(),
 				VideoQuality.createButton().render(),
+				PlayerSize.createButton().render(),
 				AutoPlay.createButton().render()
 			]
 		}]
@@ -959,7 +968,7 @@ zMzMyE/AMgAAAAF0Uk5TAEDm2GYAAAAgSURBVAjXY+BhYMhtYKhvYLBnYPh8AISADCAXKMjDAAB1\
 	});
 
 	// Hide when other tab clicked.
-	unsafeWindow.playnav.selectPanel = extendFn(unsafeWindow.playnav.selectPanel, function () {
+	unsafeWindow.playnav.selectPanel = extendFn(unsafeWindow.playnav.selectPanel, function() {
 		DH.id('playnav-panel-tab-yays_settings').setAttribute('class', '');
 		DH.id('playnav-panel-yays_settings').style.display = 'none';
 	});
