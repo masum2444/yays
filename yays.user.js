@@ -288,21 +288,20 @@ var DH = {
 		each(node.setAttribute, attributes, node);
 	},
 
+	hasClass: function(node, clss) {
+		return node.hasAttribute('class') && node.getAttribute('class').indexOf(clss) != -1;
+	},
+
 	addClass: function(node, clss) {
-		var classAttr = node.getAttribute('class') || '';
-		if (classAttr.indexOf(clss) == -1) {
-			node.setAttribute('class', classAttr.concat(' ', clss));
+		if (! this.hasClass(node, clss)) {
+			node.setAttribute('class', (node.getAttribute('class') || '').concat(' ', clss));
 		}
 	},
 
 	delClass: function(node, clss) {
-		if (node.hasAttribute('class')) {
+		if (this.hasClass(node, clss)) {
 			node.setAttribute('class', node.getAttribute('class').replace(new RegExp('\\s*'.concat(clss, '\\s*'), 'g'), ' '));
 		}
-	},
-
-	hasClass: function(node, clss) {
-		return node.hasAttribute('class') && node.getAttribute('class').indexOf(clss) != -1;
 	},
 
 	listeners: function(node, listeners) {
@@ -335,6 +334,11 @@ var Config = (function(namespace) {
 			set: function(key, value) {
 				GM_setValue(key, value);
 				GM_values[key] = value;
+			},
+
+			del: function(key) {
+				GM_deleteValue(key);
+				delete GM_values[key];
 			}
 		};
 	}
@@ -344,8 +348,17 @@ var Config = (function(namespace) {
 	// HTML5
 	if (typeof unsafeWindow.localStorage != 'undefined') {
 		return {
-			get: function(key) { return unsafeWindow.localStorage.getItem(prefix + key); },
-			set: function(key, value) { return unsafeWindow.localStorage.setItem(prefix + key, value); }
+			get: function(key) {
+				return unsafeWindow.localStorage.getItem(prefix + key);
+			},
+
+			set: function(key, value) {
+				unsafeWindow.localStorage.setItem(prefix + key, value);
+			},
+
+			del: function(key) {
+				unsafeWindow.localStorage.removeItem(prefix + key);
+			}
 		};
 	}
 
@@ -356,14 +369,11 @@ var Config = (function(namespace) {
 		},
 
 		set: function(key, value) {
-			key = prefix + key;
+			document.cookie = prefix.concat(key, '=', value, '; path=/; expires=', new Date(new Date().valueOf() + 365 * 24 * 36e5).toUTCString());
+		},
 
-			if (new RegExp('(?:^|; *)'.concat(key, '=\\w+(?:$|;)')).test(document.cookie)) {
-				document.cookie = key.concat('=', value);
-			}
-			else {
-				document.cookie = key.concat('=', value, '; path=/; expires=', new Date(new Date().valueOf() + 365 * 24 * 3600 * 1000).toUTCString());
-			}
+		del: function(key) {
+			document.cookie = prefix.concat(key, '=deleted; path=/; max-age=0');
 		}
 	};
 })(Meta.ns);
@@ -446,7 +456,7 @@ var JSONRequest = (function(namespace) {
  * Check for update.
  */
 (function() {
-	if (new Date().valueOf() - Number(Config.get('update_checked_at')) < 24 * 3600 * 1000)
+	if (new Date().valueOf() - Number(Config.get('update_checked_at')) < 24 * 36e5)
 		return;
 
 	var popup = null;
@@ -859,14 +869,16 @@ csFg0+JttI0AAAAASUVORK5CYII='}
 					container = DH.id('watch-actions-area-container'),
 					panel = DH.id('yays_settings-panel');
 
-				function isHidden(node) { return node.nodeType != 1 || DH.hasClass(node, 'hid'); }
+				function isHidden(node) {
+					return node.nodeType != 1 || DH.hasClass(node, 'hid');
+				}
 
 				if (isHidden(panel) || isHidden(container)) {
 					DH.delClass(container, 'hid');
 					container.style.display = 'block';
 
 					each(function(i, node) {
-						! isHidden(node) && DH.hasClass(node, 'watch-actions-panel') && DH.addClass(node, ' hid');
+						! isHidden(node) && DH.hasClass(node, 'watch-actions-panel') && DH.addClass(node, 'hid');
 					}, DH.id('watch-actions-area').childNodes);
 
 					DH.delClass(panel, 'hid');
@@ -889,11 +901,11 @@ csFg0+JttI0AAAAASUVORK5CYII='}
 		children: [{
 			tag: 'img',
 			style: {position: 'absolute', top: '0', right: '10px', marginTop: '-3px', cursor: 'pointer'},
-			attributes: {src: 'data:image/png;base64,\
+			attributes: {title: _('Help'), src: 'data:image/png;base64,\
 iVBORw0KGgoAAAANSUhEUgAAAAcAAAAJCAYAAAD+WDajAAAAAXNSR0IArs4c6QAAAHVJREFUGNN9\
 zT0OQVEUBODvPmIPotOq1OpTqEWlkYgN6MQCWITaCqjOoiQqKpr34lZvmpnMT6Zk5ggnbDDBE3cc\
 hzjj4I8x9pg2mOOFJWZVaVE6lZkDXLFtrVtTNS9V8MCuDlctf7COiLc+1J/fTkdEgaZv+QMwqxX9\
-qVmH8wAAAABJRU5ErkJggg==', title: _('Help')},
+qVmH8wAAAABJRU5ErkJggg=='},
 			listeners: {click: function() { unsafeWindow.open(Meta.site); }}
 		}, {
 			style: {textAlign: 'center'},
