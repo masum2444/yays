@@ -124,7 +124,7 @@ var _ = (function() {
 	vocabulary = [
 		'Auto play', 'ON', 'OFF', 'AUTO \u03B2', 'Toggle video autoplay',
 		'Quality', 'AUTO', 'LOW', 'MEDIUM', 'HIGH', 'HIGHEST', 'Set default video quality',
-		'Size', 'WIDE', 'WIDER', 'Set default player size',
+		'Size', 'WIDE', 'FIT', 'Set default player size',
 		'Settings', 'Player settings', 'Help'
 	],
 	dictionary = combine(vocabulary, (function() {
@@ -767,7 +767,7 @@ var VideoQuality = new PlayerOption('video_quality', {
  * Set player size.
  */
 var PlayerSize = new PlayerOption('player_size', {
-	_states: ['AUTO', 'WIDE', 'WIDER'],
+	_states: ['AUTO', 'WIDE', 'FIT'],
 
 	_step: function() {
 		this.set((this.get() + 1) % 3);
@@ -779,7 +779,7 @@ var PlayerSize = new PlayerOption('player_size', {
 
 	apply: function() {
 		switch (this.get()) {
-			case 2: // WIDER
+			case 2: // FIT
 				DH.append(document.body, {
 					tag: 'style',
 					attributes: {type: 'text/css'},
