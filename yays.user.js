@@ -528,7 +528,7 @@ var Button = (function() {
 		node: {
 			tag: 'button',
 			style: {margin: '0 0 0 5px'},
-			attributes: {type: 'button', 'class': 'yt-uix-button yt-uix-tooltip'}
+			attributes: {type: 'button', 'class': 'yt-uix-button yt-uix-button-default yt-uix-tooltip'}
 		},
 
 		label: {
@@ -833,6 +833,9 @@ function onPlayerReady() {
 		if (typeof player.getPlayerState == 'function') {
 			PlayerOption.init(player);
 
+			AutoPlay.apply();
+			VideoQuality.apply();
+
 			player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange');
 		}
 	}
@@ -851,7 +854,7 @@ if (DH.id('watch-actions') !== null) {
 	DH.insertAfter(DH.id('watch-flag'), {
 		tag: 'button',
 		style: {marginLeft: '3px', padding: '0 4px'},
-		attributes: {id: 'yays_settings-button', type: 'button', 'class': 'yt-uix-button yt-uix-tooltip yt-uix-tooltip-reverse', title: _('Player settings')},
+		attributes: {id: 'yays_settings-button', type: 'button', 'class': 'yt-uix-button yt-uix-button-default yt-uix-tooltip yt-uix-tooltip-reverse', title: _('Player settings')},
 		children: {
 				tag: 'img',
 				attributes: {src: 'data:image/png;base64,\
