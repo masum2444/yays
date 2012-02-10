@@ -784,7 +784,8 @@ var PlayerSize = new PlayerOption('player_size', {
 					tag: 'style',
 					attributes: {type: 'text/css'},
 					children: [
-						'#watch-video.medium #watch-player {',
+						'#watch-video.medium #watch-player,',
+						'#watch-video.large #watch-player {',
 							'width: 970px !important;',
 							'height: 575px !important;',
 						'}'
