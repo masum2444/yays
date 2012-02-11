@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Yays! (Yet Another Youtube Script)
 // @description Control autoplaying and playback quality on YouTube.
-// @version     1.5.4
+// @version     1.5.5
 // @author      eugenox_gmail_com
 // @license     (CC) BY-SA-3.0 http://creativecommons.org/licenses/by-sa/3.0/
 // @namespace   youtube
@@ -17,8 +17,8 @@ function YAYS(unsafeWindow) {
  */
 var Meta = {
 	title:       'Yays! (Yet Another Youtube Script)',
-	version:     '1.5.4',
-	releasedate: 'Dec 24, 2011',
+	version:     '1.5.5',
+	releasedate: 'Feb 11, 2012',
 	site:        'http://eugenox.appspot.com/script/yays',
 	ns:          'yays'
 };
@@ -134,7 +134,7 @@ var _ = (function() {
 				return [
 					'Automatikus lej\xE1tsz\xE1s', 'BE', 'KI', 'AUTO \u03B2', 'Automatikus lej\xE1tsz\xE1s ki-, bekapcsol\xE1sa',
 					'Min\u0151s\xE9g', 'AUTO', 'ALACSONY', 'K\xD6ZEPES', 'MAGAS', 'LEGMAGASABB', 'Vide\xF3k alap\xE9rtelmezett felbont\xE1sa',
-					'M\xE9ret', 'SZ\xC9LES', 'SZ\xC9LESEBB', 'Lej\xE1tsz\xF3 alap\xE9rtelmezett m\xE9rete',
+					'M\xE9ret', 'SZ\xC9LES', 'ILLESZTETT', 'Lej\xE1tsz\xF3 alap\xE9rtelmezett m\xE9rete',
 					'Be\xE1ll\xEDt\xE1sok', 'Lej\xE1tsz\xF3 be\xE1ll\xEDt\xE1sai', 'S\xFAg\xF3'
 				];
 
@@ -382,23 +382,21 @@ var Config = (function(namespace) {
  * Create XHR or JSONP requests.
  */
 var JSONRequest = (function(namespace) {
-	var Impl;
+	var Request;
 
 	// Greasemonkey XHR
 	if (typeof GM_xmlhttpRequest == 'function') {
-		Impl = function() {};
+		Request = function(url, parameters, callback) {
+			this._callback = callback;
 
-		Impl.prototype = {
-			_doRequest: function(url, parameters, callback) {
-				this._callback = callback;
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: buildURL(url, parameters),
+				onload: bind(this._onLoad, this)
+			});
+		};
 
-				GM_xmlhttpRequest({
-					method: 'GET',
-					url: buildURL(url, parameters),
-					onload: bind(this._onLoad, this)
-				});
-			},
-
+		Request.prototype = {
 			_onLoad: function(response) {
 				this._callback(parseJSON(response.responseText));
 			}
@@ -406,28 +404,28 @@ var JSONRequest = (function(namespace) {
 	}
 	// Script tag
 	else {
-		Impl = (function() {
-			var requests = [], requestsNs = 'jsonp', Impl = function() {};
+		Request = (function() {
+			var requests = [], requestsNs = 'jsonp';
 
-			Impl.prototype = {
+			function Request(url, parameters, callback) {
+				this._callback = callback;
+				this._id = requests.push(bind(this._onLoad, this)) - 1;
+
+				parameters.callback = namespace.concat('.', requestsNs, '[', this._id, ']');
+
+				this._scriptNode = document.body.appendChild(DH.build({
+					tag: 'script',
+					attributes: {
+						type: 'text/javascript',
+						src: buildURL(url, parameters)
+					}
+				}));
+			}
+
+			Request.prototype = {
 				_callback: null,
 				_id: null,
 				_scriptNode: null,
-
-				_doRequest: function(url, parameters, callback) {
-					this._callback = callback;
-					this._id = requests.push(bind(this._onLoad, this)) - 1;
-
-					parameters.callback = namespace.concat('.', requestsNs, '[', this._id, ']');
-
-					this._scriptNode = document.body.appendChild(DH.build({
-						tag: 'script',
-						attributes: {
-							type: 'text/javascript',
-							src: buildURL(url, parameters)
-						}
-					}));
-				},
 
 				_onLoad: function(response) {
 					this._callback(response);
@@ -439,15 +437,9 @@ var JSONRequest = (function(namespace) {
 
 			unsafeWindow[namespace][requestsNs] = requests;
 
-			return Impl;
+			return Request;
 		})();
 	}
-
-	function Request(url, parameters, callback) {
-		this._doRequest(url, parameters, callback);
-	}
-
-	Request.prototype = new Impl();
 
 	return Request;
 })(Meta.ns);
@@ -749,9 +741,7 @@ var VideoQuality = new PlayerOption('video_quality', {
 					return;
 			}
 
-			setTimeout(bind(function() {
-				this._player.setPlaybackQuality(quality);
-			}, this), 1);
+			this._player.setPlaybackQuality(quality);
 		}
 	},
 
@@ -815,32 +805,42 @@ var PlayerSize = new PlayerOption('player_size', {
  * Player state change callback.
  */
 unsafeWindow[Meta.ns].onPlayerStateChange = function() {
-	AutoPlay.apply();
 	VideoQuality.apply();
+	AutoPlay.apply();
 };
 
 /*
  * Player ready callback.
  */
-function onPlayerReady() {
-	var player = DH.id('movie_player') || DH.id('movie_player-flash') || DH.id('video-player');
+var onPlayerReady = (function() {
+	var player = null;
 
-	if (player) {
-		// Unwrap the player object
-		if (typeof XPCNativeWrapper != 'undefined' && typeof XPCNativeWrapper.unwrap == 'function') {
-			player = XPCNativeWrapper.unwrap(player);
+	return function() {
+		var element = DH.id('movie_player') || DH.id('movie_player-flash') || DH.id('movie_player-html5');
+
+		if (player !== element) {
+			player = element;
+
+			// Unwrap the player object
+			if (typeof XPCNativeWrapper != 'undefined' && typeof XPCNativeWrapper.unwrap == 'function') {
+				player = XPCNativeWrapper.unwrap(player);
+			}
+
+			var initInterval = setInterval(function() {
+				if (typeof player.getPlayerState == 'function') {
+					PlayerOption.init(player);
+
+					VideoQuality.apply();
+					AutoPlay.apply();
+
+					player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange');
+
+					clearInterval(initInterval);
+				}
+			}, 10);
 		}
-
-		if (typeof player.getPlayerState == 'function') {
-			PlayerOption.init(player);
-
-			AutoPlay.apply();
-			VideoQuality.apply();
-
-			player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange');
-		}
-	}
-}
+	};
+})();
 
 unsafeWindow.onYouTubePlayerReady = extendFn(unsafeWindow.onYouTubePlayerReady, onPlayerReady);
 unsafeWindow.onChannelPlayerReady = extendFn(unsafeWindow.onChannelPlayerReady, onPlayerReady);
