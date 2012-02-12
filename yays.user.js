@@ -113,7 +113,7 @@ function parseJSON(data) {
 }
 
 function debug() {
-	unsafeWindow.console.debug.apply(unsafeWindow.console, arguments);
+	unsafeWindow.console.debug.apply(unsafeWindow.console, Array.prototype.concat.apply(['yays: '], arguments));
 }
 
 /*
@@ -277,7 +277,7 @@ var DH = {
 
 	content: function(node, children) {
 		if (node.hasChildNodes()) {
-			var child;
+			var child = null;
 			while (child = node.firstChild) node.removeChild(child);
 		}
 
@@ -382,7 +382,7 @@ var Config = (function(namespace) {
  * Create XHR or JSONP requests.
  */
 var JSONRequest = (function(namespace) {
-	var Request;
+	var Request = null;
 
 	// Greasemonkey XHR
 	if (typeof GM_xmlhttpRequest == 'function') {
@@ -723,7 +723,7 @@ var VideoQuality = new PlayerOption('video_quality', {
 	},
 
 	apply: function() {
-		if (! this._applied && this._player.getPlayerState() == 2) {
+		if (! this._applied) {
 			var qualities = this._player.getAvailableQualityLevels(), quality = null;
 
 			this._applied = true;
@@ -805,7 +805,6 @@ var PlayerSize = new PlayerOption('player_size', {
  * Player state change callback.
  */
 unsafeWindow[Meta.ns].onPlayerStateChange = function() {
-	VideoQuality.apply();
 	AutoPlay.apply();
 };
 
@@ -818,26 +817,28 @@ var onPlayerReady = (function() {
 	return function() {
 		var element = DH.id('movie_player') || DH.id('movie_player-flash') || DH.id('movie_player-html5');
 
-		if (player !== element) {
-			player = element;
-
+		if (element) {
 			// Unwrap the player object
 			if (typeof XPCNativeWrapper != 'undefined' && typeof XPCNativeWrapper.unwrap == 'function') {
-				player = XPCNativeWrapper.unwrap(player);
+				element = XPCNativeWrapper.unwrap(element);
 			}
 
-			var initInterval = setInterval(function() {
-				if (typeof player.getPlayerState == 'function') {
-					PlayerOption.init(player);
+			if (player !== element) {
+				player = element;
 
-					VideoQuality.apply();
-					AutoPlay.apply();
+				var initInterval = setInterval(function() {
+					if (typeof player.getPlayerState == 'function') {
+						PlayerOption.init(player);
 
-					player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange');
+						VideoQuality.apply();
+						AutoPlay.apply();
 
-					clearInterval(initInterval);
-				}
-			}, 10);
+						player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange');
+
+						clearInterval(initInterval);
+					}
+				}, 10);
+			}
 		}
 	};
 })();
