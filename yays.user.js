@@ -31,7 +31,7 @@ unsafeWindow[Meta.ns] = {};
 /*
  * Utility functions.
  */
-function each(callback, iterable, scope) {
+function each(iterable, callback, scope) {
 	if (iterable.length) {
 		for (var i = 0; i < iterable.length; i++)
 			callback.call(scope, i, iterable[i]);
@@ -100,7 +100,7 @@ function emptyFn() { return; };
 
 function buildURL(path, parameters) {
 	var query = [];
-	each(function(key, value) { query.push(key.concat('=', encodeURIComponent(value))); }, parameters);
+	each(parameters, function(key, value) { query.push(key.concat('=', encodeURIComponent(value))); });
 
 	return path.concat('?', query.join('&'));
 }
@@ -250,14 +250,14 @@ var DH = {
 	},
 
 	append: function(node, children) {
-		each(function(i, child) { node.appendChild(this.build(child)); }, [].concat(children), this);
+		each([].concat(children), function(i, child) { node.appendChild(this.build(child)); }, this);
 		node.normalize();
 	},
 
 	insertAfter: function(node, children) {
 		var parent = node.parentNode, sibling = node.nextSibling;
 		if (sibling) {
-			each(function(i, child) { parent.insertBefore(this.build(child), sibling); }, [].concat(children), this);
+			each([].concat(children), function(i, child) { parent.insertBefore(this.build(child), sibling); }, this);
 			parent.normalize();
 		}
 		else {
@@ -268,7 +268,7 @@ var DH = {
 	prepend: function(node, children) {
 		if (node.hasChildNodes()) {
 			var firstChild = node.firstChild;
-			each(function(i, child) { node.insertBefore(this.build(child), firstChild); }, [].concat(children), this);
+			each([].concat(children), function(i, child) { node.insertBefore(this.build(child), firstChild); }, this);
 		}
 		else {
 			this.append(node, children);
@@ -285,7 +285,7 @@ var DH = {
 	},
 
 	attributes: function(node, attributes) {
-		each(node.setAttribute, attributes, node);
+		each(attributes, node.setAttribute, node);
 	},
 
 	hasClass: function(node, clss) {
@@ -305,7 +305,7 @@ var DH = {
 	},
 
 	listeners: function(node, listeners) {
-		each(function(type, listener) { this.on(node, type, listener); }, listeners, this);
+		each(listeners, function(type, listener) { this.on(node, type, listener); }, this);
 	},
 
 	on: function(node, type, listener) {
@@ -595,7 +595,7 @@ var PlayerOption = (function() {
 
 	PlayerOption.init = function(player) {
 		this.prototype._player = player;
-		each(function(i, instance) { instance.init(); }, instances);
+		each(instances, function(i, instance) { instance.init(); });
 	};
 
 	PlayerOption.prototype = {
@@ -843,8 +843,10 @@ var onPlayerReady = (function() {
 	};
 })();
 
-unsafeWindow.onYouTubePlayerReady = extendFn(unsafeWindow.onYouTubePlayerReady, onPlayerReady);
-unsafeWindow.onChannelPlayerReady = extendFn(unsafeWindow.onChannelPlayerReady, onPlayerReady);
+each(['onYouTubePlayerReady', 'onChannelPlayerReady', 'ytPlayerOnYouTubePlayerReady'], function(i, callback) {
+	unsafeWindow[callback] = extendFn(unsafeWindow[callback], onPlayerReady);
+});
+
 onPlayerReady();
 
 /*
@@ -882,9 +884,9 @@ csFg0+JttI0AAAAASUVORK5CYII='}
 					DH.delClass(container, 'hid');
 					container.style.display = 'block';
 
-					each(function(i, node) {
+					each(DH.id('watch-actions-area').childNodes, function(i, node) {
 						! isHidden(node) && DH.hasClass(node, 'watch-actions-panel') && DH.addClass(node, 'hid');
-					}, DH.id('watch-actions-area').childNodes);
+					});
 
 					DH.delClass(panel, 'hid');
 					panel.style.display = 'block';
@@ -954,13 +956,13 @@ zMzMyE/AMgAAAAF0Uk5TAEDm2GYAAAAgSURBVAjXY+BhYMhtYKhvYLBnYPh8AISADCAXKMjDAAB1\
 							children: _('Settings'),
 							listeners: {
 								mousedown: function() {
-									each(function(i, node) {
+									each(DH.id('playnav-bottom-links-clip').getElementsByTagName('td'), function(i, node) {
 										var panelName = (new RegExp('^playnav-panel-tab-(\\w+)').exec(node.getAttribute('id') || '') || [, null])[1];
 										if (panelName) {
 											DH.delClass(node, 'panel-tab-selected');
 											DH.id('playnav-panel-' + panelName).style.display = 'none';
 										}
-									}, DH.id('playnav-bottom-links-clip').getElementsByTagName('td'));
+									});
 
 									DH.addClass(DH.id('playnav-panel-tab-yays_settings'), 'panel-tab-selected');
 									DH.id('playnav-panel-yays_settings').style.display = 'block';
