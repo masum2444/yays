@@ -71,8 +71,10 @@ function combine(keys, values) {
 	return object;
 }
 
-function bind(func, scope) {
-	return function() { return func.apply(scope, arguments); };
+function bind(func, scope, args) {
+	return function() {
+		return func.apply(scope, typeof args == 'undefined' ? arguments : args);
+	};
 }
 
 function copy(src, target) {
@@ -87,10 +89,7 @@ function extendFn(func, extension) {
 		return extension;
 
 	return function() {
-		try {
-			func.apply(this, arguments);
-		}
-		catch (ex) {}
+		setTimeout(bind(func, this, arguments), 0);
 
 		extension.apply(this, arguments);
 	};
@@ -768,29 +767,41 @@ var PlayerSize = new PlayerOption('player_size', {
 	},
 
 	apply: function() {
+		var video = DH.id('watch-video'), page = DH.id('page');
+
 		switch (this.get()) {
 			case 2: // FIT
 				DH.append(document.body, {
 					tag: 'style',
 					attributes: {type: 'text/css'},
 					children: [
-						'#watch-video.medium #watch-player,',
-						'#watch-video.large #watch-player {',
+						'#watch-video.yays.medium #watch-player,',
+						'#watch-video.yays.large #watch-player {',
 							'width: 970px !important;',
 							'height: 575px !important;',
 						'}'
 					]
 				});
+
+				DH.addClass(page, 'yays');
+				DH.addClass(video, 'yays');
 				// no break;
 
 			case 1: // WIDE
-				DH.addClass(DH.id('watch-video'), 'medium');
-				DH.addClass(DH.id('page'), 'watch-wide');
+				unsafeWindow.yt.net.cookies.set('wide', '1');
+
+				DH.addClass(page, 'watch-wide');
+				DH.addClass(video, 'medium');
 				break;
 
 			default:
 				return;
 		}
+	},
+
+	revert: function() {
+		DH.delClass(DH.id('page'), 'yays');
+		DH.delClass(DH.id('watch-video'), 'yays');
 	},
 
 	createButton: function() {
@@ -806,6 +817,13 @@ var PlayerSize = new PlayerOption('player_size', {
  */
 unsafeWindow[Meta.ns].onPlayerStateChange = function() {
 	AutoPlay.apply();
+};
+
+/*
+ * Player size changer clicked callback.
+ */
+unsafeWindow[Meta.ns].onPlayerSizeClicked = function() {
+	PlayerSize.revert();
 };
 
 /*
@@ -833,6 +851,7 @@ var onPlayerReady = (function() {
 						AutoPlay.apply();
 
 						player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange');
+						player.addEventListener('SIZE_CLICKED', Meta.ns + '.onPlayerSizeClicked');
 
 						clearInterval(initInterval);
 					}
