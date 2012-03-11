@@ -818,7 +818,6 @@ var onPlayerReady = (function() {
 		var element = DH.id('movie_player') || DH.id('movie_player-flash') || DH.id('movie_player-html5');
 
 		if (element) {
-			// Unwrap the player object
 			if (typeof XPCNativeWrapper != 'undefined' && typeof XPCNativeWrapper.unwrap == 'function') {
 				element = XPCNativeWrapper.unwrap(element);
 			}
@@ -843,15 +842,13 @@ var onPlayerReady = (function() {
 	};
 })();
 
-each(['onYouTubePlayerReady', 'onChannelPlayerReady', 'ytPlayerOnYouTubePlayerReady'], function(i, callback) {
+each(['onYouTubePlayerReady', 'ytPlayerOnYouTubePlayerReady'], function(i, callback) {
 	unsafeWindow[callback] = extendFn(unsafeWindow[callback], onPlayerReady);
 });
 
 onPlayerReady();
 
 /*
- * Per-site
- *
  * Watch page.
  */
 if (DH.id('watch-actions') !== null) {
@@ -925,89 +922,6 @@ qVmH8wAAAABJRU5ErkJggg=='},
 	}]);
 
 	PlayerSize.apply();
-}
-/*
- * Legacy channel page.
- */
-else if (DH.id('playnav-video-details') !== null) {
-	// Create and append tab
-	DH.append(DH.id('playnav-bottom-links-clip').getElementsByTagName('tr')[0], {
-		tag: 'td',
-		attributes: {id: 'playnav-panel-tab-yays_settings'},
-		children: {
-			tag: 'table',
-			attributes: {'class': 'panel-tabs'},
-			children: [{
-				tag: 'tr',
-				children: {
-					tag: 'td',
-					attributes: {'class': 'panel-tab-title-cell'},
-					children: [{
-						attributes: {'class': 'playnav-panel-tab-icon'},
-						style: {marginTop: '2px', height: '10px', backgroundImage: 'url(data:image/png;base64,\
-iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKAQMAAAC3/F3+AAAAAXNSR0IArs4c6QAAAAZQTFRFAAAA\
-zMzMyE/AMgAAAAF0Uk5TAEDm2GYAAAAgSURBVAjXY+BhYMhtYKhvYLBnYPh8AISADCAXKMjDAAB1\
-9AfV9jsohwAAAABJRU5ErkJggg=='}
-					}, {
-						attributes: {'class': 'playnav-bottom-link'},
-						children: {
-							tag: 'a',
-							attributes: {href: 'javascript:;', title: _('Player settings')},
-							children: _('Settings'),
-							listeners: {
-								mousedown: function() {
-									each(DH.id('playnav-bottom-links-clip').getElementsByTagName('td'), function(i, node) {
-										var panelName = (new RegExp('^playnav-panel-tab-(\\w+)').exec(node.getAttribute('id') || '') || [, null])[1];
-										if (panelName) {
-											DH.delClass(node, 'panel-tab-selected');
-											DH.id('playnav-panel-' + panelName).style.display = 'none';
-										}
-									});
-
-									DH.addClass(DH.id('playnav-panel-tab-yays_settings'), 'panel-tab-selected');
-									DH.id('playnav-panel-yays_settings').style.display = 'block';
-								}
-							}
-						}
-					}, {
-						attributes: {'class': 'spacer'}
-					}]
-				}
-			}, {
-				tag: 'tr',
-				children: {
-					tag: 'td',
-					attributes: {'class': 'panel-tab-indicator-cell inner-box-opacity'},
-					children: {
-						attributes: {'class': 'panel-tab-indicator-arrow'}
-					}
-				}
-			}]
-		}
-	});
-
-	// Hide when other tab clicked.
-	unsafeWindow.playnav.selectPanel = extendFn(unsafeWindow.playnav.selectPanel, function() {
-		DH.id('playnav-panel-tab-yays_settings').setAttribute('class', '');
-		DH.id('playnav-panel-yays_settings').style.display = 'none';
-	});
-
-	// Create and append panel.
-	DH.append(DH.id('playnav-video-panel-inner'), {
-		attributes: {id: 'playnav-panel-yays_settings', 'class': 'hid'},
-		children: {
-			children: [{
-				tag: 'strong',
-				children: _('Player settings')
-			}, {
-				style: {textAlign: 'center', marginTop: '5px'},
-				children: [
-					VideoQuality.createButton().render(),
-					AutoPlay.createButton().render()
-				]
-			}]
-		}
-	});
 }
 
 } // YAYS
