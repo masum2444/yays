@@ -656,9 +656,7 @@ var AutoPlay = new PlayerOption('auto_play', {
 	},
 
 	init: function() {
-		var config = this._player_feature != 'embedded' ? this.get() : 0;
-
-		switch (config) {
+		switch (this.get()) {
 			case 0: // ON
 				this._applied = true;
 				break;
@@ -763,8 +761,6 @@ var VideoQuality = new PlayerOption('video_quality', {
  * Set player size.
  */
 var PlayerSize = new PlayerOption('player_size', {
-	_applied: false,
-
 	_states: ['AUTO', 'WIDE', 'FIT'],
 
 	_step: function() {
@@ -775,12 +771,8 @@ var PlayerSize = new PlayerOption('player_size', {
 		return _(this._states[this.get()]);
 	},
 
-	init: function() {
-		this._applied = this._player_feature != 'detailpage';
-	},
-
 	apply: function() {
-		if (! this._applied) {
+		if (this._player_feature == 'detailpage') {
 			var video = DH.id('watch-video'), page = DH.id('page');
 
 			switch (this.get()) {
@@ -811,8 +803,6 @@ var PlayerSize = new PlayerOption('player_size', {
 				default:
 					return;
 			}
-
-			this._applied = true;
 		}
 	},
 
@@ -851,7 +841,7 @@ var onPlayerReady = (function() {
 	var player = null;
 
 	return function() {
-		var element = DH.id('movie_player') || DH.id('movie_player-flash') || DH.id('movie_player-html5') || DH.id('video-player-flash');
+		var element = DH.id('movie_player') || DH.id('movie_player-flash') || DH.id('movie_player-html5');
 
 		if (element) {
 			if (typeof XPCNativeWrapper != 'undefined' && typeof XPCNativeWrapper.unwrap == 'function') {
