@@ -594,14 +594,11 @@ var PlayerOption = (function() {
 
 	PlayerOption.init = function(player) {
 		this.prototype._player = player;
-		this.prototype._player_feature = (/feature=player_(\w+)/.exec(player.getVideoUrl()) || [, null])[1];
-
 		each(instances, function(i, instance) { instance.init(); });
 	};
 
 	PlayerOption.prototype = {
 		_player: null,
-		_player_feature: null,
 
 		get: function() {
 			return Number(Config.get(this._configKey));
@@ -772,37 +769,35 @@ var PlayerSize = new PlayerOption('player_size', {
 	},
 
 	apply: function() {
-		if (this._player_feature == 'detailpage') {
-			var video = DH.id('watch-video'), page = DH.id('page');
+		var video = DH.id('watch-video'), page = DH.id('page');
 
-			switch (this.get()) {
-				case 2: // FIT
-					DH.append(document.body, {
-						tag: 'style',
-						attributes: {type: 'text/css'},
-						children: [
-							'#watch-video.yays.medium #watch-player,',
-							'#watch-video.yays.large #watch-player {',
-								'width: 970px !important;',
-								'height: 575px !important;',
-							'}'
-						]
-					});
+		switch (this.get()) {
+			case 2: // FIT
+				DH.append(document.body, {
+					tag: 'style',
+					attributes: {type: 'text/css'},
+					children: [
+						'#watch-video.yays.medium #watch-player,',
+						'#watch-video.yays.large #watch-player {',
+							'width: 970px !important;',
+							'height: 575px !important;',
+						'}'
+					]
+				});
 
-					DH.addClass(page, 'yays');
-					DH.addClass(video, 'yays');
-					// no break;
+				DH.addClass(page, 'yays');
+				DH.addClass(video, 'yays');
+				// no break;
 
-				case 1: // WIDE
-					unsafeWindow.yt.net.cookies.set('wide', '1');
+			case 1: // WIDE
+				unsafeWindow.yt.net.cookies.set('wide', '1');
 
-					DH.addClass(page, 'watch-wide');
-					DH.addClass(video, 'medium');
-					break;
+				DH.addClass(page, 'watch-wide');
+				DH.addClass(video, 'medium');
+				break;
 
-				default:
-					return;
-			}
+			default:
+				return;
 		}
 	},
 
@@ -859,7 +854,6 @@ var onPlayerReady = (function() {
 
 						VideoQuality.apply();
 						AutoPlay.apply();
-						PlayerSize.apply();
 
 						player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange');
 						player.addEventListener('SIZE_CLICKED', Meta.ns + '.onPlayerSizeClicked');
@@ -948,6 +942,8 @@ qVmH8wAAAABJRU5ErkJggg=='},
 			]
 		}]
 	}]);
+
+	PlayerSize.apply();
 }
 
 } // YAYS
