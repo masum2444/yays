@@ -594,11 +594,14 @@ var PlayerOption = (function() {
 
 	PlayerOption.init = function(player) {
 		this.prototype._player = player;
+		this.prototype._player_feature = (/feature=player_(\w+)/.exec(player.getVideoUrl()) || [, null])[1];
+
 		each(instances, function(i, instance) { instance.init(); });
 	};
 
 	PlayerOption.prototype = {
 		_player: null,
+		_player_feature: null,
 
 		get: function() {
 			return Number(Config.get(this._configKey));
@@ -653,7 +656,9 @@ var AutoPlay = new PlayerOption('auto_play', {
 	},
 
 	init: function() {
-		switch (this.get()) {
+		var config = this._player_feature != 'embedded' ? this.get() : 0;
+
+		switch (config) {
 			case 0: // ON
 				this._applied = true;
 				break;
@@ -725,22 +730,24 @@ var VideoQuality = new PlayerOption('video_quality', {
 		if (! this._applied) {
 			var qualities = this._player.getAvailableQualityLevels(), quality = null;
 
-			this._applied = true;
+			if (qualities.length) {
+				this._applied = true;
 
-			switch (this.get()) {
-				case 1: // LOW
-					quality = qualities.pop(); break;
-				case 2: // MEDIUM
-					while (this._qualities[quality = qualities.shift()] > this._qualities.large); break;
-				case 3: // HIGH
-					while (this._qualities[quality = qualities.shift()] > this._qualities.hd720); break;
-				case 4: // HIGHEST
-					quality = qualities.shift(); break;
-				default:
-					return;
+				switch (this.get()) {
+					case 1: // LOW
+						quality = qualities.pop(); break;
+					case 2: // MEDIUM
+						while (this._qualities[quality = qualities.shift()] > this._qualities.large); break;
+					case 3: // HIGH
+						while (this._qualities[quality = qualities.shift()] > this._qualities.hd720); break;
+					case 4: // HIGHEST
+						quality = qualities.shift(); break;
+					default:
+						return;
+				}
+
+				this._player.setPlaybackQuality(quality);
 			}
-
-			this._player.setPlaybackQuality(quality);
 		}
 	},
 
@@ -756,6 +763,8 @@ var VideoQuality = new PlayerOption('video_quality', {
  * Set player size.
  */
 var PlayerSize = new PlayerOption('player_size', {
+	_applied: false,
+
 	_states: ['AUTO', 'WIDE', 'FIT'],
 
 	_step: function() {
@@ -766,36 +775,44 @@ var PlayerSize = new PlayerOption('player_size', {
 		return _(this._states[this.get()]);
 	},
 
+	init: function() {
+		this._applied = this._player_feature != 'detailpage';
+	},
+
 	apply: function() {
-		var video = DH.id('watch-video'), page = DH.id('page');
+		if (! this._applied) {
+			var video = DH.id('watch-video'), page = DH.id('page');
 
-		switch (this.get()) {
-			case 2: // FIT
-				DH.append(document.body, {
-					tag: 'style',
-					attributes: {type: 'text/css'},
-					children: [
-						'#watch-video.yays.medium #watch-player,',
-						'#watch-video.yays.large #watch-player {',
-							'width: 970px !important;',
-							'height: 575px !important;',
-						'}'
-					]
-				});
+			switch (this.get()) {
+				case 2: // FIT
+					DH.append(document.body, {
+						tag: 'style',
+						attributes: {type: 'text/css'},
+						children: [
+							'#watch-video.yays.medium #watch-player,',
+							'#watch-video.yays.large #watch-player {',
+								'width: 970px !important;',
+								'height: 575px !important;',
+							'}'
+						]
+					});
 
-				DH.addClass(page, 'yays');
-				DH.addClass(video, 'yays');
-				// no break;
+					DH.addClass(page, 'yays');
+					DH.addClass(video, 'yays');
+					// no break;
 
-			case 1: // WIDE
-				unsafeWindow.yt.net.cookies.set('wide', '1');
+				case 1: // WIDE
+					unsafeWindow.yt.net.cookies.set('wide', '1');
 
-				DH.addClass(page, 'watch-wide');
-				DH.addClass(video, 'medium');
-				break;
+					DH.addClass(page, 'watch-wide');
+					DH.addClass(video, 'medium');
+					break;
 
-			default:
-				return;
+				default:
+					return;
+			}
+
+			this._applied = true;
 		}
 	},
 
@@ -816,6 +833,7 @@ var PlayerSize = new PlayerOption('player_size', {
  * Player state change callback.
  */
 unsafeWindow[Meta.ns].onPlayerStateChange = function() {
+	VideoQuality.apply();
 	AutoPlay.apply();
 };
 
@@ -833,7 +851,7 @@ var onPlayerReady = (function() {
 	var player = null;
 
 	return function() {
-		var element = DH.id('movie_player') || DH.id('movie_player-flash') || DH.id('movie_player-html5');
+		var element = DH.id('movie_player') || DH.id('movie_player-flash') || DH.id('movie_player-html5') || DH.id('video-player-flash');
 
 		if (element) {
 			if (typeof XPCNativeWrapper != 'undefined' && typeof XPCNativeWrapper.unwrap == 'function') {
@@ -845,15 +863,16 @@ var onPlayerReady = (function() {
 
 				var initInterval = setInterval(function() {
 					if (typeof player.getPlayerState == 'function') {
+						clearInterval(initInterval);
+
 						PlayerOption.init(player);
 
 						VideoQuality.apply();
 						AutoPlay.apply();
+						PlayerSize.apply();
 
 						player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange');
 						player.addEventListener('SIZE_CLICKED', Meta.ns + '.onPlayerSizeClicked');
-
-						clearInterval(initInterval);
 					}
 				}, 10);
 			}
@@ -939,8 +958,6 @@ qVmH8wAAAABJRU5ErkJggg=='},
 			]
 		}]
 	}]);
-
-	PlayerSize.apply();
 }
 
 } // YAYS
