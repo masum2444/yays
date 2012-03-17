@@ -777,16 +777,13 @@ var PlayerSize = new PlayerOption('player_size', {
 					tag: 'style',
 					attributes: {type: 'text/css'},
 					children: [
-						'#watch-video.yays.medium #watch-player,',
-						'#watch-video.yays.large #watch-player {',
+						'#watch-video.medium #watch-player,',
+						'#watch-video.large #watch-player {',
 							'width: 970px !important;',
 							'height: 575px !important;',
 						'}'
 					]
 				});
-
-				DH.addClass(page, 'yays');
-				DH.addClass(video, 'yays');
 				// no break;
 
 			case 1: // WIDE
@@ -799,11 +796,6 @@ var PlayerSize = new PlayerOption('player_size', {
 			default:
 				return;
 		}
-	},
-
-	revert: function() {
-		DH.delClass(DH.id('page'), 'yays');
-		DH.delClass(DH.id('watch-video'), 'yays');
 	},
 
 	createButton: function() {
@@ -820,13 +812,6 @@ var PlayerSize = new PlayerOption('player_size', {
 unsafeWindow[Meta.ns].onPlayerStateChange = function() {
 	VideoQuality.apply();
 	AutoPlay.apply();
-};
-
-/*
- * Player size changer clicked callback.
- */
-unsafeWindow[Meta.ns].onPlayerSizeClicked = function() {
-	PlayerSize.revert();
 };
 
 /*
@@ -856,7 +841,6 @@ var onPlayerReady = (function() {
 						AutoPlay.apply();
 
 						player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange');
-						player.addEventListener('SIZE_CLICKED', Meta.ns + '.onPlayerSizeClicked');
 					}
 				}, 10);
 			}
