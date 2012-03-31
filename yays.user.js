@@ -470,10 +470,10 @@ var JSONRequest = (function(namespace) {
 				style: {textAlign: 'center', fontWeight: 'bold'},
 				children: Meta.title
 			}, {
-				style: {color: '#a0a0a0', marginBottom: '5px', textAlign: 'center'},
+				style: {color: '#a0a0a0', marginBottom: '10px', textAlign: 'center'},
 				children: 'UserScript update notification.'
 			}, {
-				style: {marginBottom: '5px'},
+				style: {marginBottom: '10px'},
 				children: ['You are using version ', {tag: 'strong', children: Meta.version}, ', released on ', {tag: 'em', children: Meta.releasedate}, '.', {tag: 'br'}, 'Please update to the newest version.']
 			}, {
 				children: map(function(entry) {
@@ -680,12 +680,12 @@ var AutoPlay = new PlayerOption('auto_play', {
 
 	apply: function() {
 		if (! this._applied && this._player.getPlayerState() == 1) {
-			this._player.pauseVideo();
-
 			try {
 				this._player.seekTo(0, false);
 			}
 			catch (ex) {}
+
+			this._player.pauseVideo();
 
 			this._applied = true;
 		}
@@ -722,7 +722,7 @@ var VideoQuality = new PlayerOption('video_quality', {
 	},
 
 	apply: function() {
-		if (! this._applied) {
+		if (! this._applied && this._player.getPlayerState() > -1) {
 			var qualities = this._player.getAvailableQualityLevels(), quality = null;
 
 			if (qualities.length) {
@@ -769,8 +769,6 @@ var PlayerSize = new PlayerOption('player_size', {
 	},
 
 	apply: function() {
-		var video = DH.id('watch-video'), page = DH.id('page');
-
 		switch (this.get()) {
 			case 2: // FIT
 				DH.append(document.body, {
@@ -789,8 +787,8 @@ var PlayerSize = new PlayerOption('player_size', {
 			case 1: // WIDE
 				unsafeWindow.yt.net.cookies.set('wide', '1');
 
-				DH.addClass(page, 'watch-wide');
-				DH.addClass(video, 'medium');
+				DH.addClass(DH.id('page'), 'watch-wide');
+				DH.addClass(DH.id('watch-video'), 'medium');
 				break;
 
 			default:
@@ -810,8 +808,8 @@ var PlayerSize = new PlayerOption('player_size', {
  * Player state change callback.
  */
 unsafeWindow[Meta.ns].onPlayerStateChange = function() {
-	VideoQuality.apply();
 	AutoPlay.apply();
+	VideoQuality.apply();
 };
 
 /*
@@ -837,8 +835,8 @@ var onPlayerReady = (function() {
 
 						PlayerOption.init(player);
 
-						VideoQuality.apply();
 						AutoPlay.apply();
+						VideoQuality.apply();
 
 						player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange');
 					}
