@@ -630,6 +630,7 @@ var PlayerOption = (function() {
 var AutoPlay = new PlayerOption('auto_play', {
 	_applied: false,
 	_focused: false,
+	_muted: null,
 	_timer: null,
 
 	_states: ['ON', 'OFF', 'AUTO \u03B2'],
@@ -688,15 +689,23 @@ var AutoPlay = new PlayerOption('auto_play', {
 	},
 
 	apply: function() {
-		if (! this._applied && this._player.getPlayerState() == 1) {
-			try {
+		if (! this._applied) {
+			if (this._muted === null)
+				this._muted = this._player.isMuted();
+
+			this._player.mute();
+
+			if (this._player.getPlayerState() == 1) {
 				this._player.seekTo(0, false);
+				this._player.pauseVideo();
+
+				if (! this._muted)
+					this._player.unMute();
+
+				this._muted = null;
+
+				this._applied = true;
 			}
-			catch (ex) {}
-
-			this._player.pauseVideo();
-
-			this._applied = true;
 		}
 	},
 
