@@ -302,13 +302,13 @@ var DH = {
 
 	addClass: function(node, clss) {
 		if (! this.hasClass(node, clss)) {
-			node.setAttribute('class', (node.getAttribute('class') || '').concat(' ', clss));
+			node.setAttribute('class', (node.getAttribute('class') || '').concat(' ', clss).trim());
 		}
 	},
 
 	delClass: function(node, clss) {
 		if (this.hasClass(node, clss)) {
-			node.setAttribute('class', node.getAttribute('class').replace(new RegExp('\\s*'.concat(clss, '\\s*'), 'g'), ' '));
+			node.setAttribute('class', node.getAttribute('class').replace(new RegExp('\\s*'.concat(clss, '\\s*'), 'g'), ' ').trim());
 		}
 	},
 
@@ -527,7 +527,7 @@ var Button = (function() {
 	var def = {
 		node: {
 			tag: 'button',
-			style: {margin: '0 0 0 5px'},
+			style: {margin: '0 0 0 4px'},
 			attributes: {type: 'button', 'class': 'yt-uix-button yt-uix-button-default yt-uix-tooltip'}
 		},
 
@@ -696,6 +696,8 @@ var AutoPlay = new PlayerOption('auto_play', {
 			this._player.mute();
 
 			if (this._player.getPlayerState() == 1) {
+				this._applied = true;
+
 				this._player.seekTo(0, false);
 				this._player.pauseVideo();
 
@@ -703,8 +705,6 @@ var AutoPlay = new PlayerOption('auto_play', {
 					this._player.unMute();
 
 				this._muted = null;
-
-				this._applied = true;
 			}
 		}
 	},
@@ -901,21 +901,24 @@ csFg0+JttI0AAAAASUVORK5CYII='}
 
 				if (isHidden(panel) || isHidden(container)) {
 					DH.delClass(container, 'hid');
-					container.style.display = 'block';
+					DH.style(container, {display: 'block'});
 
 					each(DH.id('watch-actions-area').childNodes, function(i, node) {
-						! isHidden(node) && DH.hasClass(node, 'watch-actions-panel') && DH.addClass(node, 'hid');
+						if (! isHidden(node) && DH.hasClass(node, 'watch-actions-panel')) {
+							DH.addClass(node, 'hid');
+							DH.style(node, {display: 'none'});
+						}
 					});
 
 					DH.delClass(panel, 'hid');
-					panel.style.display = 'block';
+					DH.style(panel, {display: 'block'});
 				}
 				else {
 					DH.addClass(container, 'hid');
-					container.style.display = 'none';
+					DH.style(container, {display: 'none'});
 
 					DH.addClass(panel, 'hid');
-					panel.style.display = 'none';
+					DH.style(panel, {display: 'none'});
 				}
 			}
 		}
