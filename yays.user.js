@@ -527,7 +527,7 @@ var Button = (function() {
 	var def = {
 		node: {
 			tag: 'button',
-			style: {margin: '0 0 0 4px'},
+			style: {margin: '2px'},
 			attributes: {type: 'button', 'class': 'yt-uix-button yt-uix-button-default yt-uix-tooltip'}
 		},
 
@@ -874,9 +874,9 @@ onPlayerReady();
  * Watch page.
  */
 if (DH.id('watch-actions') !== null) {
-	DH.insertAfter(DH.id('watch-flag'), {
+	DH.insertAfter(DH.id('watch-flag'), [' ', {
 		tag: 'button',
-		style: {marginLeft: '3px', padding: '0 4px'},
+		style: {padding: '0 4px'},
 		attributes: {id: 'yays_settings-button', type: 'button', 'class': 'yt-uix-button yt-uix-button-default yt-uix-tooltip yt-uix-tooltip-reverse', title: _('Player settings')},
 		children: {
 				tag: 'img',
@@ -922,7 +922,7 @@ csFg0+JttI0AAAAASUVORK5CYII='}
 				}
 			}
 		}
-	});
+	}]);
 
 	DH.prepend(DH.id('watch-actions-area'), [{
 		attributes: {id: 'yays_settings-panel', 'class': 'watch-actions-panel'},
