@@ -121,7 +121,7 @@ function debug() {
 var _ = (function() {
 	var
 	vocabulary = [
-		'Auto play', 'ON', 'OFF', 'AUTO \u03B2', 'Toggle video autoplay',
+		'Auto play', 'ON', 'OFF', 'AUTO', 'Toggle video autoplay',
 		'Quality', 'AUTO', 'LOW', 'MEDIUM', 'HIGH', 'HIGHEST', 'Set default video quality',
 		'Size', 'WIDE', 'FIT', 'Set default player size',
 		'Settings', 'Player settings', 'Help'
@@ -131,7 +131,7 @@ var _ = (function() {
 			// hungarian - magyar
 			case 'hu':
 				return [
-					'Automatikus lej\xE1tsz\xE1s', 'BE', 'KI', 'AUTO \u03B2', 'Automatikus lej\xE1tsz\xE1s ki-, bekapcsol\xE1sa',
+					'Automatikus lej\xE1tsz\xE1s', 'BE', 'KI', 'AUTO', 'Automatikus lej\xE1tsz\xE1s ki-, bekapcsol\xE1sa',
 					'Min\u0151s\xE9g', 'AUTO', 'ALACSONY', 'K\xD6ZEPES', 'MAGAS', 'LEGMAGASABB', 'Vide\xF3k alap\xE9rtelmezett felbont\xE1sa',
 					'M\xE9ret', 'SZ\xC9LES', 'ILLESZTETT', 'Lej\xE1tsz\xF3 alap\xE9rtelmezett m\xE9rete',
 					'Be\xE1ll\xEDt\xE1sok', 'Lej\xE1tsz\xF3 be\xE1ll\xEDt\xE1sai', 'S\xFAg\xF3'
@@ -140,7 +140,7 @@ var _ = (function() {
 			// dutch - nederlands (Mike-RaWare @userscripts.org)
 			case 'nl':
 				return [
-					'Auto spelen', 'AAN', 'UIT', 'AUTOMATISCH \u03B2', 'Stel automatisch afspelen in',
+					'Auto spelen', 'AAN', 'UIT', 'AUTOMATISCH', 'Stel automatisch afspelen in',
 					'Kwaliteit', 'AUTOMATISCH', 'LAAG', 'GEMIDDELD', 'HOOG', undefined, 'Stel standaard videokwaliteit in',
 					undefined, undefined, undefined, undefined,
 					undefined, undefined, undefined
@@ -149,7 +149,7 @@ var _ = (function() {
 			// spanish - español (yonane @userscripts.org)
 			case 'es':
 				return [
-					'Reproducci\xF3n Autom\xE1tica', undefined, undefined, 'AUTO \u03B2', 'Modificar Reproducci\xF3n Autom\xE1tica',
+					'Reproducci\xF3n Autom\xE1tica', undefined, undefined, 'AUTO', 'Modificar Reproducci\xF3n Autom\xE1tica',
 					'Calidad', 'AUTO', 'BAJA', 'MEDIA', 'ALTA', undefined, 'Usar calidad por defecto',
 					undefined, undefined, undefined, undefined,
 					undefined, undefined, undefined
@@ -158,7 +158,7 @@ var _ = (function() {
 			// german - deutsch (xemino @userscripts.org)
 			case 'de':
 				return [
-					'Automatische Wiedergabe', 'AN', 'AUS', 'AUTO \u03B2', 'Automatische Wiedergabe umschalten',
+					'Automatische Wiedergabe', 'AN', 'AUS', 'AUTO', 'Automatische Wiedergabe umschalten',
 					'Qualit\xE4t', 'AUTO', 'NIEDRIG', 'MITTEL', 'HOCH', undefined, 'Standard Video Qualit\xE4t setzen',
 					undefined, undefined, undefined, undefined,
 					undefined, undefined, undefined
@@ -167,7 +167,7 @@ var _ = (function() {
 			// brazilian portuguese - português brasileiro (Pitukinha @userscripts.org)
 			case 'pt':
 				return [
-					'Reprodu\xE7\xE3o Autom\xE1tica', 'LIGADO', 'DESLIGADO', 'AUTOM\xC1TICO \u03B2', 'Modificar Reprodu\xE7\xE3o Autom\xE1tica',
+					'Reprodu\xE7\xE3o Autom\xE1tica', 'LIGADO', 'DESLIGADO', 'AUTOM\xC1TICO', 'Modificar Reprodu\xE7\xE3o Autom\xE1tica',
 					'Qualidade', 'AUTOM\xC1TICO', 'BAIXA', 'M\xC9DIO', 'BOA', undefined, 'Defini\xE7\xE3o padr\xE3o de v\xEDdeo',
 					undefined, undefined, undefined, undefined,
 					'Configura\xE7\xF5es', 'Configura\xE7\xE3o do usu\xE1rio', undefined
@@ -176,7 +176,7 @@ var _ = (function() {
 			// greek - Έλληνες (TastyTeo @userscripts.org)
 			case 'el':
 				return [
-					'\u0391\u03C5\u03C4\u03CC\u03BC\u03B1\u03C4\u03B7 \u03B1\u03BD\u03B1\u03C0\u03B1\u03C1\u03B1\u03B3\u03C9\u03B3\u03AE', '\u0395\u039D\u0395\u03A1\u0393\u039F', '\u0391\u039D\u0395\u039D\u0395\u03A1\u0393\u039F', '\u0391\u03A5\u03A4\u039F\u039C\u0391\u03A4\u0397 \u03B2', '\u0395\u03BD\u03B1\u03BB\u03BB\u03B1\u03B3\u03AE \u03B1\u03C5\u03C4\u03CC\u03BC\u03B1\u03C4\u03B7\u03C2 \u03B1\u03BD\u03B1\u03C0\u03B1\u03C1\u03B1\u03B3\u03C9\u03B3\u03AE\u03C2',
+					'\u0391\u03C5\u03C4\u03CC\u03BC\u03B1\u03C4\u03B7 \u03B1\u03BD\u03B1\u03C0\u03B1\u03C1\u03B1\u03B3\u03C9\u03B3\u03AE', '\u0395\u039D\u0395\u03A1\u0393\u039F', '\u0391\u039D\u0395\u039D\u0395\u03A1\u0393\u039F', '\u0391\u03A5\u03A4\u039F\u039C\u0391\u03A4\u0397', '\u0395\u03BD\u03B1\u03BB\u03BB\u03B1\u03B3\u03AE \u03B1\u03C5\u03C4\u03CC\u03BC\u03B1\u03C4\u03B7\u03C2 \u03B1\u03BD\u03B1\u03C0\u03B1\u03C1\u03B1\u03B3\u03C9\u03B3\u03AE\u03C2',
 					'\u03A0\u03BF\u03B9\u03CC\u03C4\u03B7\u03C4\u03B1', '\u0391\u03A5\u03A4\u039F\u039C\u0391\u03A4\u0397', '\u03A7\u0391\u039C\u0397\u039B\u0397', '\u039A\u0391\u039D\u039F\u039D\u0399\u039A\u0397', '\u03A5\u03A8\u0397\u039B\u0397', '\u03A0\u039F\u039B\u03A5 \u03A5\u03A8\u0397\u039B\u0397', '\u039F\u03C1\u03B9\u03C3\u03BC\u03CC\u03C2 \u03C0\u03C1\u03BF\u03B5\u03C0\u03B9\u03BB\u03B5\u03B3\u03BC\u03AD\u03BD\u03B7\u03C2 \u03C0\u03BF\u03B9\u03CC\u03C4\u03B7\u03C4\u03B1\u03C2 \u03B2\u03AF\u03BD\u03C4\u03B5\u03BF',
 					undefined, undefined, undefined, undefined,
 					'\u0395\u03C0\u03B9\u03BB\u03BF\u03B3\u03AD\u03C2', '\u0395\u03C0\u03B9\u03BB\u03BF\u03B3\u03AD\u03C2 Player', undefined
@@ -203,7 +203,7 @@ var _ = (function() {
 			// russian - русский (an1k3y @userscripts.org)
 			case 'ru':
 				return [
-					'\u0410\u0432\u0442\u043E \u0432\u043E\u0441\u043F\u0440\u043E\u0438\u0437\u0432\u0435\u0434\u0435\u043D\u0438\u0435', '\u0412\u041A\u041B', '\u0412\u042B\u041A\u041B', '\u0410\u0412\u0422\u041E \u03B2', '\u0410\u0432\u0442\u043E\u0437\u0430\u043F\u0443\u0441\u043A \u0432\u0438\u0434\u0435\u043E',
+					'\u0410\u0432\u0442\u043E \u0432\u043E\u0441\u043F\u0440\u043E\u0438\u0437\u0432\u0435\u0434\u0435\u043D\u0438\u0435', '\u0412\u041A\u041B', '\u0412\u042B\u041A\u041B', '\u0410\u0412\u0422\u041E', '\u0410\u0432\u0442\u043E\u0437\u0430\u043F\u0443\u0441\u043A \u0432\u0438\u0434\u0435\u043E',
 					'\u041A\u0430\u0447\u0435\u0441\u0442\u0432\u043E', '\u0410\u0412\u0422\u041E', '\u041D\u0418\u0417\u041A\u041E\u0415', '\u0421\u0420\u0415\u0414\u041D\u0415\u0415', '\u0412\u042B\u0421\u041E\u041A\u041E\u0415', '\u0421\u0410\u041C\u041E\u0415 \u0412\u042B\u0421\u041E\u041A\u041E\u0415', '\u041A\u0430\u0447\u0435\u0441\u0442\u0432\u043E \u0432\u0438\u0434\u0435\u043E \u043F\u043E \u0443\u043C\u043E\u043B\u0447\u0430\u043D\u0438\u044E',
 					'\u0420\u0410\u0417\u041C\u0415\u0420', '\u0420\u0410\u0417\u0412\u0415\u0420\u041D\u0423\u0422\u042C', '\u0420\u0410\u0421\u0422\u042F\u041D\u0423\u0422\u042C', '\u0420\u0430\u0437\u043C\u0435\u0440 \u0432\u0438\u0434\u0435\u043E \u043F\u043E \u0443\u043C\u043E\u043B\u0447\u0430\u043D\u0438\u044E',
 					'\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438', '\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 \u043F\u043B\u0435\u0435\u0440\u0430', '\u041F\u043E\u043C\u043E\u0449\u044C'
@@ -212,10 +212,10 @@ var _ = (function() {
 			// hebrew - עברית (baryoni @userscripts.org)
 			case 'iw':
 				return [
-					"\u05D4\u05E4\u05E2\u05DC\u05D4 \u05D0\u05D5\u05D8\u05D5\u05DE\u05D8\u05D9\u05EA", "\u05E4\u05E2\u05D9\u05DC", "\u05DB\u05D1\u05D5\u05D9", "\u05D0\u05D5\u05D8\u05D5\u05DE\u05D8\u05D9 \u03B2", "\u05E9\u05E0\u05D4 \u05DE\u05E6\u05D1 \u05D4\u05E4\u05E2\u05DC\u05D4 \u05D0\u05D5\u05D8\u05D5\u05DE\u05D8\u05D9\u05EA \u05E9\u05DC \u05D4\u05D5\u05D9\u05D3\u05D0\u05D5",
-					"\u05D0\u05D9\u05DB\u05D5\u05EA", "\u05D0\u05D5\u05D8\u05D5\u05DE\u05D8\u05D9\u05EA", "\u05E0\u05DE\u05D5\u05DB\u05D4", "\u05D1\u05D9\u05E0\u05D5\u05E0\u05D9\u05EA", "\u05D2\u05D1\u05D5\u05D4\u05D4", "\u05D4\u05D2\u05D1\u05D5\u05D4\u05D4 \u05D1\u05D9\u05D5\u05EA\u05E8", "\u05D4\u05D2\u05D3\u05E8 \u05D0\u05EA \u05D0\u05D9\u05DB\u05D5\u05EA \u05D1\u05E8\u05D9\u05E8\u05EA \u05D4\u05DE\u05D7\u05D3\u05DC \u05E9\u05DC \u05D4\u05D5\u05D9\u05D3\u05D0\u05D5",
-					"\u05D2\u05D5\u05D3\u05DC", "\u05E8\u05D7\u05D1", "\u05DE\u05DC\u05D0", "\u05D4\u05D2\u05D3\u05E8 \u05D0\u05EA \u05D2\u05D5\u05D3\u05DC \u05D1\u05E8\u05D9\u05E8\u05EA \u05D4\u05DE\u05D7\u05D3\u05DC \u05E9\u05DC \u05D4\u05E0\u05D2\u05DF",
-					"\u05D4\u05D2\u05D3\u05E8\u05D5\u05EA", "\u05D4\u05D2\u05D3\u05E8\u05D5\u05EA \u05E0\u05D2\u05DF", "\u05E2\u05D6\u05E8\u05D4"
+					'\u05D4\u05E4\u05E2\u05DC\u05D4 \u05D0\u05D5\u05D8\u05D5\u05DE\u05D8\u05D9\u05EA', '\u05E4\u05E2\u05D9\u05DC', '\u05DB\u05D1\u05D5\u05D9', '\u05D0\u05D5\u05D8\u05D5\u05DE\u05D8\u05D9', '\u05E9\u05E0\u05D4 \u05DE\u05E6\u05D1 \u05D4\u05E4\u05E2\u05DC\u05D4 \u05D0\u05D5\u05D8\u05D5\u05DE\u05D8\u05D9\u05EA \u05E9\u05DC \u05D4\u05D5\u05D9\u05D3\u05D0\u05D5',
+					'\u05D0\u05D9\u05DB\u05D5\u05EA', '\u05D0\u05D5\u05D8\u05D5\u05DE\u05D8\u05D9\u05EA', '\u05E0\u05DE\u05D5\u05DB\u05D4', '\u05D1\u05D9\u05E0\u05D5\u05E0\u05D9\u05EA', '\u05D2\u05D1\u05D5\u05D4\u05D4', '\u05D4\u05D2\u05D1\u05D5\u05D4\u05D4 \u05D1\u05D9\u05D5\u05EA\u05E8', '\u05D4\u05D2\u05D3\u05E8 \u05D0\u05EA \u05D0\u05D9\u05DB\u05D5\u05EA \u05D1\u05E8\u05D9\u05E8\u05EA \u05D4\u05DE\u05D7\u05D3\u05DC \u05E9\u05DC \u05D4\u05D5\u05D9\u05D3\u05D0\u05D5',
+					'\u05D2\u05D5\u05D3\u05DC', '\u05E8\u05D7\u05D1', '\u05DE\u05DC\u05D0', '\u05D4\u05D2\u05D3\u05E8 \u05D0\u05EA \u05D2\u05D5\u05D3\u05DC \u05D1\u05E8\u05D9\u05E8\u05EA \u05D4\u05DE\u05D7\u05D3\u05DC \u05E9\u05DC \u05D4\u05E0\u05D2\u05DF',
+					'\u05D4\u05D2\u05D3\u05E8\u05D5\u05EA', '\u05D4\u05D2\u05D3\u05E8\u05D5\u05EA \u05E0\u05D2\u05DF', '\u05E2\u05D6\u05E8\u05D4'
 				];
 		}
 
@@ -642,7 +642,7 @@ var AutoPlay = new PlayerOption('auto_play', {
 	_muted: null,
 	_timer: null,
 
-	_states: ['ON', 'OFF', 'AUTO \u03B2'],
+	_states: ['ON', 'OFF', 'AUTO'],
 
 	_step: function() {
 		this.set((this.get() + 1) % 3);
@@ -671,30 +671,50 @@ var AutoPlay = new PlayerOption('auto_play', {
 		}
 	},
 
-	init: function() {
-		switch (this.get()) {
-			case 0: // ON
-				this._applied = true;
-				break;
+	_isAutoPlaying: function() {
+		// Flash
+		if (this._player.hasAttribute('flashvars'))
+			return (this._player.getAttribute('flashvars').match(new RegExp('autoplay=(\\d)')) || [, '1'])[1] == 1;
 
-			case 1: // OFF
-				this._applied = false;
-				break;
-
-			case 2: // AUTO
-				// Video opened in the same window.
-				if (this._focused || unsafeWindow.history.length > 1) {
-					this._applied = true;
-				}
-				// Video opened in a new window/tab.
-				else {
-					DH.on(unsafeWindow, 'focus', bind(this._onFocus, this));
-					DH.on(unsafeWindow, 'blur', bind(this._onBlur, this));
-
-					this._applied = false;
-				}
-				break;
+		// HTML5
+		try {
+			var autoplay = unsafeWindow.yt.playerConfig.args.autoplay;
+			if (autoplay !== undefined)
+				return autoplay == 1;
 		}
+		catch (e) {}
+
+		return true;
+	},
+
+	init: function() {
+		if (this._isAutoPlaying()) {
+			switch (this.get()) {
+				case 0: // ON
+					this._applied = true;
+					break;
+
+				case 1: // OFF
+					this._applied = false;
+					break;
+
+				case 2: // AUTO
+					// Video opened in the same window.
+					if (this._focused || unsafeWindow.history.length > 1) {
+						this._applied = true;
+					}
+					// Video opened in a new window/tab.
+					else {
+						DH.on(unsafeWindow, 'focus', bind(this._onFocus, this));
+						DH.on(unsafeWindow, 'blur', bind(this._onBlur, this));
+
+						this._applied = false;
+					}
+					break;
+			}
+		}
+		else
+			this._applied = true;
 	},
 
 	apply: function() {
