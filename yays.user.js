@@ -613,6 +613,10 @@ var PlayerOption = (function() {
 	PlayerOption.init = function(player) {
 		this.prototype._player = player;
 		each(instances, function(i, instance) { instance.init(); });
+
+		// FIXME: Sometimes the player reports "not started" state while the video is
+		// playing. This hack makes the state information current again.
+		player.seekTo(player.getCurrentTime(), false);
 	};
 
 	PlayerOption.prototype = {
