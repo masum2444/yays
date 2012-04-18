@@ -530,13 +530,13 @@ var JSONRequest = (function(namespace) {
 })();
 
 /*
- * Player class.
+ * Player singleton.
  */
 var Player = (function() {
 	var instance = null;
 
-	function Player(reference, callback) {
-		this._reference = reference;
+	function Player(element, callback) {
+		this._element = element;
 
 		// FIXME: Sometimes the player reports "not started" state while the video is
 		// playing. This hack makes the state information current again.
@@ -547,17 +547,17 @@ var Player = (function() {
 	}
 
 	Player.prototype = {
-		_reference: null,
+		_element: null,
 
 		api: function(/* method, arg0, arg1, ... */) {
 			var args = Array.prototype.constructor.apply([], arguments);
-			return this._reference[args.shift()].apply(this._reference, args);
+			return this._element[args.shift()].apply(this._element, args);
 		},
 
 		getArgument: function(name) {
 			// Flash
-			if (this._reference.hasAttribute('flashvars')) {
-				var match = this._reference.getAttribute('flashvars').match(new RegExp('(?:^|&)'.concat(name, '=(.+?)(?:&|$)')));
+			if (this._element.hasAttribute('flashvars')) {
+				var match = this._element.getAttribute('flashvars').match(new RegExp('(?:^|&)'.concat(name, '=(.+?)(?:&|$)')));
 				if (match)
 					return decodeURIComponent(match[1]);
 			}
@@ -580,7 +580,7 @@ var Player = (function() {
 		instance: null,
 
 		create: function(element, callback) {
-			if (instance && instance._reference === element)
+			if (instance && instance._element === element)
 				return;
 
 			var bootInterval = setInterval(function() {
