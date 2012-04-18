@@ -530,6 +530,71 @@ var JSONRequest = (function(namespace) {
 })();
 
 /*
+ * Player class.
+ */
+var Player = (function() {
+	var instance = null;
+
+	function Player(reference, callback) {
+		this._reference = reference;
+
+		// FIXME: Sometimes the player reports "not started" state while the video is
+		// playing. This hack makes the state information current again.
+		if (this.isAutoPlaying())
+			this.api('seekTo', this.api('getCurrentTime'), false);
+
+		instance = this;
+	}
+
+	Player.prototype = {
+		_reference: null,
+
+		api: function(/* method, arg0, arg1, ... */) {
+			var args = Array.prototype.constructor.apply([], arguments);
+			return this._reference[args.shift()].apply(this._reference, args);
+		},
+
+		getArgument: function(name) {
+			// Flash
+			if (this._reference.hasAttribute('flashvars')) {
+				var match = this._reference.getAttribute('flashvars').match(new RegExp('(?:^|&)'.concat(name, '=(.+?)(?:&|$)')));
+				if (match)
+					return decodeURIComponent(match[1]);
+			}
+
+			// HTML5
+			try {
+				return unsafeWindow.yt.playerConfig.args[name];
+			}
+			catch (e) {}
+
+			return;
+		},
+
+		isAutoPlaying: function() {
+			return (this.getArgument('autoplay') || '1') == 1;
+		}
+	};
+
+	return {
+		instance: null,
+
+		create: function(element, callback) {
+			if (instance && instance._reference === element)
+				return;
+
+			var bootInterval = setInterval(function() {
+				if (typeof element.getPlayerState == 'function') {
+					clearInterval(bootInterval);
+
+					callback(new Player(element));
+				}
+			}, 10);
+		}
+	};
+})();
+
+/*
  * Button class.
  */
 var Button = (function() {
@@ -613,10 +678,6 @@ var PlayerOption = (function() {
 	PlayerOption.init = function(player) {
 		this.prototype._player = player;
 		each(instances, function(i, instance) { instance.init(); });
-
-		// FIXME: Sometimes the player reports "not started" state while the video is
-		// playing. This hack makes the state information current again.
-		player.seekTo(player.getCurrentTime(), false);
 	};
 
 	PlayerOption.prototype = {
@@ -659,7 +720,7 @@ var AutoPlay = new PlayerOption('auto_play', {
 	_onFocus: function() {
 		if (this._applied && ! this._focused) {
 			this._timer = setTimeout(bind(function() {
-				this._player.playVideo();
+				this._player.api('playVideo');
 
 				this._focused = true;
 				this._timer = null;
@@ -675,24 +736,8 @@ var AutoPlay = new PlayerOption('auto_play', {
 		}
 	},
 
-	_isAutoPlaying: function() {
-		// Flash
-		if (this._player.hasAttribute('flashvars'))
-			return (this._player.getAttribute('flashvars').match(new RegExp('autoplay=(\\d)')) || [, '1'])[1] == 1;
-
-		// HTML5
-		try {
-			var autoplay = unsafeWindow.yt.playerConfig.args.autoplay;
-			if (autoplay !== undefined)
-				return autoplay == 1;
-		}
-		catch (e) {}
-
-		return true;
-	},
-
 	init: function() {
-		if (this._isAutoPlaying()) {
+		if (this._player.isAutoPlaying()) {
 			switch (this.get()) {
 				case 0: // ON
 					this._applied = true;
@@ -724,18 +769,18 @@ var AutoPlay = new PlayerOption('auto_play', {
 	apply: function() {
 		if (! this._applied) {
 			if (this._muted === null)
-				this._muted = this._player.isMuted();
+				this._muted = this._player.api('isMuted');
 
-			this._player.mute();
+			this._player.api('mute');
 
-			if (this._player.getPlayerState() == 1) {
+			if (this._player.api('getPlayerState') == 1) {
 				this._applied = true;
 
-				this._player.seekTo(0, false);
-				this._player.pauseVideo();
+				this._player.api('seekTo', 0, false);
+				this._player.api('pauseVideo');
 
 				if (! this._muted)
-					this._player.unMute();
+					this._player.api('unMute');
 
 				this._muted = null;
 			}
@@ -773,8 +818,8 @@ var VideoQuality = new PlayerOption('video_quality', {
 	},
 
 	apply: function() {
-		if (! this._applied && this._player.getPlayerState() > -1) {
-			var qualities = this._player.getAvailableQualityLevels(), quality = null;
+		if (! this._applied && this._player.api('getPlayerState') > -1) {
+			var qualities = this._player.api('getAvailableQualityLevels'), quality = null;
 
 			if (qualities.length) {
 				this._applied = true;
@@ -792,7 +837,7 @@ var VideoQuality = new PlayerOption('video_quality', {
 						return;
 				}
 
-				this._player.setPlaybackQuality(quality);
+				this._player.api('setPlaybackQuality', quality);
 			}
 		}
 	},
@@ -866,36 +911,24 @@ unsafeWindow[Meta.ns].onPlayerStateChange = function() {
 /*
  * Player ready callback.
  */
-var onPlayerReady = (function() {
-	var player = null;
+var onPlayerReady = function() {
+	var element = DH.id('movie_player') || DH.id('movie_player-flash') || DH.id('movie_player-html5');
 
-	return function() {
-		var element = DH.id('movie_player') || DH.id('movie_player-flash') || DH.id('movie_player-html5');
-
-		if (element) {
-			if (typeof XPCNativeWrapper != 'undefined' && typeof XPCNativeWrapper.unwrap == 'function') {
-				element = XPCNativeWrapper.unwrap(element);
-			}
-
-			if (player !== element) {
-				player = element;
-
-				var initInterval = setInterval(function() {
-					if (typeof player.getPlayerState == 'function') {
-						clearInterval(initInterval);
-
-						PlayerOption.init(player);
-
-						AutoPlay.apply();
-						VideoQuality.apply();
-
-						player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange');
-					}
-				}, 10);
-			}
+	if (element) {
+		if (typeof XPCNativeWrapper != 'undefined' && typeof XPCNativeWrapper.unwrap == 'function') {
+			element = XPCNativeWrapper.unwrap(element);
 		}
-	};
-})();
+
+		Player.create(element, function(player) {
+			PlayerOption.init(player);
+
+			AutoPlay.apply();
+			VideoQuality.apply();
+
+			player.api('addEventListener', 'onStateChange', Meta.ns + '.onPlayerStateChange');
+		});
+	}
+};
 
 each(['onYouTubePlayerReady', 'ytPlayerOnYouTubePlayerReady'], function(i, callback) {
 	unsafeWindow[callback] = extendFn(unsafeWindow[callback], onPlayerReady);
