@@ -533,9 +533,11 @@ var JSONRequest = (function(namespace) {
  * Player singleton.
  */
 var Player = (function() {
-	var instance = null;
+	var instance = {
+		_element: null
+	};
 
-	function Player(element, callback) {
+	function Player(element) {
 		this._element = element;
 
 		// FIXME: Sometimes the player reports "not started" state while the video is
@@ -580,8 +582,10 @@ var Player = (function() {
 		instance: null,
 
 		create: function(element, callback) {
-			if (instance && instance._element === element)
+			if (instance._element === element)
 				return;
+
+			instance._element = element;
 
 			var bootInterval = setInterval(function() {
 				if (typeof element.getPlayerState == 'function') {
