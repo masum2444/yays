@@ -579,7 +579,14 @@ var Player = (function() {
 	};
 
 	return {
-		instance: null,
+		UNSTARTED: -1,
+		PLAYING: 1,
+		PAUSED: 2,
+		BUFFERING: 3,
+
+		instance: function() {
+			return instance;
+		},
 
 		create: function(element, callback) {
 			if (instance._element === element)
@@ -772,12 +779,12 @@ var AutoPlay = new PlayerOption('auto_play', {
 
 	apply: function() {
 		if (! this._applied) {
-			if (this._muted === null)
+			if (this._muted === null) {
 				this._muted = this._player.api('isMuted');
+				this._player.api('mute');
+			}
 
-			this._player.api('mute');
-
-			if (this._player.api('getPlayerState') == 1) {
+			if (this._player.api('getPlayerState') == Player.PLAYING) {
 				this._applied = true;
 
 				this._player.api('seekTo', 0, false);
@@ -804,6 +811,7 @@ var AutoPlay = new PlayerOption('auto_play', {
  */
 var VideoQuality = new PlayerOption('video_quality', {
 	_applied: false,
+	_muted: null,
 
 	_states: ['AUTO', 'LOW', 'MEDIUM', 'HIGH', 'HIGHEST'],
 
@@ -822,26 +830,39 @@ var VideoQuality = new PlayerOption('video_quality', {
 	},
 
 	apply: function() {
-		if (! this._applied && this._player.api('getPlayerState') > -1) {
-			var qualities = this._player.api('getAvailableQualityLevels'), quality = null;
+		if (! this._applied) {
+			if (this._player.api('getPlayerState') > Player.UNSTARTED) {
+				var qualities = this._player.api('getAvailableQualityLevels'), quality = null;
 
-			if (qualities.length) {
-				this._applied = true;
+				if (qualities.length) {
+					this._applied = true;
 
-				switch (this.get()) {
-					case 1: // LOW
-						quality = qualities.pop(); break;
-					case 2: // MEDIUM
-						while (this._qualities[quality = qualities.shift()] > this._qualities.large); break;
-					case 3: // HIGH
-						while (this._qualities[quality = qualities.shift()] > this._qualities.hd720); break;
-					case 4: // HIGHEST
-						quality = qualities.shift(); break;
-					default:
-						return;
+					switch (this.get()) {
+						case 1: // LOW
+							quality = qualities.pop(); break;
+						case 2: // MEDIUM
+							while (this._qualities[quality = qualities.shift()] > this._qualities.large); break;
+						case 3: // HIGH
+							while (this._qualities[quality = qualities.shift()] > this._qualities.hd720); break;
+						case 4: // HIGHEST
+							quality = qualities.shift(); break;
+						default:
+							return;
+					}
+
+					this._muted = this._player.api('isMuted');
+					this._player.api('mute');
+
+					this._player.api('setPlaybackQuality', quality);
 				}
+			}
+		}
+		else {
+			if (this._player.api('getPlayerState') != Player.BUFFERING) {
+				if (this._muted === false)
+					this._player.api('unMute');
 
-				this._player.api('setPlaybackQuality', quality);
+				this._muted = null;
 			}
 		}
 	},
