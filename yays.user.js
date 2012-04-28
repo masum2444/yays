@@ -539,9 +539,10 @@ var Player = (function() {
 
 	function Player(element) {
 		this._element = element;
+		this._muted = Number(this.api('isMuted'));
 
-		// FIXME: Sometimes the player reports "not started" state while the video is
-		// playing. This hack makes the state information current again.
+		// FIXME: Sometimes the player reports unstarted state even if the video was
+		// being started. This hack fix this problem.
 		if (this.isAutoPlaying())
 			this.api('seekTo', this.api('getCurrentTime'), false);
 
@@ -550,6 +551,7 @@ var Player = (function() {
 
 	Player.prototype = {
 		_element: null,
+		_muted: 0,
 
 		api: function(/* method, arg0, arg1, ... */) {
 			var args = Array.prototype.constructor.apply([], arguments);
@@ -563,18 +565,29 @@ var Player = (function() {
 				if (match)
 					return decodeURIComponent(match[1]);
 			}
-
 			// HTML5
-			try {
-				return unsafeWindow.yt.playerConfig.args[name];
+			else {
+				try {
+					return unsafeWindow.yt.playerConfig.args[name];
+				}
+				catch (e) {}
 			}
-			catch (e) {}
 
 			return;
 		},
 
 		isAutoPlaying: function() {
 			return (this.getArgument('autoplay') || '1') == 1;
+		},
+
+		mute: function() {
+			if (! this._muted++)
+				this.api('mute');
+		},
+
+		unMute: function() {
+			if (! --this._muted)
+				this.api('unMute');
 		}
 	};
 
@@ -715,7 +728,7 @@ var PlayerOption = (function() {
 var AutoPlay = new PlayerOption('auto_play', {
 	_applied: false,
 	_focused: false,
-	_muted: null,
+	_muted: false,
 	_timer: null,
 
 	_states: ['ON', 'OFF', 'AUTO'],
@@ -779,9 +792,9 @@ var AutoPlay = new PlayerOption('auto_play', {
 
 	apply: function() {
 		if (! this._applied) {
-			if (this._muted === null) {
-				this._muted = this._player.api('isMuted');
-				this._player.api('mute');
+			if (! this._muted) {
+				this._player.mute();
+				this._muted = true;
 			}
 
 			if (this._player.api('getPlayerState') == Player.PLAYING) {
@@ -790,10 +803,8 @@ var AutoPlay = new PlayerOption('auto_play', {
 				this._player.api('seekTo', 0, false);
 				this._player.api('pauseVideo');
 
-				if (! this._muted)
-					this._player.api('unMute');
-
-				this._muted = null;
+				this._player.unMute();
+				this._muted = false;
 			}
 		}
 	},
@@ -811,7 +822,7 @@ var AutoPlay = new PlayerOption('auto_play', {
  */
 var VideoQuality = new PlayerOption('video_quality', {
 	_applied: false,
-	_muted: null,
+	_muted: false,
 
 	_states: ['AUTO', 'LOW', 'MEDIUM', 'HIGH', 'HIGHEST'],
 
@@ -850,8 +861,8 @@ var VideoQuality = new PlayerOption('video_quality', {
 							return;
 					}
 
-					this._muted = this._player.api('isMuted');
-					this._player.api('mute');
+					this._player.mute();
+					this._muted = true;
 
 					this._player.api('setPlaybackQuality', quality);
 				}
@@ -859,10 +870,10 @@ var VideoQuality = new PlayerOption('video_quality', {
 		}
 		else {
 			if (this._player.api('getPlayerState') != Player.BUFFERING) {
-				if (this._muted === false)
-					this._player.api('unMute');
-
-				this._muted = null;
+				if (this._muted) {
+					this._player.unMute();
+					this._muted = false;
+				}
 			}
 		}
 	},
