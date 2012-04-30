@@ -13,7 +13,7 @@
 function YAYS(unsafeWindow) {
 
 /*
- * Meta data.
+ * Meta.
  */
 var Meta = {
 	title:       'Yays! (Yet Another Youtube Script)',
@@ -234,7 +234,7 @@ var DH = {
 			case '[object Object]':
 				def = copy(def, {tag: 'div', style: null, attributes: null, listeners: null, children: null});
 
-				var node = this.element(def.tag);
+				var node = this.createElement(def.tag);
 
 				if (def.style !== null)
 					this.style(node, def.style);
@@ -251,7 +251,7 @@ var DH = {
 				return node;
 
 			case '[object String]':
-				return this.textNode(def);
+				return this.createTextNode(def);
 
 			default:
 				return def;
@@ -259,8 +259,9 @@ var DH = {
 	},
 
 	id: bind(unsafeWindow.document.getElementById, unsafeWindow.document),
-	element: bind(unsafeWindow.document.createElement, unsafeWindow.document),
-	textNode: bind(unsafeWindow.document.createTextNode, unsafeWindow.document),
+	createElement: bind(unsafeWindow.document.createElement, unsafeWindow.document),
+	createEvent: bind(unsafeWindow.document.createEvent, unsafeWindow.document),
+	createTextNode: bind(unsafeWindow.document.createTextNode, unsafeWindow.document),
 
 	style: function(node, style) {
 		copy(style, node.style);
@@ -331,6 +332,14 @@ var DH = {
 
 	un: function(node, type, listener) {
 		node.removeEventListener(type, listener, false);
+	},
+
+	unwrap: function(element) {
+		if (typeof XPCNativeWrapper != 'undefined' && typeof XPCNativeWrapper.unwrap == 'function') {
+			return XPCNativeWrapper.unwrap(element);
+		}
+
+		return element;
 	}
 };
 
@@ -539,19 +548,35 @@ var Player = (function() {
 
 	function Player(element) {
 		this._element = element;
-		this._muted = Number(this.api('isMuted'));
-
-		// FIXME: Sometimes the player reports unstarted state even if the video was
-		// being started. This hack fix this problem.
-		if (this.isAutoPlaying())
-			this.api('seekTo', this.api('getCurrentTime'), false);
-
-		instance = this;
+		this._boot();
 	}
 
 	Player.prototype = {
 		_element: null,
 		_muted: 0,
+
+		_boot: function() {
+			if (typeof this._element.getPlayerState == 'function') {
+				this._onApiReady();
+
+				var apiReady = DH.createEvent('Event');
+				apiReady.initEvent('apiready', false, false);
+				apiReady.player = this;
+
+				this._element.dispatchEvent(apiReady);
+			}
+			else
+				setTimeout(bind(this._boot, this), 10);
+		},
+
+		_onApiReady: function() {
+			this._muted = Number(this.api('isMuted'));
+
+			// FIXME: Sometimes the player reports unstarted state even if the video was
+			// being started. This hack fix this problem.
+			if (this.isAutoPlaying())
+				this.api('seekTo', this.api('getCurrentTime'), false);
+		},
 
 		api: function(/* method, arg0, arg1, ... */) {
 			var args = Array.prototype.constructor.apply([], arguments);
@@ -605,15 +630,10 @@ var Player = (function() {
 			if (instance._element === element)
 				return;
 
-			instance._element = element;
+			// The player overrides the default addEventListener method.
+			DH.unwrap(unsafeWindow.HTMLElement).prototype.addEventListener.call(element, 'apiready', callback, false);
 
-			var bootInterval = setInterval(function() {
-				if (typeof element.getPlayerState == 'function') {
-					clearInterval(bootInterval);
-
-					callback(new Player(element));
-				}
-			}, 10);
+			instance = new Player(element);
 		}
 	};
 })();
@@ -951,17 +971,13 @@ var onPlayerReady = function() {
 	var element = DH.id('movie_player') || DH.id('movie_player-flash') || DH.id('movie_player-html5');
 
 	if (element) {
-		if (typeof XPCNativeWrapper != 'undefined' && typeof XPCNativeWrapper.unwrap == 'function') {
-			element = XPCNativeWrapper.unwrap(element);
-		}
-
-		Player.create(element, function(player) {
-			PlayerOption.init(player);
+		Player.create(DH.unwrap(element), function(e) {
+			PlayerOption.init(e.player);
 
 			AutoPlay.apply();
 			VideoQuality.apply();
 
-			player.api('addEventListener', 'onStateChange', Meta.ns + '.onPlayerStateChange');
+			e.player.api('addEventListener', 'onStateChange', Meta.ns + '.onPlayerStateChange');
 		});
 	}
 };
