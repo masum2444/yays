@@ -556,7 +556,9 @@ var Player = (function() {
 		_muted: 0,
 
 		_boot: function() {
-			if (typeof this._element.getPlayerState == 'function') {
+			if (typeof this._element.getApiInterface == 'function') {
+				this._apiInterface();
+
 				this._onApiReady();
 
 				var apiReady = DH.createEvent('Event');
@@ -569,18 +571,20 @@ var Player = (function() {
 				setTimeout(bind(this._boot, this), 10);
 		},
 
+		_apiInterface: function() {
+			each(this._element.getApiInterface(), function(i, method) {
+				if (! Player.prototype.hasOwnProperty(method))
+					this[method] = bind(this._element[method], this._element);
+			}, this);
+		},
+
 		_onApiReady: function() {
-			this._muted = Number(this.api('isMuted'));
+			this._muted = Number(this.isMuted());
 
 			// FIXME: Sometimes the player reports unstarted state even if the video was
 			// being started. This hack fix this problem.
 			if (this.isAutoPlaying())
-				this.api('seekTo', this.api('getCurrentTime'), false);
-		},
-
-		api: function(/* method, arg0, arg1, ... */) {
-			var args = Array.prototype.constructor.apply([], arguments);
-			return this._element[args.shift()].apply(this._element, args);
+				this.seekTo(this.getCurrentTime(), false);
 		},
 
 		getArgument: function(name) {
@@ -607,12 +611,12 @@ var Player = (function() {
 
 		mute: function() {
 			if (! this._muted++)
-				this.api('mute');
+				this._element.mute();
 		},
 
 		unMute: function() {
 			if (! --this._muted)
-				this.api('unMute');
+				this._element.unMute();
 		}
 	};
 
@@ -764,7 +768,7 @@ var AutoPlay = new PlayerOption('auto_play', {
 	_onFocus: function() {
 		if (this._applied && ! this._focused) {
 			this._timer = setTimeout(bind(function() {
-				this._player.api('playVideo');
+				this._player.playVideo();
 
 				this._focused = true;
 				this._timer = null;
@@ -817,11 +821,11 @@ var AutoPlay = new PlayerOption('auto_play', {
 				this._muted = true;
 			}
 
-			if (this._player.api('getPlayerState') == Player.PLAYING) {
+			if (this._player.getPlayerState() == Player.PLAYING) {
 				this._applied = true;
 
-				this._player.api('seekTo', 0, false);
-				this._player.api('pauseVideo');
+				this._player.seekTo(0, false);
+				this._player.pauseVideo();
 
 				this._player.unMute();
 				this._muted = false;
@@ -862,8 +866,8 @@ var VideoQuality = new PlayerOption('video_quality', {
 
 	apply: function() {
 		if (! this._applied) {
-			if (this._player.api('getPlayerState') > Player.UNSTARTED) {
-				var qualities = this._player.api('getAvailableQualityLevels'), quality = null;
+			if (this._player.getPlayerState() > Player.UNSTARTED) {
+				var qualities = this._player.getAvailableQualityLevels(), quality = null;
 
 				if (qualities.length) {
 					this._applied = true;
@@ -884,12 +888,12 @@ var VideoQuality = new PlayerOption('video_quality', {
 					this._player.mute();
 					this._muted = true;
 
-					this._player.api('setPlaybackQuality', quality);
+					this._player.setPlaybackQuality(quality);
 				}
 			}
 		}
 		else {
-			if (this._player.api('getPlayerState') != Player.BUFFERING) {
+			if (this._player.getPlayerState() != Player.BUFFERING) {
 				if (this._muted) {
 					this._player.unMute();
 					this._muted = false;
@@ -977,7 +981,7 @@ var onPlayerReady = function() {
 			AutoPlay.apply();
 			VideoQuality.apply();
 
-			e.player.api('addEventListener', 'onStateChange', Meta.ns + '.onPlayerStateChange');
+			e.player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange');
 		});
 	}
 };
