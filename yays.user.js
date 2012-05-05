@@ -824,7 +824,7 @@ var AutoPlay = new PlayerOption('auto_play', {
 			if (this._player.getPlayerState() == Player.PLAYING) {
 				this._applied = true;
 
-				this._player.seekTo(0, false);
+				this._player.seekTo(0, true);
 				this._player.pauseVideo();
 
 				this._player.unMute();
