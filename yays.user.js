@@ -335,9 +335,8 @@ var DH = {
 	},
 
 	unwrap: function(element) {
-		if (typeof XPCNativeWrapper != 'undefined' && typeof XPCNativeWrapper.unwrap == 'function') {
+		if (typeof XPCNativeWrapper != 'undefined' && typeof XPCNativeWrapper.unwrap == 'function')
 			return XPCNativeWrapper.unwrap(element);
-		}
 
 		return element;
 	}
@@ -410,7 +409,7 @@ var Config = (function(namespace) {
 var JSONRequest = (function(namespace) {
 	var Request = null;
 
-	// Greasemonkey XHR
+	// XHR
 	if (typeof GM_xmlhttpRequest == 'function') {
 		Request = function(url, parameters, callback) {
 			this._callback = callback;
@@ -428,7 +427,7 @@ var JSONRequest = (function(namespace) {
 			}
 		};
 	}
-	// Script tag
+	// JSONP
 	else {
 		Request = (function() {
 			var requests = [], requestsNs = 'jsonp';
@@ -635,7 +634,7 @@ var Player = (function() {
 				return;
 
 			// The player overrides the default addEventListener method.
-			DH.unwrap(unsafeWindow.HTMLElement).prototype.addEventListener.call(element, 'apiready', callback, false);
+			DH.unwrap(HTMLElement).prototype.addEventListener.call(element, 'apiready', callback, false);
 
 			instance = new Player(element);
 		}
@@ -1073,16 +1072,18 @@ qVmH8wAAAABJRU5ErkJggg=='},
 
 } // YAYS
 
-// Firefox
-if (new RegExp('Firefox/\\d', 'i').test(navigator.userAgent)) {
-	YAYS(unsafeWindow);
-}
-// Chrome, Opera, Safari
-else {
-	var node = document.createElement('script');
-	node.setAttribute('type', 'text/javascript');
-	node.text = '('.concat(YAYS.toString(), ')(window);');
+if (top === self) {
+	// Firefox
+	if (new RegExp('Firefox/\\d', 'i').test(navigator.userAgent)) {
+		YAYS(unsafeWindow);
+	}
+	// Chrome, Opera, Safari
+	else {
+		var node = document.createElement('script');
+		node.setAttribute('type', 'text/javascript');
+		node.text = '('.concat(YAYS.toString(), ')(window);');
 
-	document.body.appendChild(node);
-	document.body.removeChild(node);
+		document.body.appendChild(node);
+		document.body.removeChild(node);
+	}
 }
