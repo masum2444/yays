@@ -581,7 +581,7 @@ var Player = (function() {
 			this._muted = Number(this.isMuted());
 
 			// FIXME: Sometimes the player reports unstarted state even if the video was
-			// being started. This hack fix this problem.
+			// being started. This hack fix this problem somehow.
 			if (this.isAutoPlaying())
 				this.seekTo(this.getCurrentTime(), false);
 		},
@@ -606,6 +606,14 @@ var Player = (function() {
 
 		isAutoPlaying: function() {
 			return (this.getArgument('autoplay') || '1') == 1;
+		},
+
+		// FIXME: Suppress random exception.
+		seekTo: function() {
+			try {
+				this._element.seekTo.apply(this._element, arguments);
+			}
+			catch (e) {}
 		},
 
 		mute: function() {
