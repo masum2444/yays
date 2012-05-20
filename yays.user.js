@@ -112,7 +112,7 @@ function parseJSON(data) {
 }
 
 function debug() {
-	unsafeWindow.console.debug.apply(unsafeWindow.console, Array.prototype.concat.apply(['yays: '], arguments));
+	unsafeWindow.console.debug.apply(unsafeWindow.console, Array.prototype.concat.apply(['[yays]'], arguments));
 }
 
 /*
@@ -970,7 +970,7 @@ unsafeWindow[Meta.ns].onPlayerStateChange = function() {
 /*
  * Player ready callback.
  */
-var onPlayerReady = function() {
+function onPlayerReady() {
 	var element = DH.id('movie_player') || DH.id('movie_player-flash') || DH.id('movie_player-html5');
 
 	if (element) {
@@ -983,7 +983,7 @@ var onPlayerReady = function() {
 			e.player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange');
 		});
 	}
-};
+}
 
 each(['onYouTubePlayerReady', 'ytPlayerOnYouTubePlayerReady'], function(i, callback) {
 	unsafeWindow[callback] = extendFn(unsafeWindow[callback], onPlayerReady);
