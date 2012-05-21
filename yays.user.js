@@ -853,6 +853,7 @@ var AutoPlay = new PlayerOption('auto_play', {
  */
 var VideoQuality = new PlayerOption('video_quality', {
 	_applied: false,
+	_muted: false,
 
 	_states: ['AUTO', 'LOW', 'MEDIUM', 'HIGH', 'HIGHEST'],
 
@@ -891,7 +892,20 @@ var VideoQuality = new PlayerOption('video_quality', {
 							return;
 					}
 
-					this._player.setPlaybackQuality(quality);
+					if (quality != this._player.getPlaybackQuality()) {
+						this._player.mute();
+						this._muted = true;
+
+						this._player.setPlaybackQuality(quality);
+					}
+				}
+			}
+		}
+		else {
+			if (this._player.getPlayerState() != Player.BUFFERING) {
+				if (this._muted) {
+					this._player.unMute();
+					this._muted = false;
 				}
 			}
 		}
