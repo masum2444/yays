@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Yays! (Yet Another Youtube Script)
 // @description Control autoplaying and playback quality on YouTube.
-// @version     1.5.6
+// @version     1.5.6.1
 // @author      eugenox_gmail_com
 // @license     (CC) BY-SA-3.0 http://creativecommons.org/licenses/by-sa/3.0/
 // @namespace   youtube
@@ -17,8 +17,8 @@ function YAYS(unsafeWindow) {
  */
 var Meta = {
 	title:       'Yays! (Yet Another Youtube Script)',
-	version:     '1.5.6',
-	releasedate: 'May 20, 2012',
+	version:     '1.5.6.1',
+	releasedate: 'May 21, 2012',
 	site:        'http://eugenox.appspot.com/script/yays',
 	ns:          'yays'
 };
@@ -853,7 +853,6 @@ var AutoPlay = new PlayerOption('auto_play', {
  */
 var VideoQuality = new PlayerOption('video_quality', {
 	_applied: false,
-	_muted: false,
 
 	_states: ['AUTO', 'LOW', 'MEDIUM', 'HIGH', 'HIGHEST'],
 
@@ -892,18 +891,7 @@ var VideoQuality = new PlayerOption('video_quality', {
 							return;
 					}
 
-					this._player.mute();
-					this._muted = true;
-
 					this._player.setPlaybackQuality(quality);
-				}
-			}
-		}
-		else {
-			if (this._player.getPlayerState() != Player.BUFFERING) {
-				if (this._muted) {
-					this._player.unMute();
-					this._muted = false;
 				}
 			}
 		}
