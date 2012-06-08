@@ -33,7 +33,7 @@ unsafeWindow[Meta.ns] = {};
  */
 function each(iterable, callback, scope) {
 	if (iterable.length) {
-		for (var i = 0; i < iterable.length; i++)
+		for (var i = 0, len = iterable.length; i < len; ++i)
 			callback.call(scope, i, iterable[i]);
 	}
 	else {
@@ -53,11 +53,11 @@ function map() {
 		var i = 0, len = Math.max.apply(Math, map(function(arg) { return arg.length; }, args));
 		function getter(arg) { return arg[i]; }
 
-		for (; i < len; i++)
+		for (; i < len; ++i)
 			buffer.push(callback.apply(null, map(getter, args)));
 	}
 	else {
-		for (var i = 0, arg = args[0], len = arg.length; i < len; i++)
+		for (var i = 0, arg = args[0], len = arg.length; i < len; ++i)
 			buffer.push(callback(arg[i]));
 	}
 
@@ -1008,7 +1008,7 @@ if (DH.id('watch-actions') !== null) {
 	DH.insertAfter(DH.id('watch-flag'), [' ', {
 		tag: 'button',
 		style: {padding: '0 4px'},
-		attributes: {id: 'yays_settings-button', type: 'button', 'class': 'yt-uix-button yt-uix-button-default yt-uix-tooltip yt-uix-tooltip-reverse', title: _('Player settings')},
+		attributes: {id: 'yays_settings-button', type: 'button', role: 'button', 'class': 'yt-uix-button yt-uix-button-default yt-uix-tooltip yt-uix-tooltip-reverse yt-uix-button-empty', title: _('Player settings')},
 		children: {
 				tag: 'img',
 				attributes: {src: 'data:image/png;base64,\
@@ -1051,6 +1051,12 @@ csFg0+JttI0AAAAASUVORK5CYII='}
 					DH.addClass(panel, 'hid');
 					DH.style(panel, {display: 'none'});
 				}
+
+				each(DH.id('watch-actions').getElementsByTagName('button'), function(i, action) {
+					DH.delClass(action, 'active');
+				});
+
+				DH.addClass(DH.id('yays_settings-button'), 'active');
 			}
 		}
 	}]);
