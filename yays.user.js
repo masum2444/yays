@@ -1026,37 +1026,33 @@ csFg0+JttI0AAAAASUVORK5CYII='}
 					container = DH.id('watch-actions-area-container'),
 					panel = DH.id('yays_settings-panel');
 
-				function isHidden(node) {
-					return node.nodeType != 1 || DH.hasClass(node, 'hid');
+				function setVisible(node, visible) {
+					DH[visible ? 'delClass' : 'addClass'](node, 'hid');
+					DH.style(node, {display: visible ? 'block' : 'none'});
 				}
 
-				if (isHidden(panel) || isHidden(container)) {
-					DH.delClass(container, 'hid');
-					DH.style(container, {display: 'block'});
+				if (DH.hasClass(panel, 'hid') || DH.hasClass(container, 'hid')) {
+					each(DH.id('watch-actions').getElementsByTagName('button'), function(i, action) {
+						DH.delClass(action, 'active');
+					});
+
+					DH.addClass(DH.id('yays_settings-button'), 'active');
 
 					each(DH.id('watch-actions-area').childNodes, function(i, node) {
-						if (! isHidden(node) && DH.hasClass(node, 'watch-actions-panel')) {
-							DH.addClass(node, 'hid');
-							DH.style(node, {display: 'none'});
+						if (node.nodeType == 1 && DH.hasClass(node, 'watch-actions-panel')) {
+							setVisible(node, false);
 						}
 					});
 
-					DH.delClass(panel, 'hid');
-					DH.style(panel, {display: 'block'});
+					setVisible(panel, true);
+					setVisible(container, true);
 				}
 				else {
-					DH.addClass(container, 'hid');
-					DH.style(container, {display: 'none'});
+					DH.delClass(DH.id('yays_settings-button'), 'active');
 
-					DH.addClass(panel, 'hid');
-					DH.style(panel, {display: 'none'});
+					setVisible(container, false);
+					setVisible(panel, false);
 				}
-
-				each(DH.id('watch-actions').getElementsByTagName('button'), function(i, action) {
-					DH.delClass(action, 'active');
-				});
-
-				DH.addClass(DH.id('yays_settings-button'), 'active');
 			}
 		}
 	}]);
