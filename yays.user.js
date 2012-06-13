@@ -854,6 +854,7 @@ var AutoPlay = new PlayerOption('auto_play', {
 var VideoQuality = new PlayerOption('video_quality', {
 	_applied: false,
 	_muted: false,
+	_buffered: false,
 
 	_states: ['AUTO', 'LOW', 'MEDIUM', 'HIGH', 'HIGHEST'],
 
@@ -873,8 +874,13 @@ var VideoQuality = new PlayerOption('video_quality', {
 
 	apply: function() {
 		if (! this._applied) {
+			if (! this._muted) {
+				this._player.mute();
+				this._muted = true;
+			}
+
 			if (this._player.getPlayerState() > Player.UNSTARTED) {
-				var qualities = this._player.getAvailableQualityLevels(), quality = null;
+				var qualities = this._player.getAvailableQualityLevels(), quality;
 
 				if (qualities.length) {
 					this._applied = true;
@@ -889,24 +895,40 @@ var VideoQuality = new PlayerOption('video_quality', {
 						case 4: // HIGHEST
 							quality = qualities.shift(); break;
 						default:
-							return;
+							quality = null;
 					}
 
-					if (quality != this._player.getPlaybackQuality()) {
-						this._player.mute();
-						this._muted = true;
+					if (quality && quality != this._player.getPlaybackQuality()) {
+						this._buffered = false;
 
+						this._player.seekTo(0, true);
 						this._player.setPlaybackQuality(quality);
+
+						return;
 					}
 				}
 			}
+			else
+				return;
+
+			this._player.unMute();
+			this._muted = false;
 		}
 		else {
-			if (this._player.getPlayerState() != Player.BUFFERING) {
-				if (this._muted) {
-					this._player.unMute();
-					this._muted = false;
-				}
+			switch (this._player.getPlayerState()) {
+				case Player.BUFFERING:
+					this._buffered = true;
+					break;
+
+				case Player.PLAYING:
+					this._buffered = true;
+					// no break;
+
+				default:
+					if (this._buffered && this._muted) {
+						this._player.unMute();
+						this._muted = false;
+					}
 			}
 		}
 	},
