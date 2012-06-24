@@ -1107,11 +1107,9 @@ qVmH8wAAAABJRU5ErkJggg=='},
 } // YAYS
 
 if (top === self) {
-	// Firefox
-	if (new RegExp('Firefox/\\d', 'i').test(navigator.userAgent)) {
+	if (typeof unsafeWindow != 'undefined') {
 		YAYS(unsafeWindow);
 	}
-	// Chrome, Opera, Safari
 	else {
 		var node = document.createElement('script');
 		node.setAttribute('type', 'text/javascript');
