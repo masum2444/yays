@@ -608,7 +608,7 @@ var Player = (function() {
 			return (this.getArgument('autoplay') || '1') == 1;
 		},
 
-		// FIXME: Suppress random exception.
+		// FIXME: Suppressing random exception.
 		seekTo: function() {
 			try {
 				this._element.seekTo.apply(this._element, arguments);
@@ -791,6 +791,12 @@ var AutoPlay = new PlayerOption('auto_play', {
 		}
 	},
 
+	// @see http://www.w3.org/TR/page-visibility/
+	_isVisible: function() {
+		var doc = unsafeWindow.document;
+		return doc.hidden === false || doc.mozHidden === false || doc.webkitHidden === false;
+	},
+
 	init: function() {
 		if (this._player.isAutoPlaying()) {
 			switch (this.get()) {
@@ -804,7 +810,7 @@ var AutoPlay = new PlayerOption('auto_play', {
 
 				case 2: // AUTO
 					// Video opened in the same window.
-					if (this._focused || unsafeWindow.history.length > 1) {
+					if (this._focused || this._isVisible() || unsafeWindow.history.length > 1) {
 						this._applied = true;
 					}
 					// Video opened in a new window/tab.
@@ -904,6 +910,7 @@ var VideoQuality = new PlayerOption('video_quality', {
 						this._player.seekTo(0, true);
 						this._player.setPlaybackQuality(quality);
 
+						// Sometimes buffering event doesn't occur after the quality has changed.
 						this.apply();
 
 						return;
