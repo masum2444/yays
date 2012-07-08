@@ -904,6 +904,8 @@ var VideoQuality = new PlayerOption('video_quality', {
 						this._player.seekTo(0, true);
 						this._player.setPlaybackQuality(quality);
 
+						this.apply();
+
 						return;
 					}
 				}
@@ -972,6 +974,7 @@ var PlayerSize = new PlayerOption('player_size', {
 				// no break;
 
 			case 1: // WIDE
+				// FIXME: Non API call.
 				unsafeWindow.yt.net.cookies.set('wide', '1');
 
 				DH.addClass(DH.id('page'), 'watch-wide');
