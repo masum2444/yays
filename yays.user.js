@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Yays! (Yet Another Youtube Script)
 // @description Control autoplaying and playback quality on YouTube.
-// @version     1.5.6.1
+// @version     1.5.7
 // @author      eugenox_gmail_com
 // @license     (CC) BY-SA-3.0 http://creativecommons.org/licenses/by-sa/3.0/
 // @namespace   youtube
@@ -17,8 +17,8 @@ function YAYS(unsafeWindow) {
  */
 var Meta = {
 	title:       'Yays! (Yet Another Youtube Script)',
-	version:     '1.5.6.1',
-	releasedate: 'May 21, 2012',
+	version:     '1.5.7',
+	releasedate: 'Jul 22, 2012',
 	site:        'http://eugenox.appspot.com/script/yays',
 	ns:          'yays'
 };
