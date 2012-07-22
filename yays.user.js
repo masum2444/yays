@@ -1117,8 +1117,8 @@ qVmH8wAAAABJRU5ErkJggg=='},
 
 } // YAYS
 
-if (top === self) {
-	if (typeof unsafeWindow != 'undefined') {
+if (window.top === window.self) {
+	if (this['unsafeWindow']) { // Look for Greasemonkey.
 		YAYS(unsafeWindow);
 	}
 	else {
