@@ -131,7 +131,7 @@ var _ = (function() {
 			// hungarian - magyar
 			case 'hu':
 				return [
-					'Automatikus lej\xE1tsz\xE1s', 'BE', 'KI', 'AUTO', 'Automatikus lej\xE1tsz\xE1s ki-, bekapcsol\xE1sa',
+					'Automatikus lej\xE1tsz\xE1s', 'BE', 'KI', 'AUTO', 'Automatikus lej\xE1tsz\xE1s ki-be kapcsol\xE1sa',
 					'Min\u0151s\xE9g', 'AUTO', 'ALACSONY', 'K\xD6ZEPES', 'MAGAS', 'LEGMAGASABB', 'Vide\xF3k alap\xE9rtelmezett felbont\xE1sa',
 					'M\xE9ret', 'SZ\xC9LES', 'ILLESZTETT', 'Lej\xE1tsz\xF3 alap\xE9rtelmezett m\xE9rete',
 					'Be\xE1ll\xEDt\xE1sok', 'Lej\xE1tsz\xF3 be\xE1ll\xEDt\xE1sai', 'S\xFAg\xF3'
@@ -616,6 +616,14 @@ var Player = (function() {
 			catch (e) {}
 		},
 
+		seekToStart: function(ahead) {
+			var
+				code = (location.hash + location.search).match(/\bt=(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?/) || new Array(4),
+				seconds = (Number(code[1]) || 0) * 3600 + (Number(code[2]) || 0) * 60 + (Number(code[3]) || 0);
+
+			this.seekTo(seconds, ahead);
+		},
+
 		mute: function() {
 			if (! this._muted++)
 				this._element.mute();
@@ -837,7 +845,7 @@ var AutoPlay = new PlayerOption('auto_play', {
 			if (this._player.getPlayerState() == Player.PLAYING) {
 				this._applied = true;
 
-				this._player.seekTo(0, true);
+				this._player.seekToStart(true);
 				this._player.pauseVideo();
 
 				this._player.unMute();
@@ -907,7 +915,7 @@ var VideoQuality = new PlayerOption('video_quality', {
 					if (quality && quality != this._player.getPlaybackQuality()) {
 						this._buffered = false;
 
-						this._player.seekTo(0, true);
+						this._player.seekToStart(true);
 						this._player.setPlaybackQuality(quality);
 
 						// Sometimes buffering event doesn't occur after the quality has changed.
