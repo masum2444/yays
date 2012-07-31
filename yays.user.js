@@ -1,13 +1,16 @@
 // ==UserScript==
 // @name        Yays! (Yet Another Youtube Script)
+// @namespace   youtube
 // @description Control autoplaying and playback quality on YouTube.
 // @version     1.5.7
 // @author      eugenox_gmail_com
 // @license     (CC) BY-SA-3.0 http://creativecommons.org/licenses/by-sa/3.0/
-// @namespace   youtube
 // @include     http*://*.youtube.com/*
 // @include     http*://youtube.com/*
 // @run-at      document-end
+// @noframes
+// @homepageURL http://eugenox.appspot.com/script/yays
+// @updateURL   https://eugenox.appspot.com/blob/yays/yays.meta.js
 // ==/UserScript==
 
 function YAYS(unsafeWindow) {
@@ -109,6 +112,14 @@ function parseJSON(data) {
 		return JSON.parse(data);
 
 	return eval('('.concat(data, ')'));
+}
+
+function timeoutProxy(callback) {
+	return function() {
+		setTimeout(function() {
+			callback.apply(null, arguments);
+		}, 0);
+	};
 }
 
 function debug() {
@@ -348,22 +359,17 @@ var DH = {
 var Config = (function(namespace) {
 	// Greasemonkey compatible
 	if (typeof GM_listValues == 'function') {
-		// Accessing GM_getValue from unsafeWindow is not allowed.
-		var GM_values = combine(GM_listValues(), map(GM_getValue, GM_listValues()));
-
 		return {
 			get: function(key) {
-				return GM_values[key] || null;
+				return GM_getValue(key);
 			},
 
 			set: function(key, value) {
 				GM_setValue(key, value);
-				GM_values[key] = value;
 			},
 
 			del: function(key) {
 				GM_deleteValue(key);
-				delete GM_values[key];
 			}
 		};
 	}
@@ -703,22 +709,22 @@ var Button = (function() {
 		_indicator: null,
 		_node: null,
 
-		_refresh: function() {
-			this._indicator.data = this.refresh();
+		_onClick: function() {
+			this.handler();
+			this.refresh();
 		},
 
-		_onClick: function(event) {
-			this.handler();
-			this._refresh();
+		refresh: function() {
+			this._indicator.data = this.display();
 		},
 
 		render: function() {
-			this._refresh();
+			this.refresh();
 			return this._node;
 		},
 
 		handler: emptyFn,
-		refresh: emptyFn
+		display: emptyFn
 	};
 
 	return Button;
@@ -857,7 +863,7 @@ var AutoPlay = new PlayerOption('auto_play', {
 	createButton: function() {
 		return new Button(_('Auto play'), _('Toggle video autoplay'), {
 			handler: bind(this._step, this),
-			refresh: bind(this._indicator, this)
+			display: bind(this._indicator, this)
 		});
 	}
 });
@@ -953,7 +959,7 @@ var VideoQuality = new PlayerOption('video_quality', {
 	createButton: function() {
 		return new Button(_('Quality'), _('Set default video quality'), {
 			handler: bind(this._step, this),
-			refresh: bind(this._indicator, this)
+			display: bind(this._indicator, this)
 		});
 	}
 });
@@ -1004,7 +1010,7 @@ var PlayerSize = new PlayerOption('player_size', {
 	createButton: function() {
 		return new Button(_('Size'), _('Set default player size'), {
 			handler: bind(this._step, this),
-			refresh: bind(this._indicator, this)
+			display: bind(this._indicator, this)
 		});
 	}
 });
@@ -1012,15 +1018,15 @@ var PlayerSize = new PlayerOption('player_size', {
 /*
  * Player state change callback.
  */
-unsafeWindow[Meta.ns].onPlayerStateChange = function() {
+unsafeWindow[Meta.ns].onPlayerStateChange = timeoutProxy(function() {
 	AutoPlay.apply();
 	VideoQuality.apply();
-};
+});
 
 /*
  * Player ready callback.
  */
-function onPlayerReady() {
+var onPlayerReady = timeoutProxy(function() {
 	var element = DH.id('movie_player') || DH.id('movie_player-flash') || DH.id('movie_player-html5');
 
 	if (element) {
@@ -1033,7 +1039,7 @@ function onPlayerReady() {
 			e.player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange');
 		});
 	}
-}
+});
 
 each(['onYouTubePlayerReady', 'ytPlayerOnYouTubePlayerReady'], function(i, callback) {
 	unsafeWindow[callback] = extendFn(unsafeWindow[callback], onPlayerReady);
@@ -1045,6 +1051,12 @@ onPlayerReady();
  * Watch page.
  */
 if (DH.id('watch-actions') !== null) {
+	var buttons = [
+		VideoQuality.createButton(),
+		PlayerSize.createButton(),
+		AutoPlay.createButton()
+	];
+
 	DH.insertAfter(DH.id('watch-flag'), [' ', {
 		tag: 'button',
 		style: {padding: '0 4px'},
@@ -1085,6 +1097,8 @@ RK5CYII='}
 						}
 					});
 
+					each(buttons, function(i, button) { button.refresh(); });
+
 					setVisible(panel, true);
 					setVisible(container, true);
 				}
@@ -1112,11 +1126,7 @@ qVmH8wAAAABJRU5ErkJggg=='},
 			listeners: {click: function() { unsafeWindow.open(Meta.site); }}
 		}, {
 			style: {textAlign: 'center'},
-			children: [
-				VideoQuality.createButton().render(),
-				PlayerSize.createButton().render(),
-				AutoPlay.createButton().render()
-			]
+			children: map(bind(Button.prototype.render.call, Button.prototype.render), buttons)
 		}]
 	}]);
 
