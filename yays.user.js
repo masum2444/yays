@@ -114,11 +114,9 @@ function parseJSON(data) {
 	return eval('('.concat(data, ')'));
 }
 
-function timeoutProxy(callback) {
+function timeoutProxy(func) {
 	return function() {
-		setTimeout(function() {
-			callback.apply(null, arguments);
-		}, 0);
+		setTimeout(bind(func, this, arguments), 0);
 	};
 }
 
@@ -857,6 +855,10 @@ var AutoPlay = new PlayerOption('auto_play', {
 				this._player.unMute();
 				this._muted = false;
 			}
+		}
+		else {
+			if (this._player.getPlayerState() == Player.PLAYING)
+				this._focused = true;
 		}
 	},
 
