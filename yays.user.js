@@ -9,6 +9,11 @@
 // @include     http*://youtube.com/*
 // @run-at      document-end
 // @noframes
+// @grant       GM_deleteValue
+// @grant       GM_getValue
+// @grant       GM_listValues
+// @grant       GM_setValue
+// @grant       GM_xmlhttpRequest
 // @homepageURL http://eugenox.appspot.com/script/yays
 // @updateURL   https://eugenox.appspot.com/blob/yays/yays.meta.js
 // ==/UserScript==
