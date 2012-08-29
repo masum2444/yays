@@ -569,9 +569,8 @@ var Player = (function() {
 
 				this._onApiReady();
 
-				var apiReady = DH.createEvent('Event');
-				apiReady.initEvent('apiready', false, false);
-				apiReady.player = this;
+				var apiReady = DH.createEvent('CustomEvent');
+				apiReady.initCustomEvent('apiready', false, false, this);
 
 				this._element.dispatchEvent(apiReady);
 			}
@@ -736,39 +735,33 @@ var Button = (function() {
 /*
  * PlayerOption class.
  */
-var PlayerOption = (function() {
-	var instances = [];
+function PlayerOption(key, overrides) {
+	copy(overrides, this);
 
-	function PlayerOption(configKey, overrides) {
-		copy(overrides, this);
+	this._key = key;
+}
 
-		this._configKey = configKey;
+PlayerOption.prototype = {
+	_player: null,
+	_key: null,
 
-		instances.push(this);
-	}
+	get: function() {
+		return Number(Config.get(this._key));
+	},
 
-	PlayerOption.init = function(player) {
-		this.prototype._player = player;
-		each(instances, function(i, instance) { instance.init(); });
-	};
+	set: function(value) {
+		Config.set(this._key, Number(value));
+	},
 
-	PlayerOption.prototype = {
-		_player: null,
+	init: function(player) {
+		this._player = player;
 
-		get: function() {
-			return Number(Config.get(this._configKey));
-		},
+		this.configure();
+	},
 
-		set: function(value) {
-			Config.set(this._configKey, Number(value));
-		},
-
-		init: emptyFn,
-		apply: emptyFn
-	};
-
-	return PlayerOption;
-})();
+	configure: emptyFn,
+	apply: emptyFn
+};
 
 /*
  * Prevent autoplaying.
@@ -777,6 +770,7 @@ var AutoPlay = new PlayerOption('auto_play', {
 	_applied: false,
 	_focused: false,
 	_muted: false,
+	_player: null,
 	_timer: null,
 
 	_states: ['ON', 'OFF', 'AUTO'],
@@ -814,7 +808,7 @@ var AutoPlay = new PlayerOption('auto_play', {
 		return doc.hidden === false || doc.mozHidden === false || doc.webkitHidden === false;
 	},
 
-	init: function() {
+	configure: function() {
 		if (this._player.isAutoPlaying()) {
 			switch (this.get()) {
 				case 0: // ON
@@ -882,6 +876,7 @@ var VideoQuality = new PlayerOption('video_quality', {
 	_applied: false,
 	_muted: false,
 	_buffered: false,
+	_player: null,
 
 	_states: ['AUTO', 'LOW', 'MEDIUM', 'HIGH', 'HIGHEST'],
 
@@ -895,7 +890,7 @@ var VideoQuality = new PlayerOption('video_quality', {
 		return _(this._states[this.get()]);
 	},
 
-	init: function() {
+	configure: function() {
 		this._applied = ! this.get();
 	},
 
@@ -1038,12 +1033,14 @@ var onPlayerReady = timeoutProxy(function() {
 
 	if (element) {
 		Player.create(DH.unwrap(element), function(e) {
-			PlayerOption.init(e.player);
+			each([AutoPlay, VideoQuality, PlayerSize], function(i, option) {
+				option.init(e.detail);
+			});
 
 			AutoPlay.apply();
 			VideoQuality.apply();
 
-			e.player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange');
+			e.detail.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange');
 		});
 	}
 });
