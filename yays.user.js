@@ -550,10 +550,6 @@ var JSONRequest = (function(namespace) {
  * Player singleton.
  */
 var Player = (function() {
-	var instance = {
-		_element: null
-	};
-
 	function Player(element) {
 		this._element = element;
 		this._boot();
@@ -565,7 +561,7 @@ var Player = (function() {
 
 		_boot: function() {
 			if (typeof this._element.getApiInterface == 'function') {
-				this._apiInterface();
+				this._exportApiInterface();
 
 				this._onApiReady();
 
@@ -578,7 +574,7 @@ var Player = (function() {
 				setTimeout(bind(this._boot, this), 10);
 		},
 
-		_apiInterface: function() {
+		_exportApiInterface: function() {
 			each(this._element.getApiInterface(), function(i, method) {
 				if (! Player.prototype.hasOwnProperty(method))
 					this[method] = bind(this._element[method], this._element);
@@ -643,8 +639,13 @@ var Player = (function() {
 		}
 	};
 
+	var instance = {
+		_element: null
+	};
+
 	return {
 		UNSTARTED: -1,
+		ENDED: 0,
 		PLAYING: 1,
 		PAUSED: 2,
 		BUFFERING: 3,
@@ -758,7 +759,7 @@ PlayerOption.prototype = {
 	},
 
 	get: function() {
-		return Number(Config.get(this._key));
+		return Number(Config.get(this._key) || 0);
 	},
 
 	set: function(value) {
@@ -833,11 +834,11 @@ var AutoPlay = new PlayerOption('auto_play', {
 					break;
 
 				case 2: // AUTO
-					// Video opened in the same window.
+					// Video is visible or opened in the same window.
 					if (this._focused || this._isVisible() || unsafeWindow.history.length > 1) {
 						this._applied = true;
 					}
-					// Video opened in a new window/tab.
+					// Video is opened in a background tab.
 					else {
 						DH.on(unsafeWindow, 'focus', bind(this._onFocus, this));
 						DH.on(unsafeWindow, 'blur', bind(this._onBlur, this));
