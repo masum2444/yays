@@ -570,7 +570,7 @@ var Player = (function() {
 				this._onApiReady();
 
 				var apiReady = DH.createEvent('CustomEvent');
-				apiReady.initCustomEvent('apiready', false, false, this);
+				apiReady.initCustomEvent(Meta.ns + '-apiready', false, false, this);
 
 				this._element.dispatchEvent(apiReady);
 			}
@@ -658,7 +658,7 @@ var Player = (function() {
 				return;
 
 			// The player overrides the default addEventListener method.
-			DH.unwrap(HTMLElement).prototype.addEventListener.call(element, 'apiready', callback, false);
+			DH.unwrap(HTMLElement).prototype.addEventListener.call(element, Meta.ns + '-apiready', callback, false);
 
 			instance = new Player(element);
 		}
