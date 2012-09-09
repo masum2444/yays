@@ -559,16 +559,13 @@ var Player = (function() {
 		_element: null,
 		_muted: 0,
 
+		_ready: false,
+		_onReady: emptyFn,
+
 		_boot: function() {
 			if (typeof this._element.getApiInterface == 'function') {
 				this._exportApiInterface();
-
 				this._onApiReady();
-
-				var apiReady = DH.createEvent('CustomEvent');
-				apiReady.initCustomEvent(Meta.ns + '-apiready', false, false, this);
-
-				this._element.dispatchEvent(apiReady);
 			}
 			else
 				setTimeout(bind(this._boot, this), 10);
@@ -584,10 +581,19 @@ var Player = (function() {
 		_onApiReady: function() {
 			this._muted = Number(this.isMuted());
 
-			// FIXME: Sometimes the player reports unstarted state even if the video was
-			// being started. This hack fix this problem somehow.
+			// FIXME: Sometimes the player reports inconsistent state. This hack fixes this problem.
 			if (this.isAutoPlaying())
 				this.seekTo(this.getCurrentTime(), false);
+
+			this._ready = true;
+			this._onReady(this);
+		},
+
+		onReady: function(callback) {
+			if (this._ready)
+				callback(this);
+			else
+				this._onReady = callback;
 		},
 
 		getArgument: function(name) {
@@ -654,14 +660,11 @@ var Player = (function() {
 			return instance;
 		},
 
-		create: function(element, callback) {
-			if (instance._element === element)
-				return;
+		create: function(element) {
+			if (instance._element !== element)
+				instance = new Player(element);
 
-			// The player overrides the default addEventListener method.
-			DH.unwrap(HTMLElement).prototype.addEventListener.call(element, Meta.ns + '-apiready', callback, false);
-
-			instance = new Player(element);
+			return instance;
 		}
 	};
 })();
@@ -802,6 +805,8 @@ var AutoPlay = new PlayerOption('auto_play', {
 			this._timer = setTimeout(bind(function() {
 				this._player.playVideo();
 
+				debug('Playback autostarted');
+
 				this._focused = true;
 				this._timer = null;
 			}, this), 500);
@@ -865,6 +870,8 @@ var AutoPlay = new PlayerOption('auto_play', {
 				this._player.seekToStart(true);
 				this._player.pauseVideo();
 
+				debug('Playback paused');
+
 				this._player.unMute();
 				this._muted = false;
 			}
@@ -913,6 +920,8 @@ var VideoQuality = new PlayerOption('video_quality', {
 
 						this._player.seekToStart(true);
 						this._player.setPlaybackQuality(quality);
+
+						debug('Quality changed to', quality);
 
 						// Sometimes buffering event doesn't occur after the quality has changed.
 						this.apply();
@@ -988,7 +997,9 @@ var PlayerSize = new PlayerOption('player_size', {
 /*
  * Player state change callback.
  */
-unsafeWindow[Meta.ns].onPlayerStateChange = timeoutProxy(function() {
+unsafeWindow[Meta.ns].onPlayerStateChange = timeoutProxy(function(state) {
+	debug('State changed to', ['unstarted', 'ended', 'playing', 'paused', 'buffering'][state + 1]);
+
 	AutoPlay.apply();
 	VideoQuality.apply();
 });
@@ -1000,15 +1011,17 @@ var onPlayerReady = timeoutProxy(function() {
 	var element = DH.id('movie_player') || DH.id('movie_player-flash') || DH.id('movie_player-html5');
 
 	if (element) {
-		Player.create(DH.unwrap(element), function(e) {
+		Player.create(DH.unwrap(element)).onReady(function(player) {
+			debug('Player ready');
+
 			each([AutoPlay, VideoQuality, PlayerSize], function(i, option) {
-				option.init(e.detail);
+				option.init(player);
 			});
 
 			AutoPlay.apply();
 			VideoQuality.apply();
 
-			e.detail.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange');
+			player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange');
 		});
 	}
 });
