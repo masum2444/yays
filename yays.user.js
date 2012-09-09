@@ -559,7 +559,6 @@ var Player = (function() {
 		_element: null,
 		_muted: 0,
 
-		_ready: false,
 		_onReady: emptyFn,
 
 		_boot: function() {
@@ -585,15 +584,15 @@ var Player = (function() {
 			if (this.isAutoPlaying())
 				this.seekTo(this.getCurrentTime(), false);
 
-			this._ready = true;
 			this._onReady(this);
+			this._onReady = null;
 		},
 
 		onReady: function(callback) {
-			if (this._ready)
-				callback(this);
-			else
+			if (this._onReady)
 				this._onReady = callback;
+			else
+				callback(this);
 		},
 
 		getArgument: function(name) {
