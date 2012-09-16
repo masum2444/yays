@@ -580,9 +580,9 @@ var Player = (function() {
 		_onApiReady: function() {
 			this._muted = Number(this.isMuted());
 
-			// FIXME: Sometimes the player reports inconsistent state. This hack fixes this problem.
+			// The player sometimes reports inconsistent state.
 			if (this.isAutoPlaying())
-				this.seekTo(this.getCurrentTime(), false);
+				this.resetState();
 
 			this._onReady(this);
 			this._onReady = null;
@@ -617,7 +617,7 @@ var Player = (function() {
 			return (this.getArgument('autoplay') || '1') == 1;
 		},
 
-		// FIXME: Suppressing random exception.
+		// Suppressing random exception.
 		seekTo: function() {
 			try {
 				this._element.seekTo.apply(this._element, arguments);
@@ -625,12 +625,18 @@ var Player = (function() {
 			catch (e) {}
 		},
 
+		// Seek to the beginning of the video considering deep-links.
 		seekToStart: function(ahead) {
 			var
 				code = (location.hash + location.search).match(/\bt=(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?/) || new Array(4),
 				seconds = (Number(code[1]) || 0) * 3600 + (Number(code[2]) || 0) * 60 + (Number(code[3]) || 0);
 
 			this.seekTo(seconds, ahead);
+		},
+
+		// This hack resets some aspects of the player.
+		resetState: function() {
+			this.seekTo(this.getCurrentTime(), false);
 		},
 
 		mute: function() {
@@ -802,6 +808,7 @@ var AutoPlay = new PlayerOption('auto_play', {
 	_onFocus: function() {
 		if (this._applied && ! this._focused) {
 			this._timer = setTimeout(bind(function() {
+				this._player.resetState();
 				this._player.playVideo();
 
 				debug('Playback autostarted');
