@@ -659,11 +659,11 @@ var Player = (function() {
 			return instance;
 		},
 
-		create: function(element) {
-			if (instance._element !== element)
-				instance = new Player(element);
+		initialize: function(element) {
+			if (instance._element === element)
+				throw 'Player already initialized';
 
-			return instance;
+			return instance = new Player(element);
 		}
 	};
 })();
@@ -1010,18 +1010,23 @@ var onPlayerReady = timeoutProxy(function() {
 	var element = DH.id('movie_player') || DH.id('movie_player-flash') || DH.id('movie_player-html5');
 
 	if (element) {
-		Player.create(DH.unwrap(element)).onReady(function(player) {
-			debug('Player ready');
+		try {
+			Player.initialize(DH.unwrap(element)).onReady(function(player) {
+				debug('Player ready');
 
-			each([AutoPlay, VideoQuality, PlayerSize], function(i, option) {
-				option.init(player);
+				each([AutoPlay, VideoQuality, PlayerSize], function(i, option) {
+					option.init(player);
+				});
+
+				AutoPlay.apply();
+				VideoQuality.apply();
+
+				player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange');
 			});
-
-			AutoPlay.apply();
-			VideoQuality.apply();
-
-			player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange');
-		});
+		}
+		catch (e) {
+			debug(e);
+		}
 	}
 });
 
