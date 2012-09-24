@@ -636,7 +636,7 @@ var Player = (function() {
 
 		// This hack resets some aspects of the player.
 		resetState: function() {
-			this.seekTo(this.getCurrentTime(), false);
+			this.seekTo(this.getCurrentTime(), true);
 		},
 
 		mute: function() {
