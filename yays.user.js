@@ -16,6 +16,7 @@
 // @grant       GM_xmlhttpRequest
 // @homepageURL http://eugenox.appspot.com/script/yays
 // @updateURL   https://eugenox.appspot.com/blob/yays/yays.meta.js
+// @downloadURL https://eugenox.appspot.com/blob/yays/yays.user.js
 // ==/UserScript==
 
 function YAYS(unsafeWindow) {
