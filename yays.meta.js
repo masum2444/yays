@@ -11,7 +11,6 @@
 // @noframes
 // @grant       GM_deleteValue
 // @grant       GM_getValue
-// @grant       GM_listValues
 // @grant       GM_setValue
 // @grant       GM_xmlhttpRequest
 // @homepageURL http://eugenox.appspot.com/script/yays

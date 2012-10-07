@@ -11,7 +11,6 @@
 // @noframes
 // @grant       GM_deleteValue
 // @grant       GM_getValue
-// @grant       GM_listValues
 // @grant       GM_setValue
 // @grant       GM_xmlhttpRequest
 // @homepageURL http://eugenox.appspot.com/script/yays
@@ -127,7 +126,7 @@ function timeoutProxy(func) {
 }
 
 function debug() {
-	unsafeWindow.console.debug.apply(unsafeWindow.console, Array.prototype.concat.apply(['[yays]'], arguments));
+	unsafeWindow.console.debug.apply(unsafeWindow.console, Array.prototype.concat.apply(['['.concat(Meta.ns, ']')], arguments));
 }
 
 /*
@@ -244,6 +243,8 @@ var _ = (function() {
  * DOM Helper singleton.
  */
 var DH = {
+	ELEMENT_NODE: 1,
+
 	build: function(def) {
 		switch (Object.prototype.toString.call(def)) {
 			case '[object Object]':
@@ -354,6 +355,28 @@ var DH = {
 			return XPCNativeWrapper.unwrap(element);
 
 		return element;
+	},
+
+	walk: function(node, path) {
+		var steps = path.split('/'), step = null;
+
+		while (node && (step = steps.shift())) {
+			if (step == '..') {
+				node = node.parentNode;
+				continue;
+			}
+
+			var
+				selector = /^(\w*)(?:\[(\d+)\])?$/.exec(step),
+				name = selector[1],
+				index = Number(selector[2]) || 0;
+
+			for (var i = 0, j = 0, nodes = node.childNodes; node = nodes.item(i); ++i)
+				if (node.nodeType == DH.ELEMENT_NODE && (! name || node.tagName.toLowerCase() == name) && j++ == index)
+					break;
+		}
+
+		return node;
 	}
 };
 
@@ -362,19 +385,11 @@ var DH = {
  */
 var Config = (function(namespace) {
 	// Greasemonkey compatible
-	if (typeof GM_listValues == 'function') {
+	if (typeof GM_getValue == 'function') {
 		return {
-			get: function(key) {
-				return GM_getValue(key);
-			},
-
-			set: function(key, value) {
-				GM_setValue(key, value);
-			},
-
-			del: function(key) {
-				GM_deleteValue(key);
-			}
+			get: GM_getValue,
+			set: GM_setValue,
+			del: GM_deleteValue
 		};
 	}
 
@@ -1002,6 +1017,174 @@ var PlayerSize = new PlayerOption('player_size', {
 });
 
 /*
+ * Abstract UI class.
+ */
+var UI = copy({
+	setVisible: function(node, visible) {
+		DH[visible ? 'delClass' : 'addClass'](node, 'hid');
+		DH.style(node, {display: visible ? 'block' : 'none'});
+	}
+}, function() {});
+
+UI.prototype = {
+	_def: {
+		button: function(click) {
+			return {
+				tag: 'button',
+				style: {padding: '0 4px'},
+				attributes: {type: 'button', role: 'button', 'class': 'yt-uix-button yt-uix-button-default yt-uix-tooltip yt-uix-tooltip-reverse yt-uix-button-empty', title: _('Player settings')},
+				children: {
+						tag: 'img',
+						attributes: {src: 'data:image/png;base64,\
+iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABIklEQVQ4y6WSPUoEQRCFv5kdWVAT\
+DyDGJkKnpuoZJu5IUFeMRPYCaiAbOIhGL94LGHkBEbQ1XMM1N3EVVvxJaoelmRFHX1TV7/WrrupK\
+qIH3fh04sPRI0lWVLqMel8CMxavA7I8G3vsesAe8SpoD3qcMvkwzMqNTSbsAiRGbwDnN0JFUpJa0\
+aI60vBhCuHHOvQEbv7zclXQCkHjv74FFYCES3QG5xX3ARfwLMMyAlZoquaRHm1EODCJ+HlhO+Scy\
+4KGmhb5VnrQQYwQ8JVN7sA8cNxjiYfkL3vstoNfg5WvOuecQwvVkBh9/aP+zXAZJF0BhxFhSAoyn\
+xPHZmaSiNDCTDpBKaldsZ8s0bdNsU7XCIYQyds7dAkvAENgJIQxiDcA3XBdfpD8Lv/UAAAAASUVO\
+RK5CYII='}
+				},
+				listeners: {click: click}
+			};
+		},
+		panel: function(buttons) {
+			return [{
+				tag: 'img',
+				style: {position: 'absolute', top: '0', right: '10px', marginTop: '-3px', cursor: 'pointer'},
+				attributes: {title: _('Help'), src: 'data:image/png;base64,\
+iVBORw0KGgoAAAANSUhEUgAAAAcAAAAJCAYAAAD+WDajAAAAAXNSR0IArs4c6QAAAHVJREFUGNN9\
+zT0OQVEUBODvPmIPotOq1OpTqEWlkYgN6MQCWITaCqjOoiQqKpr34lZvmpnMT6Zk5ggnbDDBE3cc\
+hzjj4I8x9pg2mOOFJWZVaVE6lZkDXLFtrVtTNS9V8MCuDlctf7COiLc+1J/fTkdEgaZv+QMwqxX9\
+qVmH8wAAAABJRU5ErkJggg=='},
+				listeners: {click: function() { unsafeWindow.open(Meta.site); }}
+			}, {
+				style: {textAlign: 'center'},
+				children: map(bind(Button.prototype.render.call, Button.prototype.render), buttons)
+			}];
+		}
+	},
+
+	buttons: null,
+	button: null,
+	panel: null,
+
+	initialize: function() {
+		this.button = this._def.button(bind(this.toggle, this));
+		this.panel = this._def.panel(this.buttons);
+	},
+
+	refresh: function() {
+		each(this.buttons, function(i, button) { button.refresh(); });
+	},
+
+	toggle: emptyFn
+};
+
+/*
+ * WatchUI class.
+ */
+function WatchUI() {
+	this.buttons = [
+		VideoQuality.button(),
+		PlayerSize.button(),
+		AutoPlay.button()
+	];
+
+	this.initialize();
+
+	this.button = DH.build(this.button);
+
+	this.panel = DH.build({
+		attributes: {'class': 'watch-actions-panel'},
+		style: {position: 'relative'},
+		children: this.panel
+	});
+
+	DH.insertAfter(DH.id('watch-flag'), [' ', this.button]);
+	DH.prepend(DH.id('watch-actions-area'), this.panel);
+
+	PlayerSize.apply();
+}
+
+WatchUI.prototype = copy({
+	toggle: function() {
+		var container = DH.id('watch-actions-area-container');
+
+		if (DH.hasClass(this.panel, 'hid') || DH.hasClass(container, 'hid')) {
+			each(DH.id('watch-actions').getElementsByTagName('button'), function(i, button) {
+				DH.delClass(button, 'active');
+			});
+
+			DH.addClass(this.button, 'active');
+
+			each(DH.id('watch-actions-area').childNodes, function(i, node) {
+				if (node.nodeType == DH.ELEMENT_NODE && DH.hasClass(node, 'watch-actions-panel'))
+					UI.setVisible(node, false);
+			});
+
+			this.refresh();
+
+			UI.setVisible(this.panel, true);
+			UI.setVisible(container, true);
+		}
+		else {
+			DH.delClass(this.button, 'active');
+
+			UI.setVisible(container, false);
+			UI.setVisible(this.panel, false);
+		}
+	}
+}, new UI());
+
+
+/*
+ * ChannelUI class.
+ */
+function ChannelUI() {
+	this.buttons = [
+		VideoQuality.button(),
+		AutoPlay.button()
+	];
+
+	this.initialize();
+
+	this.button = DH.build(this.button);
+
+	this.panel = DH.build({
+		attributes: {'class': 'hid'},
+		style: {display: 'none', marginTop: '7px'},
+		children: [{
+			tag: 'h3',
+			children: 'Player settings'
+		}, {
+			style: {position: 'relative'},
+			children: this.panel
+		}]
+	});
+
+	DH.append(DH.walk(DH.id('flag-video-panel'), '../h3/div'), [' ', this.button]);
+	DH.insertAfter(DH.id('flag-video-panel'), this.panel);
+}
+
+ChannelUI.prototype = copy({
+	toggle: function() {
+		if (DH.hasClass(this.panel, 'hid')) {
+			each(this.panel.parentNode.childNodes, function(i, node) {
+				if (node.nodeType == DH.ELEMENT_NODE && node.tagName.toLowerCase() == 'div')
+					UI.setVisible(node, false);
+			});
+
+			this.refresh();
+
+			UI.setVisible(this.panel, true);
+		}
+		else {
+			UI.setVisible(this.panel, false);
+		}
+	}
+}, new UI());
+
+/*
  * Player state change callback.
  */
 unsafeWindow[Meta.ns].onPlayerStateChange = timeoutProxy(function(state) {
@@ -1044,96 +1227,23 @@ each(['onYouTubePlayerReady', 'ytPlayerOnYouTubePlayerReady'], function(i, callb
 
 onPlayerReady();
 
-/*
- * Watch page.
- */
-if (DH.id('watch-actions') !== null) {
-	var buttons = [
-		VideoQuality.button(),
-		PlayerSize.button(),
-		AutoPlay.button()
-	];
+var page = DH.id('page');
+if (page) {
+	switch (true) {
+		case DH.hasClass(page, 'watch'):
+			new WatchUI();
+			break;
 
-	DH.insertAfter(DH.id('watch-flag'), [' ', {
-		tag: 'button',
-		style: {padding: '0 4px'},
-		attributes: {id: 'yays_settings-button', type: 'button', role: 'button', 'class': 'yt-uix-button yt-uix-button-default yt-uix-tooltip yt-uix-tooltip-reverse yt-uix-button-empty', title: _('Player settings')},
-		children: {
-				tag: 'img',
-				attributes: {src: 'data:image/png;base64,\
-iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABIklEQVQ4y6WSPUoEQRCFv5kdWVAT\
-DyDGJkKnpuoZJu5IUFeMRPYCaiAbOIhGL94LGHkBEbQ1XMM1N3EVVvxJaoelmRFHX1TV7/WrrupK\
-qIH3fh04sPRI0lWVLqMel8CMxavA7I8G3vsesAe8SpoD3qcMvkwzMqNTSbsAiRGbwDnN0JFUpJa0\
-aI60vBhCuHHOvQEbv7zclXQCkHjv74FFYCES3QG5xX3ARfwLMMyAlZoquaRHm1EODCJ+HlhO+Scy\
-4KGmhb5VnrQQYwQ8JVN7sA8cNxjiYfkL3vstoNfg5WvOuecQwvVkBh9/aP+zXAZJF0BhxFhSAoyn\
-xPHZmaSiNDCTDpBKaldsZ8s0bdNsU7XCIYQyds7dAkvAENgJIQxiDcA3XBdfpD8Lv/UAAAAASUVO\
-RK5CYII='}
-
-		},
-		listeners: {
-			click: function() {
-				var
-					container = DH.id('watch-actions-area-container'),
-					panel = DH.id('yays_settings-panel');
-
-				function setVisible(node, visible) {
-					DH[visible ? 'delClass' : 'addClass'](node, 'hid');
-					DH.style(node, {display: visible ? 'block' : 'none'});
-				}
-
-				if (DH.hasClass(panel, 'hid') || DH.hasClass(container, 'hid')) {
-					each(DH.id('watch-actions').getElementsByTagName('button'), function(i, action) {
-						DH.delClass(action, 'active');
-					});
-
-					DH.addClass(DH.id('yays_settings-button'), 'active');
-
-					each(DH.id('watch-actions-area').childNodes, function(i, node) {
-						if (node.nodeType == 1 && DH.hasClass(node, 'watch-actions-panel')) {
-							setVisible(node, false);
-						}
-					});
-
-					each(buttons, function(i, button) { button.refresh(); });
-
-					setVisible(panel, true);
-					setVisible(container, true);
-				}
-				else {
-					DH.delClass(DH.id('yays_settings-button'), 'active');
-
-					setVisible(container, false);
-					setVisible(panel, false);
-				}
-			}
-		}
-	}]);
-
-	DH.prepend(DH.id('watch-actions-area'), [{
-		attributes: {id: 'yays_settings-panel', 'class': 'watch-actions-panel'},
-		style: {position: 'relative'},
-		children: [{
-			tag: 'img',
-			style: {position: 'absolute', top: '0', right: '10px', marginTop: '-3px', cursor: 'pointer'},
-			attributes: {title: _('Help'), src: 'data:image/png;base64,\
-iVBORw0KGgoAAAANSUhEUgAAAAcAAAAJCAYAAAD+WDajAAAAAXNSR0IArs4c6QAAAHVJREFUGNN9\
-zT0OQVEUBODvPmIPotOq1OpTqEWlkYgN6MQCWITaCqjOoiQqKpr34lZvmpnMT6Zk5ggnbDDBE3cc\
-hzjj4I8x9pg2mOOFJWZVaVE6lZkDXLFtrVtTNS9V8MCuDlctf7COiLc+1J/fTkdEgaZv+QMwqxX9\
-qVmH8wAAAABJRU5ErkJggg=='},
-			listeners: {click: function() { unsafeWindow.open(Meta.site); }}
-		}, {
-			style: {textAlign: 'center'},
-			children: map(bind(Button.prototype.render.call, Button.prototype.render), buttons)
-		}]
-	}]);
-
-	PlayerSize.apply();
+		case DH.hasClass(page, 'channel'):
+			new ChannelUI();
+			break;
+	}
 }
 
 } // YAYS
 
 if (window.top === window.self) {
-	if (this['unsafeWindow']) { // Look for Greasemonkey.
+	if (this['unsafeWindow']) { // Greasemonkey.
 		YAYS(unsafeWindow);
 	}
 	else {
