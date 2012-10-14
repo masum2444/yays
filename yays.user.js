@@ -276,7 +276,6 @@ var DH = {
 
 	id: bind(unsafeWindow.document.getElementById, unsafeWindow.document),
 	createElement: bind(unsafeWindow.document.createElement, unsafeWindow.document),
-	createEvent: bind(unsafeWindow.document.createEvent, unsafeWindow.document),
 	createTextNode: bind(unsafeWindow.document.createTextNode, unsafeWindow.document),
 
 	style: function(node, style) {
@@ -307,15 +306,6 @@ var DH = {
 		else {
 			this.append(node, children);
 		}
-	},
-
-	content: function(node, children) {
-		if (node.hasChildNodes()) {
-			var child = null;
-			while (child = node.firstChild) node.removeChild(child);
-		}
-
-		this.append(node, children);
 	},
 
 	attributes: function(node, attributes) {
