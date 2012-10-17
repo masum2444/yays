@@ -362,7 +362,7 @@ var DH = {
 				index = Number(selector[2]) || 0;
 
 			for (var i = 0, j = 0, nodes = node.childNodes; node = nodes.item(i); ++i)
-				if (node.nodeType == DH.ELEMENT_NODE && (! name || node.tagName.toLowerCase() == name) && j++ == index)
+				if (node.nodeType == this.ELEMENT_NODE && (! name || node.tagName.toLowerCase() == name) && j++ == index)
 					break;
 		}
 
@@ -1145,7 +1145,7 @@ function ChannelUI() {
 		style: {display: 'none', marginTop: '7px'},
 		children: [{
 			tag: 'h3',
-			children: 'Player settings'
+			children: _('Player settings')
 		}, {
 			style: {position: 'relative'},
 			children: this.panel
