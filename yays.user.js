@@ -85,9 +85,9 @@ function bind(func, scope, args) {
 	};
 }
 
-function copy(src, target) {
-	for (var key in src)
-		target[key] = src[key];
+function extend(target, source) {
+	for (var key in source)
+		target[key] = source[key];
 
 	return target;
 }
@@ -248,7 +248,7 @@ var DH = {
 	build: function(def) {
 		switch (Object.prototype.toString.call(def)) {
 			case '[object Object]':
-				def = copy(def, {tag: 'div', style: null, attributes: null, listeners: null, children: null});
+				def = extend({tag: 'div', style: null, attributes: null, listeners: null, children: null}, def);
 
 				var node = this.createElement(def.tag);
 
@@ -279,7 +279,7 @@ var DH = {
 	createTextNode: bind(unsafeWindow.document.createTextNode, unsafeWindow.document),
 
 	style: function(node, style) {
-		copy(style, node.style);
+		extend(node.style, style);
 	},
 
 	append: function(node, children) {
@@ -688,7 +688,7 @@ var Button = (function() {
 		node: {
 			tag: 'button',
 			style: {margin: '2px'},
-			attributes: {type: 'button', 'class': 'yt-uix-button yt-uix-button-default yt-uix-tooltip'}
+			attributes: {type: 'button', 'class': 'yt-uix-button yt-uix-button-default yt-uix-button-hh-default yt-uix-tooltip'}
 		},
 
 		label: {
@@ -719,7 +719,7 @@ var Button = (function() {
 		this._node = node;
 		this._indicator = indicator.firstChild;
 
-		copy(callbacks, this);
+		extend(this, callbacks);
 	}
 
 	Button.prototype = {
@@ -751,7 +751,7 @@ var Button = (function() {
  * PlayerOption class.
  */
 function PlayerOption(key, overrides) {
-	copy(overrides, this);
+	extend(this, overrides);
 
 	this._key = key;
 }
@@ -993,9 +993,6 @@ var PlayerSize = new PlayerOption('player_size', {
 				// no break;
 
 			case 1: // WIDE
-				// FIXME: Non API call.
-				unsafeWindow.yt.net.cookies.set('wide', '1');
-
 				DH.addClass(DH.id('page'), 'watch-wide');
 				DH.addClass(DH.id('watch-video'), 'medium');
 				break;
@@ -1009,23 +1006,18 @@ var PlayerSize = new PlayerOption('player_size', {
 /*
  * Abstract UI class.
  */
-var UI = copy({
+var UI = extend(function() {}, {
 	setVisible: function(node, visible) {
 		DH[visible ? 'delClass' : 'addClass'](node, 'hid');
 		DH.style(node, {display: visible ? 'block' : 'none'});
 	}
-}, function() {});
+});
 
 UI.prototype = {
 	_def: {
-		button: function(click) {
-			return {
-				tag: 'button',
-				style: {padding: '0 4px'},
-				attributes: {type: 'button', role: 'button', 'class': 'yt-uix-button yt-uix-button-default yt-uix-tooltip yt-uix-tooltip-reverse yt-uix-button-empty', title: _('Player settings')},
-				children: {
-						tag: 'img',
-						attributes: {src: 'data:image/png;base64,\
+		icon: {
+			tag: 'img',
+			attributes: {src: 'data:image/png;base64,\
 iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABIklEQVQ4y6WSPUoEQRCFv5kdWVAT\
 DyDGJkKnpuoZJu5IUFeMRPYCaiAbOIhGL94LGHkBEbQ1XMM1N3EVVvxJaoelmRFHX1TV7/WrrupK\
 qIH3fh04sPRI0lWVLqMel8CMxavA7I8G3vsesAe8SpoD3qcMvkwzMqNTSbsAiRGbwDnN0JFUpJa0\
@@ -1033,22 +1025,31 @@ aI60vBhCuHHOvQEbv7zclXQCkHjv74FFYCES3QG5xX3ARfwLMMyAlZoquaRHm1EODCJ+HlhO+Scy\
 4KGmhb5VnrQQYwQ8JVN7sA8cNxjiYfkL3vstoNfg5WvOuecQwvVkBh9/aP+zXAZJF0BhxFhSAoyn\
 xPHZmaSiNDCTDpBKaldsZ8s0bdNsU7XCIYQyds7dAkvAENgJIQxiDcA3XBdfpD8Lv/UAAAAASUVO\
 RK5CYII='}
-				},
+		},
+
+		button: function(click) {
+			return {
+				tag: 'button',
+				style: {padding: '0 4px'},
+				attributes: {type: 'button', role: 'button', 'class': 'yt-uix-button yt-uix-button-default yt-uix-tooltip yt-uix-tooltip-reverse yt-uix-button-empty', title: _('Player settings')},
+				children: this.icon,
 				listeners: {click: click}
 			};
 		},
+
 		panel: function(buttons) {
 			return [{
-				tag: 'img',
-				style: {position: 'absolute', top: '0', right: '10px', marginTop: '-3px', cursor: 'pointer'},
-				attributes: {title: _('Help'), src: 'data:image/png;base64,\
-iVBORw0KGgoAAAANSUhEUgAAAAcAAAAJCAYAAAD+WDajAAAAAXNSR0IArs4c6QAAAHVJREFUGNN9\
-zT0OQVEUBODvPmIPotOq1OpTqEWlkYgN6MQCWITaCqjOoiQqKpr34lZvmpnMT6Zk5ggnbDDBE3cc\
-hzjj4I8x9pg2mOOFJWZVaVE6lZkDXLFtrVtTNS9V8MCuDlctf7COiLc+1J/fTkdEgaZv+QMwqxX9\
-qVmH8wAAAABJRU5ErkJggg=='},
-				listeners: {click: function() { unsafeWindow.open(Meta.site); }}
+				children: [{
+					tag: 'strong',
+					children: _('Player settings')
+				}, {
+					tag: 'a',
+					attributes: {href: Meta.site, target: '_blank'},
+					style: {marginLeft: '4px', verticalAlign: 'super', fontSize: '10px', cursor: 'pointer'},
+					children: _('Help')
+				}]
 			}, {
-				style: {textAlign: 'center'},
+				style: {textAlign: 'center', margin: '5px 0'},
 				children: map(bind(Button.prototype.render.call, Button.prototype.render), buttons)
 			}];
 		}
@@ -1086,7 +1087,6 @@ function WatchUI() {
 
 	this.panel = DH.build({
 		attributes: {'class': 'watch-actions-panel'},
-		style: {position: 'relative'},
 		children: this.panel
 	});
 
@@ -1096,7 +1096,7 @@ function WatchUI() {
 	PlayerSize.apply();
 }
 
-WatchUI.prototype = copy({
+WatchUI.prototype = extend(new UI(), {
 	toggle: function() {
 		var container = DH.id('watch-actions-area-container');
 
@@ -1124,7 +1124,58 @@ WatchUI.prototype = copy({
 			UI.setVisible(this.panel, false);
 		}
 	}
-}, new UI());
+});
+
+function Watch7UI() {
+	this.buttons = [
+		VideoQuality.button(),
+		AutoPlay.button()
+	];
+
+	this.initialize();
+
+	this.button = DH.build(this.button);
+
+	this.panel = DH.build({
+		attributes: {id: 'action-panel-yays', 'class': 'action-panel-content hid', 'data-panel-loaded': 'true'},
+		style: {display: 'none', color: '#333'},
+		children: this.panel
+	});
+
+	DH.append(DH.id('watch7-secondary-actions'), this.button);
+	DH.prepend(DH.id('watch7-action-panels'), this.panel);
+}
+
+Watch7UI.prototype = extend(new UI(), {
+	_def: {
+		button: function(click) {
+			return {
+				tag: 'span',
+				children: {
+					tag: 'button',
+					attributes: {
+						type: 'button',
+						role: 'button',
+						'class': 'action-panel-trigger yt-uix-button yt-uix-button-hh-text yt-uix-button-empty',
+						'data-button-toggle': 'true',
+						'data-trigger-for': 'action-panel-yays'
+					},
+					children: {
+						tag: 'span',
+						attributes: {'class': 'yt-uix-button-icon-wrapper'},
+						children: [this.icon, {
+							tag: 'span',
+							attributes: {'class': 'yt-uix-button-valign'}
+						}]
+					}
+				}
+			};
+		},
+
+		icon: UI.prototype._def.icon,
+		panel: UI.prototype._def.panel
+	}
+});
 
 
 /*
@@ -1143,20 +1194,14 @@ function ChannelUI() {
 	this.panel = DH.build({
 		attributes: {'class': 'hid'},
 		style: {display: 'none', marginTop: '7px'},
-		children: [{
-			tag: 'h3',
-			children: _('Player settings')
-		}, {
-			style: {position: 'relative'},
-			children: this.panel
-		}]
+		children: this.panel
 	});
 
 	DH.append(DH.walk(DH.id('flag-video-panel'), '../h3/div'), [' ', this.button]);
 	DH.insertAfter(DH.id('flag-video-panel'), this.panel);
 }
 
-ChannelUI.prototype = copy({
+ChannelUI.prototype = extend(new UI(), {
 	toggle: function() {
 		if (DH.hasClass(this.panel, 'hid')) {
 			each(this.panel.parentNode.childNodes, function(i, node) {
@@ -1172,7 +1217,7 @@ ChannelUI.prototype = copy({
 			UI.setVisible(this.panel, false);
 		}
 	}
-}, new UI());
+});
 
 /*
  * Player state change callback.
@@ -1221,7 +1266,10 @@ var page = DH.id('page');
 if (page) {
 	switch (true) {
 		case DH.hasClass(page, 'watch'):
-			new WatchUI();
+			if (DH.id('watch-container'))
+				new WatchUI();
+			else
+				new Watch7UI();
 			break;
 
 		case DH.hasClass(page, 'channel'):
