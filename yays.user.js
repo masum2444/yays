@@ -85,9 +85,13 @@ function bind(func, scope, args) {
 	};
 }
 
-function extend(target, source) {
-	for (var key in source)
-		target[key] = source[key];
+function extend(target, source, override) {
+	override = override === undefined || override;
+
+	for (var key in source) {
+		if (override || ! target.hasOwnProperty(key))
+			target[key] = source[key];
+	}
 
 	return target;
 }
@@ -279,7 +283,7 @@ var DH = {
 	createTextNode: bind(unsafeWindow.document.createTextNode, unsafeWindow.document),
 
 	style: function(node, style) {
-		extend(node.style, style);
+		each(style, node.style.setProperty, node.style);
 	},
 
 	append: function(node, children) {
@@ -456,8 +460,8 @@ var JSONRequest = (function(namespace) {
 				this._scriptNode = document.body.appendChild(DH.build({
 					tag: 'script',
 					attributes: {
-						type: 'text/javascript',
-						src: buildURL(url, parameters)
+						'type': 'text/javascript',
+						'src': buildURL(url, parameters)
 					}
 				}));
 			}
@@ -488,7 +492,7 @@ var JSONRequest = (function(namespace) {
  * Check for update.
  */
 (function() {
-	if (new Date().valueOf() - Number(Config.get('update_checked_at')) < 24 * 36e5)
+	if (new Date().valueOf() - Number(Config.get('update_checked_at')) < 24 * 36e5) // 1 day
 		return;
 
 	var popup = null;
@@ -503,39 +507,95 @@ var JSONRequest = (function(namespace) {
 	function renderPopup(changelog) {
 		return document.body.appendChild(DH.build({
 			style: {
-				position: 'fixed', top: '15px', right: '15px', zIndex: 1000, padding: '10px 15px 5px', backgroundColor: '#ffffff', border: '1px solid #cccccc',
-				color: '#333333', fontSize: '11px', fontFamily: 'Arial,sans-serif', lineHeight: '12px',
-				boxShadow: '0 1px 2px #cccccc'
+				'position': 'fixed',
+				'top': '15px',
+				'right': '15px',
+				'z-index': '1000',
+				'padding': '10px 15px 10px',
+				'background-color': '#f8f8f8',
+				'border': '1px solid #cccccc'
 			},
 			children: [{
-				style: {textAlign: 'center', fontWeight: 'bold'},
+				tag: 'h3',
+				style: {
+					'text-align': 'center',
+				},
 				children: Meta.title
 			}, {
-				style: {color: '#a0a0a0', marginBottom: '10px', textAlign: 'center'},
-				children: 'UserScript update notification.'
+				style: {
+					'font-size': '11px',
+					'color': '#808080',
+					'text-align': 'center'
+				},
+				children: 'User Script update notification.'
 			}, {
-				style: {marginBottom: '10px'},
-				children: ['You are using version ', {tag: 'strong', children: Meta.version}, ', released on ', {tag: 'em', children: Meta.releasedate}, '.', {tag: 'br'}, 'Please update to the newest release.']
+				tag: 'p',
+				style: {
+					'margin': '10px 0'
+				},
+				children: [
+					'You are using version ',
+					{
+						tag: 'strong',
+						children: Meta.version
+					},
+					', released on ',
+					{
+						tag: 'em',
+						children: Meta.releasedate
+					},
+					'.',
+					{
+						tag: 'br'
+					},
+					'Please consider updating to the latest release.'
+				]
 			}, {
 				children: map(function(entry) {
 					return {
-						style: {marginBottom: '5px'},
-						children: [
-							{tag: 'strong', style: {fontSize: '11px'}, children: entry.version},
-							{tag: 'em', style: {marginLeft: '5px'}, children: entry.date},
-							{style: {padding: '0 0 2px 10px', whiteSpace: 'pre'}, children: [].concat(entry.note).join('\n')}
-						]
+						style: {
+							'margin-bottom': '5px'
+						},
+						children: [{
+							tag: 'strong',
+							style: {
+								'font-size': '11px'
+							},
+							children: entry.version
+						}, {
+							tag: 'em',
+							style: {
+								'margin-left': '5px'
+							},
+							children: entry.date
+						}, {
+							style: {
+								'padding': '0 0 2px 10px',
+								'white-space': 'pre'
+							},
+							children: [].concat(entry.note).join('\n')
+						}]
 					};
 				}, [].concat(changelog))
 			}, {
-				style: {textAlign: 'center', padding: '10px 0'},
+				style: {
+					'text-align': 'center',
+					'padding': '10px 0'
+				},
 				children: map(function(text, handler) {
 					return DH.build({
 						tag: 'span',
-						attributes: {'class': 'yt-uix-button'},
-						style: {margin: '0 5px', padding: '5px 10px'},
+						attributes: {
+							'class': 'yt-uix-button yt-uix-button-default'
+						},
+						style: {
+							'margin': '0 5px',
+							'padding': '5px 10px'
+						},
 						children: text,
-						listeners: {click: handler}
+						listeners: {
+							click: handler
+						}
 					});
 				}, ['Update', 'Dismiss'], [openDownloadSite, removePopup])
 			}]
@@ -687,19 +747,31 @@ var Button = (function() {
 	var def = {
 		node: {
 			tag: 'button',
-			style: {margin: '2px'},
-			attributes: {type: 'button', 'class': 'yt-uix-button yt-uix-button-default yt-uix-button-hh-default yt-uix-tooltip'}
+			style: {
+				'margin': '2px'
+			},
+			attributes: {
+				'type': 'button',
+				'class': 'yt-uix-button yt-uix-button-default yt-uix-button-hh-default yt-uix-tooltip'
+			}
 		},
 
 		label: {
 			tag: 'span',
-			attributes: {'class': 'yt-uix-button-content'}
+			attributes: {
+				'class': 'yt-uix-button-content'
+			}
 		},
 
 		indicator: {
 			tag: 'span',
-			style: {fontSize: '14px', marginLeft: '5px'},
-			attributes: {'class': 'yt-uix-button-content'},
+			style: {
+				'font-size': '14px',
+				'margin-left': '5px'
+			},
+			attributes: {
+				'class': 'yt-uix-button-content'
+			},
 			children: '-'
 		}
 	};
@@ -981,7 +1053,9 @@ var PlayerSize = new PlayerOption('player_size', {
 			case 2: // FIT
 				DH.append(document.body, {
 					tag: 'style',
-					attributes: {type: 'text/css'},
+					attributes: {
+						'type': 'text/css'
+					},
 					children: [
 						'#watch-video.medium #watch-player,',
 						'#watch-video.large #watch-player {',
@@ -1009,7 +1083,9 @@ var PlayerSize = new PlayerOption('player_size', {
 var UI = extend(function() {}, {
 	setVisible: function(node, visible) {
 		DH[visible ? 'delClass' : 'addClass'](node, 'hid');
-		DH.style(node, {display: visible ? 'block' : 'none'});
+		DH.style(node, {
+			'display': visible ? 'block' : 'none'
+		});
 	}
 });
 
@@ -1017,7 +1093,8 @@ UI.prototype = {
 	_def: {
 		icon: {
 			tag: 'img',
-			attributes: {src: 'data:image/png;base64,\
+			attributes: {
+				'src': 'data:image/png;base64,\
 iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABIklEQVQ4y6WSPUoEQRCFv5kdWVAT\
 DyDGJkKnpuoZJu5IUFeMRPYCaiAbOIhGL94LGHkBEbQ1XMM1N3EVVvxJaoelmRFHX1TV7/WrrupK\
 qIH3fh04sPRI0lWVLqMel8CMxavA7I8G3vsesAe8SpoD3qcMvkwzMqNTSbsAiRGbwDnN0JFUpJa0\
@@ -1030,8 +1107,15 @@ RK5CYII='}
 		button: function(click) {
 			return {
 				tag: 'button',
-				style: {padding: '0 4px'},
-				attributes: {type: 'button', role: 'button', 'class': 'yt-uix-button yt-uix-button-default yt-uix-tooltip yt-uix-tooltip-reverse yt-uix-button-empty', title: _('Player settings')},
+				style: {
+					'padding': '0 4px'
+				},
+				attributes: {
+					'type': 'button',
+					'role': 'button',
+					'class': 'yt-uix-button yt-uix-button-default yt-uix-tooltip yt-uix-tooltip-reverse yt-uix-button-empty',
+					'title': _('Player settings')
+				},
 				children: this.icon,
 				listeners: {click: click}
 			};
@@ -1039,17 +1123,29 @@ RK5CYII='}
 
 		panel: function(buttons) {
 			return [{
+				style: {
+					'margin-bottom': '5px'
+				},
 				children: [{
 					tag: 'strong',
 					children: _('Player settings')
 				}, {
 					tag: 'a',
-					attributes: {href: Meta.site, target: '_blank'},
-					style: {marginLeft: '4px', verticalAlign: 'super', fontSize: '10px', cursor: 'pointer'},
+					attributes: {
+						'href': Meta.site,
+						'target': '_blank'
+					},
+					style: {
+						'margin-left': '4px',
+						'vertical-align': 'super',
+						'font-size': '10px'
+					},
 					children: _('Help')
 				}]
 			}, {
-				style: {textAlign: 'center', margin: '5px 0'},
+				style: {
+					'text-align': 'center',
+				},
 				children: map(bind(Button.prototype.render.call, Button.prototype.render), buttons)
 			}];
 		}
@@ -1086,7 +1182,9 @@ function WatchUI() {
 	this.button = DH.build(this.button);
 
 	this.panel = DH.build({
-		attributes: {'class': 'watch-actions-panel'},
+		attributes: {
+			'class': 'watch-actions-panel'
+		},
 		children: this.panel
 	});
 
@@ -1126,6 +1224,9 @@ WatchUI.prototype = extend(new UI(), {
 	}
 });
 
+/*
+ * Watch7UI class.
+ */
 function Watch7UI() {
 	this.buttons = [
 		VideoQuality.button(),
@@ -1137,8 +1238,15 @@ function Watch7UI() {
 	this.button = DH.build(this.button);
 
 	this.panel = DH.build({
-		attributes: {id: 'action-panel-yays', 'class': 'action-panel-content hid', 'data-panel-loaded': 'true'},
-		style: {display: 'none', color: '#333'},
+		attributes: {
+			'id': 'action-panel-yays',
+			'class': 'action-panel-content hid',
+			'data-panel-loaded': 'true'
+		},
+		style: {
+			'display': 'none',
+			'color': '#333'
+		},
 		children: this.panel
 	});
 
@@ -1147,34 +1255,35 @@ function Watch7UI() {
 }
 
 Watch7UI.prototype = extend(new UI(), {
-	_def: {
+	_def: extend({
 		button: function(click) {
 			return {
 				tag: 'span',
 				children: {
 					tag: 'button',
 					attributes: {
-						type: 'button',
-						role: 'button',
+						'type': 'button',
+						'role': 'button',
 						'class': 'action-panel-trigger yt-uix-button yt-uix-button-hh-text yt-uix-button-empty',
 						'data-button-toggle': 'true',
 						'data-trigger-for': 'action-panel-yays'
 					},
 					children: {
 						tag: 'span',
-						attributes: {'class': 'yt-uix-button-icon-wrapper'},
+						attributes: {
+							'class': 'yt-uix-button-icon-wrapper'
+						},
 						children: [this.icon, {
 							tag: 'span',
-							attributes: {'class': 'yt-uix-button-valign'}
+							attributes: {
+								'class': 'yt-uix-button-valign'
+							}
 						}]
 					}
 				}
 			};
-		},
-
-		icon: UI.prototype._def.icon,
-		panel: UI.prototype._def.panel
-	}
+		}
+	}, UI.prototype._def, false)
 });
 
 
@@ -1192,8 +1301,13 @@ function ChannelUI() {
 	this.button = DH.build(this.button);
 
 	this.panel = DH.build({
-		attributes: {'class': 'hid'},
-		style: {display: 'none', marginTop: '7px'},
+		attributes: {
+			'class': 'hid'
+		},
+		style: {
+			'display': 'none',
+			'margin-top': '7px'
+		},
 		children: this.panel
 	});
 
