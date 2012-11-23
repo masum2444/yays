@@ -85,7 +85,7 @@ function bind(func, scope, args) {
 	};
 }
 
-function extend(target, source, override) {
+function merge(target, source, override) {
 	override = override === undefined || override;
 
 	for (var key in source) {
@@ -94,6 +94,13 @@ function extend(target, source, override) {
 	}
 
 	return target;
+}
+
+function extend(base, proto) {
+	function T() {}
+	T.prototype = base.prototype;
+
+	return merge(new T(), proto);
 }
 
 function extendFn(func, extension) {
@@ -252,7 +259,7 @@ var DH = {
 	build: function(def) {
 		switch (Object.prototype.toString.call(def)) {
 			case '[object Object]':
-				def = extend({tag: 'div', style: null, attributes: null, listeners: null, children: null}, def);
+				def = merge({tag: 'div', style: null, attributes: null, listeners: null, children: null}, def);
 
 				var node = this.createElement(def.tag);
 
@@ -297,19 +304,15 @@ var DH = {
 			each([].concat(children), function(i, child) { parent.insertBefore(this.build(child), sibling); }, this);
 			parent.normalize();
 		}
-		else {
+		else
 			this.append(parent, children);
-		}
 	},
 
 	prepend: function(node, children) {
-		if (node.hasChildNodes()) {
-			var firstChild = node.firstChild;
-			each([].concat(children), function(i, child) { node.insertBefore(this.build(child), firstChild); }, this);
-		}
-		else {
+		if (node.hasChildNodes())
+			each([].concat(children), function(i, child) { node.insertBefore(this.build(child), node.firstChild); }, this);
+		else
 			this.append(node, children);
-		}
 	},
 
 	attributes: function(node, attributes) {
@@ -321,15 +324,13 @@ var DH = {
 	},
 
 	addClass: function(node, clss) {
-		if (! this.hasClass(node, clss)) {
+		if (! this.hasClass(node, clss))
 			node.setAttribute('class', (node.getAttribute('class') || '').concat(' ', clss).trim());
-		}
 	},
 
 	delClass: function(node, clss) {
-		if (this.hasClass(node, clss)) {
+		if (this.hasClass(node, clss))
 			node.setAttribute('class', node.getAttribute('class').replace(new RegExp('\\s*'.concat(clss, '\\s*'), 'g'), ' ').trim());
-		}
 	},
 
 	listeners: function(node, listeners) {
@@ -743,8 +744,29 @@ var Player = (function() {
 /*
  * Button class.
  */
-var Button = (function() {
-	var def = {
+function Button(labelText, tooltipText, callbacks) {
+	var
+		node = DH.build(this._def.node),
+		label = DH.build(this._def.label),
+		indicator = DH.build(this._def.indicator);
+
+	DH.attributes(node, {title: tooltipText});
+	DH.append(label, labelText);
+	DH.append(node, [label, indicator]);
+
+	DH.on(node, 'click', bind(this._onClick, this));
+
+	this._node = node;
+	this._indicator = indicator.firstChild;
+
+	merge(this, callbacks);
+}
+
+Button.prototype = {
+	_indicator: null,
+	_node: null,
+
+	_def: {
 		node: {
 			tag: 'button',
 			style: {
@@ -752,7 +774,7 @@ var Button = (function() {
 			},
 			attributes: {
 				'type': 'button',
-				'class': 'yt-uix-button yt-uix-button-default yt-uix-button-hh-default yt-uix-tooltip'
+				'class': 'yt-uix-button yt-uix-button-default yt-uix-tooltip'
 			}
 		},
 
@@ -774,56 +796,43 @@ var Button = (function() {
 			},
 			children: '-'
 		}
-	};
+	},
 
-	function Button(labelText, tooltipText, callbacks) {
-		var
-			node = DH.build(def.node),
-			label = DH.build(def.label),
-			indicator = DH.build(def.indicator);
+	_onClick: function() {
+		this.handler();
+		this.refresh();
+	},
 
-		DH.attributes(node, {title: tooltipText});
-		DH.append(label, labelText);
-		DH.append(node, [label, indicator]);
+	refresh: function() {
+		this._indicator.data = this.display();
+	},
 
-		DH.on(node, 'click', bind(this._onClick, this));
+	render: function() {
+		this.refresh();
+		return this._node;
+	},
 
-		this._node = node;
-		this._indicator = indicator.firstChild;
+	handler: emptyFn,
+	display: emptyFn
+};
 
-		extend(this, callbacks);
-	}
+/*
+ * Button7 class.
+ */
+function Button7() {
+	Button.apply(this, arguments);
 
-	Button.prototype = {
-		_indicator: null,
-		_node: null,
+	DH.delClass(this._node, 'yt-uix-button-default');
+	DH.addClass(this._node, 'yt-uix-button-hh-default');
+}
 
-		_onClick: function() {
-			this.handler();
-			this.refresh();
-		},
-
-		refresh: function() {
-			this._indicator.data = this.display();
-		},
-
-		render: function() {
-			this.refresh();
-			return this._node;
-		},
-
-		handler: emptyFn,
-		display: emptyFn
-	};
-
-	return Button;
-})();
+Button7.prototype = extend(Button, {});
 
 /*
  * PlayerOption class.
  */
 function PlayerOption(key, overrides) {
-	extend(this, overrides);
+	merge(this, overrides);
 
 	this._key = key;
 }
@@ -852,8 +861,8 @@ PlayerOption.prototype = {
 		Config.set(this._key, Number(value));
 	},
 
-	button: function() {
-		return new Button(_(this.label), _(this.tooltip), {
+	button: function(buttonClss) {
+		return new buttonClss(_(this.label), _(this.tooltip), {
 			handler: bind(this._step, this),
 			display: bind(this._indicator, this)
 		});
@@ -1080,14 +1089,18 @@ var PlayerSize = new PlayerOption('player_size', {
 /*
  * Abstract UI class.
  */
-var UI = extend(function() {}, {
-	setVisible: function(node, visible) {
-		DH[visible ? 'delClass' : 'addClass'](node, 'hid');
-		DH.style(node, {
-			'display': visible ? 'block' : 'none'
-		});
-	}
-});
+function UI() {
+	this.buttons = this.buttons();
+	this.button = this._def.button(bind(this.toggle, this));
+	this.panel = this._def.panel(this.buttons);
+}
+
+UI.setVisible = function(node, visible) {
+	DH[visible ? 'delClass' : 'addClass'](node, 'hid');
+	DH.style(node, {
+		'display': visible ? 'block' : 'none'
+	});
+};
 
 UI.prototype = {
 	_def: {
@@ -1151,19 +1164,14 @@ RK5CYII='}
 		}
 	},
 
-	buttons: null,
 	button: null,
 	panel: null,
-
-	initialize: function() {
-		this.button = this._def.button(bind(this.toggle, this));
-		this.panel = this._def.panel(this.buttons);
-	},
 
 	refresh: function() {
 		each(this.buttons, function(i, button) { button.refresh(); });
 	},
 
+	buttons: emptyFn,
 	toggle: emptyFn
 };
 
@@ -1171,13 +1179,7 @@ RK5CYII='}
  * WatchUI class.
  */
 function WatchUI() {
-	this.buttons = [
-		VideoQuality.button(),
-		PlayerSize.button(),
-		AutoPlay.button()
-	];
-
-	this.initialize();
+	UI.call(this);
 
 	this.button = DH.build(this.button);
 
@@ -1194,7 +1196,15 @@ function WatchUI() {
 	PlayerSize.apply();
 }
 
-WatchUI.prototype = extend(new UI(), {
+WatchUI.prototype = extend(UI, {
+	buttons: function() {
+		return [
+			VideoQuality.button(Button),
+			PlayerSize.button(Button),
+			AutoPlay.button(Button)
+		];
+	},
+
 	toggle: function() {
 		var container = DH.id('watch-actions-area-container');
 
@@ -1228,12 +1238,7 @@ WatchUI.prototype = extend(new UI(), {
  * Watch7UI class.
  */
 function Watch7UI() {
-	this.buttons = [
-		VideoQuality.button(),
-		AutoPlay.button()
-	];
-
-	this.initialize();
+	UI.call(this);
 
 	this.button = DH.build(this.button);
 
@@ -1254,8 +1259,8 @@ function Watch7UI() {
 	DH.prepend(DH.id('watch7-action-panels'), this.panel);
 }
 
-Watch7UI.prototype = extend(new UI(), {
-	_def: extend({
+Watch7UI.prototype = extend(UI, {
+	_def: merge({
 		button: function(click) {
 			return {
 				tag: 'span',
@@ -1283,7 +1288,14 @@ Watch7UI.prototype = extend(new UI(), {
 				}
 			};
 		}
-	}, UI.prototype._def, false)
+	}, UI.prototype._def, false),
+
+	buttons: function() {
+		return [
+			VideoQuality.button(Button7),
+			AutoPlay.button(Button7)
+		];
+	}
 });
 
 
@@ -1291,12 +1303,7 @@ Watch7UI.prototype = extend(new UI(), {
  * ChannelUI class.
  */
 function ChannelUI() {
-	this.buttons = [
-		VideoQuality.button(),
-		AutoPlay.button()
-	];
-
-	this.initialize();
+	UI.call(this);
 
 	this.button = DH.build(this.button);
 
@@ -1315,7 +1322,14 @@ function ChannelUI() {
 	DH.insertAfter(DH.id('flag-video-panel'), this.panel);
 }
 
-ChannelUI.prototype = extend(new UI(), {
+ChannelUI.prototype = extend(UI, {
+	buttons: function() {
+		return [
+			VideoQuality.button(Button),
+			AutoPlay.button(Button)
+		];
+	},
+
 	toggle: function() {
 		if (DH.hasClass(this.panel, 'hid')) {
 			each(this.panel.parentNode.childNodes, function(i, node) {
@@ -1327,9 +1341,27 @@ ChannelUI.prototype = extend(new UI(), {
 
 			UI.setVisible(this.panel, true);
 		}
-		else {
+		else
 			UI.setVisible(this.panel, false);
-		}
+	}
+});
+
+/*
+ * Channel7UI
+ */
+function Channel7UI() {
+	ChannelUI.call(this);
+
+	DH.delClass(this.button, 'yt-uix-button-default');
+	DH.addClass(this.button, 'yt-uix-button-hh-default');
+}
+
+Channel7UI.prototype = extend(ChannelUI, {
+	buttons: function() {
+		return [
+			VideoQuality.button(Button7),
+			AutoPlay.button(Button7)
+		];
 	}
 });
 
@@ -1376,19 +1408,19 @@ each(['onYouTubePlayerReady', 'ytPlayerOnYouTubePlayerReady'], function(i, callb
 
 onPlayerReady();
 
-var page = DH.id('page');
+var page = DH.id('page'), v7 = DH.hasClass(unsafeWindow.document.body, 'site-left-aligned');
 if (page) {
-	switch (true) {
-		case DH.hasClass(page, 'watch'):
-			if (DH.id('watch-container'))
-				new WatchUI();
-			else
-				new Watch7UI();
-			break;
-
-		case DH.hasClass(page, 'channel'):
+	if (DH.hasClass(page, 'watch')) {
+		if (v7)
+			new Watch7UI();
+		else
+			new WatchUI();
+	}
+	else if (DH.hasClass(page, 'channel')) {
+		if (v7)
+			new Channel7UI();
+		else
 			new ChannelUI();
-			break;
 	}
 }
 
