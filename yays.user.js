@@ -861,8 +861,8 @@ PlayerOption.prototype = {
 		Config.set(this._key, Number(value));
 	},
 
-	button: function(buttonClss) {
-		return new buttonClss(_(this.label), _(this.tooltip), {
+	button: function(type) {
+		return new type(_(this.label), _(this.tooltip), {
 			handler: bind(this._step, this),
 			display: bind(this._indicator, this)
 		});
