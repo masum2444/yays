@@ -76,20 +76,12 @@ each(['onYouTubePlayerReady', 'ytPlayerOnYouTubePlayerReady'], function(i, callb
 
 onPlayerReady();
 
-var page = DH.id('page'), v7 = DH.hasClass(unsafeWindow.document.body, 'site-left-aligned');
+var page = DH.id('page');
 if (page) {
-	if (DH.hasClass(page, 'watch')) {
-		if (v7)
-			new Watch7UI();
-		else
-			new WatchUI();
-	}
-	else if (DH.hasClass(page, 'channel')) {
-		if (v7)
-			new Channel7UI();
-		else
-			new ChannelUI();
-	}
+	if (DH.hasClass(page, 'watch'))
+		new WatchUI();
+	else if (DH.hasClass(page, 'channel'))
+		new ChannelUI();
 }
 
 } // YAYS

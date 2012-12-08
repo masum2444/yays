@@ -240,18 +240,18 @@ var PlayerSize = new PlayerOption('player_size', {
 						'type': 'text/css'
 					},
 					children: [
-						'#watch-video.medium #watch-player,',
-						'#watch-video.large #watch-player {',
-							'width: 970px !important;',
-							'height: 575px !important;',
+						'.watch-medium #watch7-player {',
+							'width: 945px !important;',
+							'height: 560px !important;',
 						'}'
 					]
 				});
 				// no break;
 
 			case 1: // WIDE
-				DH.addClass(DH.id('page'), 'watch-wide');
-				DH.addClass(DH.id('watch-video'), 'medium');
+				var container = DH.id('watch7-container');
+				DH.addClass(container, 'watch-wide');
+				DH.addClass(container, 'watch-medium');
 				break;
 
 			default:

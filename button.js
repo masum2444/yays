@@ -32,7 +32,7 @@ Button.prototype = {
 			},
 			attributes: {
 				'type': 'button',
-				'class': 'yt-uix-button yt-uix-button-default yt-uix-tooltip'
+				'class': 'yt-uix-button yt-uix-button-hh-default yt-uix-tooltip'
 			}
 		},
 
@@ -73,17 +73,4 @@ Button.prototype = {
 	handler: emptyFn,
 	display: emptyFn
 };
-
-/*
- * Button7 class.
- */
-
-function Button7() {
-	Button.apply(this, arguments);
-
-	DH.delClass(this._node, 'yt-uix-button-default');
-	DH.addClass(this._node, 'yt-uix-button-hh-default');
-}
-
-Button7.prototype = extend(Button, {});
 
