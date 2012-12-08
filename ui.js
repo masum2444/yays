@@ -30,7 +30,33 @@ xPHZmaSiNDCTDpBKaldsZ8s0bdNsU7XCIYQyds7dAkvAENgJIQxiDcA3XBdfpD8Lv/UAAAAASUVO\
 RK5CYII='}
 		},
 
-		button: emptyFn,
+		button: function(click) {
+			return {
+				tag: 'span',
+				children: {
+					tag: 'button',
+					attributes: {
+						'type': 'button',
+						'role': 'button',
+						'class': 'action-panel-trigger yt-uix-button yt-uix-button-hh-text yt-uix-button-empty',
+						'data-button-toggle': 'true',
+						'data-trigger-for': 'action-panel-yays'
+					},
+					children: {
+						tag: 'span',
+						attributes: {
+							'class': 'yt-uix-button-icon-wrapper'
+						},
+						children: [this.icon, {
+							tag: 'span',
+							attributes: {
+								'class': 'yt-uix-button-valign'
+							}
+						}]
+					}
+				}
+			};
+		},
 
 		panel: function(buttons) {
 			return [{
@@ -104,36 +130,6 @@ function WatchUI() {
 }
 
 WatchUI.prototype = extend(UI, {
-	_def: merge({
-		button: function(click) {
-			return {
-				tag: 'span',
-				children: {
-					tag: 'button',
-					attributes: {
-						'type': 'button',
-						'role': 'button',
-						'class': 'action-panel-trigger yt-uix-button yt-uix-button-hh-text yt-uix-button-empty',
-						'data-button-toggle': 'true',
-						'data-trigger-for': 'action-panel-yays'
-					},
-					children: {
-						tag: 'span',
-						attributes: {
-							'class': 'yt-uix-button-icon-wrapper'
-						},
-						children: [this.icon, {
-							tag: 'span',
-							attributes: {
-								'class': 'yt-uix-button-valign'
-							}
-						}]
-					}
-				}
-			};
-		}
-	}, UI.prototype._def, false),
-
 	toggle: function() {
 		var container = DH.id('watch-actions-area-container');
 
