@@ -1,5 +1,5 @@
 // #define SCRIPT_NAME         Yays! (Yet Another Youtube Script)
-// #define SCRIPT_DESCRIPTION  Control autoplaying and playback quality on YouTube.
+// #define SCRIPT_DESCRIPTION  A lightweight and non-intrusive userscript that control autoplaying and set the preferred player size and playback quality on YouTube.
 // #define SCRIPT_VERSION      1.5.8
 // #define SCRIPT_RELEASE_DATE Sep 02, 2012
 // #define SCRIPT_NS           yays
@@ -15,8 +15,8 @@
 // @namespace   youtube
 // @description SCRIPT_DESCRIPTION
 // @version     SCRIPT_VERSION
-// @author      eugenox_gmail_com
-// @license     (CC) BY-SA-3.0 http://creativecommons.org/licenses/by-sa/3.0/
+// @author      Eugen Nouvellieu <eugenox_gmail_com>
+// @license     MIT License
 // @include     http*://ASTERIX.youtube.com/ASTERIX
 // @include     http*://youtube.com/ASTERIX
 // @run-at      document-end

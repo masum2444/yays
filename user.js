@@ -1,5 +1,7 @@
 // #include "meta.jsp"
 
+// #include "license.jsp"
+
 function YAYS(unsafeWindow) {
 
 /*
