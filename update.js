@@ -105,7 +105,7 @@
 						},
 						children: text,
 						listeners: {
-							click: handler
+							'click': handler
 						}
 					});
 				}, ['Update', 'Dismiss'], [openDownloadSite, removePopup])

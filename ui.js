@@ -53,6 +53,9 @@ RK5CYII='}
 								'class': 'yt-uix-button-valign'
 							}
 						}]
+					},
+					listeners: {
+						'click': click
 					}
 				}
 			};
@@ -131,31 +134,7 @@ function WatchUI() {
 
 WatchUI.prototype = extend(UI, {
 	toggle: function() {
-		var container = DH.id('watch-actions-area-container');
-
-		if (DH.hasClass(this.panel, 'hid') || DH.hasClass(container, 'hid')) {
-			each(DH.id('watch-actions').getElementsByTagName('button'), function(i, button) {
-				DH.delClass(button, 'active');
-			});
-
-			DH.addClass(this.button, 'active');
-
-			each(DH.id('watch-actions-area').childNodes, function(i, node) {
-				if (node.nodeType == DH.ELEMENT_NODE && DH.hasClass(node, 'watch-actions-panel'))
-					UI.setVisible(node, false);
-			});
-
-			this.refresh();
-
-			UI.setVisible(this.panel, true);
-			UI.setVisible(container, true);
-		}
-		else {
-			DH.delClass(this.button, 'active');
-
-			UI.setVisible(container, false);
-			UI.setVisible(this.panel, false);
-		}
+		this.refresh();
 	}
 });
 
@@ -199,7 +178,9 @@ ChannelUI.prototype = extend(UI, {
 					'title': _('Player settings')
 				},
 				children: this.icon,
-				listeners: {click: click}
+				listeners: {
+					'click': click
+				}
 			};
 		}
 	}, UI.prototype._def, false),
