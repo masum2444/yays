@@ -69,16 +69,24 @@ var DH = {
 	},
 
 	hasClass: function(node, clss) {
-		return node.hasAttribute('class') && node.getAttribute('class').indexOf(clss) != -1;
+		return \
+			node.hasAttribute('class') &&
+			(clss instanceof RegExp ? clss.test(node.getAttribute('class')) : node.getAttribute('class').indexOf(clss) != -1);
 	},
 
 	addClass: function(node, clss) {
-		if (! this.hasClass(node, clss))
-			node.setAttribute('class', (node.getAttribute('class') || '').concat(' ', clss).trim());
+		if (clss.indexOf(' ') == -1) {
+			if (! this.hasClass(node, clss))
+				node.setAttribute('class', (node.getAttribute('class') || '').concat(' ', clss).trim());
+		}
+		else
+			each(clss.split(/ +/), function(i, clss) { this.addClass(node, clss); }, this);
 	},
 
 	delClass: function(node, clss) {
-		if (this.hasClass(node, clss))
+		clss = clss.trim().replace(/ +/g, '|');
+
+		if (this.hasClass(node, new RegExp(clss)))
 			node.setAttribute('class', node.getAttribute('class').replace(new RegExp('\\s*'.concat(clss, '\\s*'), 'g'), ' ').trim());
 	},
 

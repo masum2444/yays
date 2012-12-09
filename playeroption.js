@@ -232,7 +232,9 @@ var PlayerSize = new PlayerOption('player_size', {
 	states: ['AUTO', 'WIDE', 'FIT'],
 
 	apply: function() {
-		switch (this.get()) {
+		var mode = this.get();
+
+		switch (mode) {
 			case 2: // FIT
 				DH.append(document.body, {
 					tag: 'style',
@@ -249,14 +251,14 @@ var PlayerSize = new PlayerOption('player_size', {
 				// no break;
 
 			case 1: // WIDE
-				var container = DH.id('watch7-container');
-				DH.addClass(container, 'watch-wide');
-				DH.addClass(container, 'watch-medium');
+				DH.addClass(DH.id('watch7-container'), 'watch-wide watch-medium watch-playlist-collapsed');
 				break;
 
 			default:
 				return;
 		}
+
+		debug('Size set to', ['wide', 'fit'][mode - 1]);
 	}
 });
 
