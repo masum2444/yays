@@ -38,7 +38,7 @@ RK5CYII='}
 					attributes: {
 						'type': 'button',
 						'role': 'button',
-						'class': 'action-panel-trigger yt-uix-button yt-uix-button-hh-text yt-uix-button-empty',
+						'class': 'action-panel-trigger yt-uix-button yt-uix-button-text yt-uix-button-empty',
 						'data-button-toggle': 'true',
 						'data-trigger-for': 'action-panel-yays'
 					},
@@ -174,7 +174,7 @@ ChannelUI.prototype = extend(UI, {
 				attributes: {
 					'type': 'button',
 					'role': 'button',
-					'class': 'yt-uix-button yt-uix-button-hh-default yt-uix-tooltip yt-uix-tooltip-reverse yt-uix-button-empty',
+					'class': 'yt-uix-button yt-uix-button-default yt-uix-tooltip yt-uix-tooltip-reverse yt-uix-button-empty',
 					'title': _('Player settings')
 				},
 				children: this.icon,

@@ -32,7 +32,7 @@ Button.prototype = {
 			},
 			attributes: {
 				'type': 'button',
-				'class': 'yt-uix-button yt-uix-button-hh-default yt-uix-tooltip'
+				'class': 'yt-uix-button yt-uix-button-default yt-uix-tooltip'
 			}
 		},
 
