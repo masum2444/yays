@@ -1,6 +1,6 @@
-// #include "meta.jsp"
+// #include "meta.jst"
 
-// #include "license.jsp"
+// #include "license.jst"
 
 function YAYS(unsafeWindow) {
 
@@ -22,16 +22,16 @@ var Meta = {
 
 unsafeWindow[Meta.ns] = {};
 
-// #include "util.jsp"
-// #include "i18n.jsp"
-// #include "dom.jsp"
-// #include "config.jsp"
-// #include "jsonrequest.jsp"
-// #include "update.jsp"
-// #include "player.jsp"
-// #include "button.jsp"
-// #include "playeroption.jsp"
-// #include "ui.jsp"
+// #include "util.jst"
+// #include "i18n.jst"
+// #include "dom.jst"
+// #include "config.jst"
+// #include "jsonrequest.jst"
+// #include "update.jst"
+// #include "player.jst"
+// #include "button.jst"
+// #include "playeroption.jst"
+// #include "ui.jst"
 
 /*
  * Player state change callback.
