@@ -66,12 +66,22 @@ function extend(base, proto) {
 	return merge(new T(), proto);
 }
 
+function asyncCall(func, scope, args) {
+	setTimeout(bind(func, scope, args), 0);
+}
+
+function asyncProxy(func) {
+	return function() {
+		asyncCall(func, this, arguments);
+	};
+}
+
 function extendFn(func, extension) {
 	if (! func)
 		return extension;
 
 	return function() {
-		setTimeout(bind(func, this, arguments), 0);
+		asyncCall(func, this, arguments);
 
 		extension.apply(this, arguments);
 	};
@@ -91,12 +101,6 @@ function parseJSON(data) {
 		return JSON.parse(data);
 
 	return eval('('.concat(data, ')'));
-}
-
-function timeoutProxy(func) {
-	return function() {
-		setTimeout(bind(func, this, arguments), 0);
-	};
 }
 
 function debug() {

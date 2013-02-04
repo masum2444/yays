@@ -37,18 +37,20 @@ unsafeWindow[Meta.ns] = {};
  * Player state change callback.
  */
 
-unsafeWindow[Meta.ns].onPlayerStateChange = timeoutProxy(function(state) {
+unsafeWindow[Meta.ns].onPlayerStateChange = asyncProxy(function(state) {
 	debug('State changed to', ['unstarted', 'ended', 'playing', 'paused', 'buffering'][state + 1]);
 
 	AutoPlay.apply();
-	VideoQuality.apply();
+
+	// Pausing playback doesn't have any effect if we rebuffer the video in the new quality level immediately.
+	asyncCall(VideoQuality.apply, VideoQuality);
 });
 
 /*
  * Player ready callback.
  */
 
-var onPlayerReady = timeoutProxy(function() {
+var onPlayerReady = asyncProxy(function() {
 	var element = DH.id('movie_player') || DH.id('movie_player-flash') || DH.id('movie_player-html5');
 
 	if (element) {
