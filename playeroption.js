@@ -243,14 +243,17 @@ var PlayerSize = new PlayerOption('player_size', {
 					},
 					children: [
 						'.watch-medium .watch7-playlist-bar {',
-							'width: 945px !important;',
+							'width: 945px;',
 						'}',
 						'.watch-medium #watch7-playlist-tray-container {',
-							'height: 560px !important;',
+							'height: 533px;',
+						'}',
+						'.watch-medium.watch-playlist-collapsed #watch7-playlist-tray-container {',
+							'height: 0;',
 						'}',
 						'.watch-medium #watch7-player {',
-							'width: 945px !important;',
-							'height: 560px !important;',
+							'width: 945px;',
+							'height: 560px;',
 						'}'
 					]
 				});
