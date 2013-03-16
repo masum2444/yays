@@ -6,6 +6,7 @@
 \
 // #define SCRIPT_SITE_DOMAIN eugenox.appspot.com
 // #define SCRIPT_SITE        http://SCRIPT_SITE_DOMAIN/script/yays
+// #define SCRIPT_AUTHOR      Eugene Nouvellieu <eugenox_gmail_com>
 \
 // #define ASTERIX *
 // #define APOSTROPHIZE(arg) ??/047arg??/047
@@ -15,7 +16,7 @@
 // @namespace   youtube
 // @description SCRIPT_DESCRIPTION
 // @version     SCRIPT_VERSION
-// @author      Eugen Nouvellieu <eugenox_gmail_com>
+// @author      SCRIPT_AUTHOR
 // @license     MIT License
 // @include     http*://ASTERIX.youtube.com/ASTERIX
 // @include     http*://youtube.com/ASTERIX
