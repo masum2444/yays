@@ -7,7 +7,7 @@ var _ = (function() {
 	vocabulary = ["Auto play", "ON", "OFF", "AUTO", "Toggle video autoplay", "Quality", "AUTO", "ORIGINAL", "Set default video quality", "Size", "AUTO", "WIDE", "FIT", "Set default player size", "Player settings", "Help"],
 	dictionary = combine(vocabulary, (function() {
 		switch ((document.documentElement.lang || 'en').substr(0, 2)) {
-			// hungarian - Eugenox
+			// hungarian - eugenox
 			case 'hu':
 				return ["Automatikus lej\u00e1tsz\u00e1s", "BE", "KI", "AUTO", "Automatikus lej\u00e1tsz\u00e1s ki-be kapcsol\u00e1sa", "Min\u0151s\u00e9g", "AUTO", "EREDETI", "Vide\u00f3k alap\u00e9rtelmezett felbont\u00e1sa", "M\u00e9ret", "AUTO", "SZ\u00c9LES", "ILLESZTETT", "Lej\u00e1tsz\u00f3 alap\u00e9rtelmezett m\u00e9rete", "Lej\u00e1tsz\u00f3 be\u00e1ll\u00edt\u00e1sai", "S\u00fag\u00f3"];
 
@@ -33,7 +33,7 @@ var _ = (function() {
 
 			// french - eXa
 			case 'fr':
-				return ["Lecture Auto", null, null, null, "Lecture auto ON/OFF", "Qualit\u00e9", null, null, "Qualit\u00e9 par d\u00e9faut", null, null, null, null, null, "Option du lecteur", null];
+				return ["Lecture Auto", "ON", "OFF", "AUTO", "Lecture auto ON/OFF", "Qualit\u00e9", "AUTO", "ORIGINAL", "Qualit\u00e9 par d\u00e9faut", "Taille", "AUTO", "LARGE", "ADAPT\u00c9", "Taille par d\u00e9faut du lecteur", "Options du lecteur", "Aide"];
 
 			// slovenian - Paranoia.Com
 			case 'sl':
@@ -50,6 +50,14 @@ var _ = (function() {
 			// chinese - blankhang
 			case 'zh':
 				return ["\u81ea\u52a8\u64ad\u653e", "\u5f00", "\u5173", "\u81ea\u52a8", "\u5207\u6362\u89c6\u9891\u81ea\u52a8\u64ad\u653e", "\u89c6\u9891\u8d28\u91cf", "\u81ea\u52a8", "\u539f\u59cb", "\u8bbe\u7f6e\u9ed8\u8ba4\u89c6\u9891\u8d28\u91cf", "\u64ad\u653e\u5668\u5927\u5c0f", "\u81ea\u52a8", "\u5bbd\u5c4f", "\u81ea\u9002\u5e94", "\u8bbe\u7f6e\u64ad\u653e\u5668\u9ed8\u8ba4\u5927\u5c0f", "\u64ad\u653e\u5668\u8bbe\u7f6e", "\u5e2e\u52a9"];
+
+			// polish - mkvs
+			case 'pl':
+				return ["Automatyczne odtwarzanie", "W\u0141\u0104CZONE", "WY\u0141ACZNONE", "AUTOMATYCZNE", "Ustaw automatyczne odtwarzanie film\u00f3w", "Jako\u015b\u0107", "AUTOMATYCZNA", "ORYGINALNA", "Ustaw domy\u015bln\u0105 jako\u015b\u0107 film\u00f3w", "Rozmiar", "AUTOMATYCZNY", "SZEROKI", "DOPASOWANY", "Ustaw domy\u015blny rozmiar odtwarzacza", "Ustawienia odtwarzacza", "Pomoc"];
+
+			// swedish - eson
+			case 'sv':
+				return ["Automatisk uppspelning", "P\u00c5", "AV", "AUTO", "V\u00e4xla uppspelningsl\u00e4ge", "Kvalitet", "AUTO", "ORIGINAL", "Ange standardkvalitet", "Storlek", "AUTO", "BRED", "ANPASSAD", "Ange standardstorlek", "Inst\u00e4llningar", "Hj\u00e4lp"];
 		}
 
 		return [];
