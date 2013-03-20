@@ -251,7 +251,7 @@ var PlayerSize = new PlayerOption('player_size', {
 						'.watch-medium.watch-playlist-collapsed #watch7-playlist-tray-container {',
 							'height: 0;',
 						'}',
-						'.watch-medium #watch7-player {',
+						'.watch-medium #player-api {',
 							'width: 945px;',
 							'height: 560px;',
 						'}'
