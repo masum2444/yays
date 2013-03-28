@@ -58,7 +58,7 @@ var Player = (function() {
 			// HTML5
 			else {
 				try {
-					return unsafeWindow.yt.playerConfig.args[name];
+					return unsafeWindow.ytplayer.config.args[name];
 				}
 				catch (e) {}
 			}
