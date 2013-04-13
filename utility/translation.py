@@ -6,6 +6,9 @@ import re
 import csv
 import itertools
 import json
+import urllib
+
+SPREADSHEET_URL = 'https://docs.google.com/spreadsheet/pub?key=0Al9obkz_TwDLdEpqcEM5bVRSc3FXczF3Vl80Wk53eEE&output=csv'
 
 class Vocabulary(object):
 	def __init__(self):
@@ -20,15 +23,13 @@ class Vocabulary(object):
 """.format(json.dumps(self._texts))
 
 class Translation(Vocabulary):
-	def __init__(self, field):
+	def __init__(self):
 		super(Translation, self).__init__()
 
 		self._language = None
 		self._language_code = None
 		self._author = None
 		self._complete = None
-
-		self.feed(field)
 
 	def __str__(self):
 		return """\
@@ -53,14 +54,15 @@ class Translation(Vocabulary):
 		else:
 			super(Translation, self).feed(field)
 
+source = urllib.urlopen(SPREADSHEET_URL)
+
 vocabulary = Vocabulary()
 translations = None
-for ln, line in enumerate(csv.reader(sys.stdin)):
+for ln, line in enumerate(csv.reader(source)):
 	fields = [field.decode('utf-8').strip() for field in line]
 
 	if translations is None:
-		translations = [Translation(field) for field in fields[1:]]
-		continue
+		translations = [Translation() for field in fields[1:]]
 
 	if ln > 2:
 		vocabulary.feed(fields[0])
