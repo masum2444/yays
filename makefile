@@ -1,10 +1,10 @@
 BUILD_DIR := ../build
 
-all: yays.user.js yays.meta.js
+all: $(BUILD_DIR)/yays.user.js $(BUILD_DIR)/yays.meta.js
 
-yays.%.js: %.jst
-	gcc -E -P -CC -traditional -o $(BUILD_DIR)/$@ -x c $<
-	sed -e $$'s:??/047:\047:g' -i $(BUILD_DIR)/$@
+$(BUILD_DIR)/yays.%.js: %.jst
+	gcc -E -P -CC -traditional -o $@ -x c $<
+	sed -ne $$'0,/==UserScript==/{h; d}; x; G; p; :1 n; s:??/047:\047:g; p; b1' -i $@
 
 user.jst: $(addsuffix t, $(wildcard *.js))
 
