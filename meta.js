@@ -4,9 +4,9 @@
 // #define SCRIPT_RELEASE_DATE Mar 29, 2013
 // #define SCRIPT_NS           yays
 \
-// #define SCRIPT_SITE_DOMAIN eugenox.appspot.com
-// #define SCRIPT_SITE        http://SCRIPT_SITE_DOMAIN/script/yays
-// #define SCRIPT_AUTHOR      Eugene Nouvellieu <eugenox_gmail_com>
+// #define SCRIPT_SITE_ROOT https://eugenox.appspot.com
+// #define SCRIPT_SITE      SCRIPT_SITE_ROOT/script/yays
+// #define SCRIPT_AUTHOR    Eugene Nouvellieu <eugenox_gmail_com>
 \
 // #define ASTERIX *
 // #define APOSTROPHIZE(arg) ??/047arg??/047
@@ -27,6 +27,6 @@
 // @grant       GM_setValue
 // @grant       GM_xmlhttpRequest
 // @homepageURL SCRIPT_SITE
-// @updateURL   https://SCRIPT_SITE_DOMAIN/blob/yays/yays.meta.js
-// @downloadURL https://SCRIPT_SITE_DOMAIN/blob/yays/yays.user.js
+// @updateURL   SCRIPT_SITE_ROOT/blob/yays/yays.meta.js
+// @downloadURL SCRIPT_SITE_ROOT/blob/yays/yays.user.js
 // ==/UserScript==
