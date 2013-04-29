@@ -248,9 +248,6 @@ var PlayerSize = new PlayerOption('player_size', {
 						'.watch-medium #watch7-playlist-tray-container {',
 							'height: 533px;',
 						'}',
-						'.watch-medium.watch-playlist-collapsed #watch7-playlist-tray-container {',
-							'height: 0;',
-						'}',
 						'.watch-medium #player-api {',
 							'width: 945px;',
 							'height: 560px;',
@@ -260,7 +257,8 @@ var PlayerSize = new PlayerOption('player_size', {
 				// no break;
 
 			case 1: // WIDE
-				DH.addClass(DH.id('watch7-container'), 'watch-wide watch-medium watch-playlist-collapsed');
+				DH.addClass(DH.id('watch7-container'), 'watch-wide');
+				DH.addClass(DH.id('player'), 'watch-medium watch-playlist-collapsed');
 				break;
 
 			default:
