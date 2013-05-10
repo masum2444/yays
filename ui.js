@@ -8,13 +8,6 @@ function UI(buttons) {
 	this.panel = DH.build(this._def.panel(buttons));
 }
 
-UI.setVisible = function(node, visible) {
-	DH[visible ? 'delClass' : 'addClass'](node, 'hid');
-	DH.style(node, {
-		'display': visible ? 'block' : 'none'
-	});
-};
-
 UI.prototype = {
 	_def: {
 		icon: {
@@ -149,6 +142,79 @@ function ChannelUI() {
 
 	this.panel = DH.build({
 		attributes: {
+			'id': 'yays-panel-dropdown',
+			'class': 'epic-nav-item-dropdown hid'
+		},
+		style: {
+			'padding': '5px 10px 10px',
+			'width': '300px'
+		},
+		children: this.panel
+	});
+
+	DH.append(DH.id('channel-navigation-menu'), DH.build({
+		tag: 'li',
+		children: [this.button, this.panel]
+	}));
+}
+
+ChannelUI.prototype = extend(UI, {
+	_def: {
+		icon: UI.prototype._def.icon,
+
+		button: function(click) {
+			return {
+				tag: 'button',
+				attributes: {
+					'type': 'button',
+					'role': 'button',
+					'class': 'epic-nav-item-empty yt-uix-button-epic-nav-item yt-uix-button yt-uix-button-empty yt-uix-tooltip flip',
+					'data-button-menu-id': 'yays-panel-dropdown',
+					'data-tooltip-text': _('Player settings')
+				},
+				style: {
+					'position': 'absolute',
+					'right': '20px',
+					'width': '30px'
+				},
+				children: {
+					tag: 'span',
+					attributes: {
+						'class': 'yt-uix-button-icon-wrapper'
+					},
+					children: [this.icon, {
+						tag: 'span',
+						attributes: {
+							'class': 'yt-uix-button-valign'
+						}
+					}]
+				},
+				listeners: {
+					'click': click
+				}
+			};
+		},
+
+		panel: UI.prototype._def.panel
+	},
+
+	toggle: function() {
+		this.refresh();
+	}
+});
+
+/*
+ * OldChannelUI
+ */
+
+function OldChannelUI() {
+	UI.call(this, [
+		VideoQuality.button(Button),
+		AutoPlay.button(Button)
+	]);
+
+	this.panel = DH.build({
+		attributes: {
 			'class': 'hid'
 		},
 		style: {
@@ -162,8 +228,10 @@ function ChannelUI() {
 	DH.insertAfter(DH.id('flag-video-panel'), this.panel);
 }
 
-ChannelUI.prototype = extend(UI, {
-	_def: merge({
+OldChannelUI.prototype = extend(UI, {
+	_def: {
+		icon: UI.prototype._def.icon,
+
 		button: function(click) {
 			return {
 				tag: 'button',
@@ -181,22 +249,22 @@ ChannelUI.prototype = extend(UI, {
 					'click': click
 				}
 			};
-		}
-	}, UI.prototype._def, false),
+		},
+
+		panel: UI.prototype._def.panel
+	},
 
 	toggle: function() {
 		if (DH.hasClass(this.panel, 'hid')) {
-			each(this.panel.parentNode.childNodes, function(i, node) {
-				if (node.nodeType == DH.ELEMENT_NODE && node.tagName.toLowerCase() == 'div')
-					UI.setVisible(node, false);
-			});
-
 			this.refresh();
 
-			UI.setVisible(this.panel, true);
+			DH.delClass(this.panel, 'hid');
+			DH.style(this.panel, {'display': 'block'});
 		}
-		else
-			UI.setVisible(this.panel, false);
+		else {
+			DH.addClass(this.panel, 'hid');
+			DH.style(this.panel, {'display': 'none'});
+		}
 	}
 });
 

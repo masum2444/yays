@@ -82,10 +82,17 @@ onPlayerReady();
 
 var page = DH.id('page');
 if (page) {
-	if (DH.hasClass(page, 'watch'))
+	if (DH.hasClass(page, 'watch')) {
 		new WatchUI();
-	else if (DH.hasClass(page, 'channel'))
-		new ChannelUI();
+	}
+	else if (DH.hasClass(page, 'channel')) {
+		try {
+			new ChannelUI();
+		}
+		catch (e) {
+			new OldChannelUI();
+		}
+	}
 }
 
 } // YAYS
