@@ -23,6 +23,7 @@ var Meta = {
 unsafeWindow[Meta.ns] = {};
 
 // #include "util.jst"
+// #include "logger.jst"
 // #include "i18n.jst"
 // #include "dom.jst"
 // #include "config.jst"
@@ -38,7 +39,7 @@ unsafeWindow[Meta.ns] = {};
  */
 
 unsafeWindow[Meta.ns].onPlayerStateChange = asyncProxy(function(state) {
-	debug('State changed to', ['unstarted', 'ended', 'playing', 'paused', 'buffering'][state + 1]);
+	Logger.debug('State changed to', ['unstarted', 'ended', 'playing', 'paused', 'buffering'][state + 1]);
 
 	AutoPlay.apply();
 
@@ -56,7 +57,7 @@ var onPlayerReady = asyncProxy(function() {
 	if (element) {
 		try {
 			Player.initialize(DH.unwrap(element)).onReady(function(player) {
-				debug('Player ready');
+				Logger.debug('Player ready');
 
 				each([AutoPlay, VideoQuality, PlayerSize], function(i, option) {
 					option.init(player);
@@ -69,7 +70,7 @@ var onPlayerReady = asyncProxy(function() {
 			});
 		}
 		catch (e) {
-			debug(e);
+			Logger.debug(e);
 		}
 	}
 });

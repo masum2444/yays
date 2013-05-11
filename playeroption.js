@@ -73,12 +73,12 @@ var AutoPlay = new PlayerOption('auto_play', {
 				this._player.resetState();
 				this._player.playVideo();
 
-				debug('Playback autostarted');
+				Logger.debug('Playback autostarted');
 			}
 			else {
 				this._applied = true;
 
-				debug('Player become visible, playback not affected');
+				Logger.debug('Player become visible, playback not affected');
 
 				this._mute(false);
 			}
@@ -149,7 +149,7 @@ var AutoPlay = new PlayerOption('auto_play', {
 				this._player.seekToStart(true);
 				this._player.pauseVideo();
 
-				debug('Playback paused');
+				Logger.debug('Playback paused');
 
 				this._mute(false);
 			}
@@ -200,7 +200,7 @@ var VideoQuality = new PlayerOption('video_quality', {
 						this._player.seekToStart(true);
 						this._player.setPlaybackQuality(quality);
 
-						debug('Quality changed to', quality);
+						Logger.debug('Quality changed to', quality);
 
 						// Sometimes buffering event doesn't occur after the quality has changed.
 						this.apply();
@@ -281,7 +281,7 @@ var PlayerSize = new PlayerOption('player_size', {
 				return;
 		}
 
-		debug('Size set to', ['wide', 'fit'][mode - 1]);
+		Logger.debug('Size set to', ['wide', 'fit'][mode - 1]);
 	}
 });
 

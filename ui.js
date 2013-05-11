@@ -55,6 +55,17 @@ QO4MOQSjsUvKb9pn2crLa1ua4zOnAMRzrlhxly4PBn4BWEpBljV5iJUAAAAASUVORK5CYII='}
 					'text-align': 'center',
 				},
 				children: map(bind(Button.prototype.render.call, Button.prototype.render), buttons)
+// #if ! RELEASE
+			}, {
+				style: {
+					'margin-top': '10px',
+					'padding': '5px',
+					'color': '#777777',
+					'font-size': '8px',
+					'border': '1px solid #e2e2e2'
+				},
+				children: Logger.display
+// #endif
 			}];
 		}
 	},

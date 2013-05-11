@@ -103,7 +103,3 @@ function parseJSON(data) {
 	return eval('('.concat(data, ')'));
 }
 
-function debug() {
-	unsafeWindow.console.debug.apply(unsafeWindow.console, Array.prototype.concat.apply(['['.concat(Meta.ns, ']')], arguments));
-}
-
