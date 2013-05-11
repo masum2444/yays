@@ -65,12 +65,16 @@ var AutoPlay = new PlayerOption('auto_play', {
 	states: ['ON', 'OFF', 'AUTO'],
 
 	_onFocus: function() {
-		if (this._applied && ! this._focused) {
+		if (! this._focused) {
 			this._timer = setTimeout(bind(function() {
-				this._player.resetState();
-				this._player.playVideo();
+				if (this._applied) {
+					this._player.resetState();
+					this._player.playVideo();
 
-				debug('Playback autostarted');
+					debug('Playback autostarted');
+				}
+				else
+					this._applied = true;
 
 				this._focused = true;
 				this._timer = null;
