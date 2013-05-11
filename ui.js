@@ -23,32 +23,8 @@ QO4MOQSjsUvKb9pn2crLa1ua4zOnAMRzrlhxly4PBn4BWEpBljV5iJUAAAAASUVORK5CYII='}
 
 		button: function(click) {
 			return {
-				tag: 'span',
-				children: {
-					tag: 'button',
-					attributes: {
-						'type': 'button',
-						'role': 'button',
-						'class': 'action-panel-trigger yt-uix-button yt-uix-button-text yt-uix-button-empty yt-uix-tooltip',
-						'data-button-toggle': 'true',
-						'data-trigger-for': 'action-panel-yays',
-						'data-tooltip-text': _('Player settings')
-					},
-					children: {
-						tag: 'span',
-						attributes: {
-							'class': 'yt-uix-button-icon-wrapper'
-						},
-						children: [this.icon, {
-							tag: 'span',
-							attributes: {
-								'class': 'yt-uix-button-valign'
-							}
-						}]
-					},
-					listeners: {
-						'click': click
-					}
+				listeners: {
+					'click': click
 				}
 			};
 		},
@@ -105,19 +81,6 @@ function WatchUI() {
 		AutoPlay.button(Button)
 	]);
 
-	this.panel = DH.build({
-		attributes: {
-			'id': 'action-panel-yays',
-			'class': 'action-panel-content hid',
-			'data-panel-loaded': 'true'
-		},
-		style: {
-			'display': 'none',
-			'color': '#333'
-		},
-		children: this.panel
-	});
-
 	DH.append(DH.id('watch7-secondary-actions'), this.button);
 	DH.prepend(DH.id('watch7-action-panels'), this.panel);
 
@@ -125,6 +88,55 @@ function WatchUI() {
 }
 
 WatchUI.prototype = extend(UI, {
+	_def: {
+		button: function(click) {
+			return {
+				tag: 'span',
+				children: {
+					tag: 'button',
+					attributes: {
+						'type': 'button',
+						'role': 'button',
+						'class': 'action-panel-trigger yt-uix-button yt-uix-button-text yt-uix-button-empty yt-uix-tooltip',
+						'data-button-toggle': 'true',
+						'data-trigger-for': 'action-panel-yays',
+						'data-tooltip-text': _('Player settings')
+					},
+					listeners: {
+						'click': click
+					},
+					children: {
+						tag: 'span',
+						attributes: {
+							'class': 'yt-uix-button-icon-wrapper'
+						},
+						children: [UI.prototype._def.icon, {
+							tag: 'span',
+							attributes: {
+								'class': 'yt-uix-button-valign'
+							}
+						}]
+					}
+				}
+			};
+		},
+
+		panel: function(buttons) {
+			return {
+				attributes: {
+					'id': 'action-panel-yays',
+					'class': 'action-panel-content hid',
+					'data-panel-loaded': 'true'
+				},
+				style: {
+					'display': 'none',
+					'color': '#333'
+				},
+				children: UI.prototype._def.panel(buttons)
+			};
+		}
+	},
+
 	toggle: function() {
 		this.refresh();
 	}
@@ -140,18 +152,6 @@ function ChannelUI() {
 		AutoPlay.button(Button)
 	]);
 
-	this.panel = DH.build({
-		attributes: {
-			'id': 'yays-panel-dropdown',
-			'class': 'epic-nav-item-dropdown hid'
-		},
-		style: {
-			'padding': '5px 10px 10px',
-			'width': '300px'
-		},
-		children: this.panel
-	});
-
 	DH.append(DH.id('channel-navigation-menu'), DH.build({
 		tag: 'li',
 		children: [this.button, this.panel]
@@ -160,8 +160,6 @@ function ChannelUI() {
 
 ChannelUI.prototype = extend(UI, {
 	_def: {
-		icon: UI.prototype._def.icon,
-
 		button: function(click) {
 			return {
 				tag: 'button',
@@ -177,25 +175,40 @@ ChannelUI.prototype = extend(UI, {
 					'right': '20px',
 					'width': '30px'
 				},
+				listeners: {
+					'click': click
+				},
 				children: {
 					tag: 'span',
 					attributes: {
 						'class': 'yt-uix-button-icon-wrapper'
 					},
-					children: [this.icon, {
+					style: {
+						'opacity': '0.75'
+					},
+					children: [UI.prototype._def.icon, {
 						tag: 'span',
 						attributes: {
 							'class': 'yt-uix-button-valign'
 						}
 					}]
-				},
-				listeners: {
-					'click': click
 				}
 			};
 		},
 
-		panel: UI.prototype._def.panel
+		panel: function(buttons) {
+			return {
+				attributes: {
+					'id': 'yays-panel-dropdown',
+					'class': 'epic-nav-item-dropdown hid'
+				},
+				style: {
+					'padding': '5px 10px 10px',
+					'width': '300px'
+				},
+				children: UI.prototype._def.panel(buttons)
+			};
+		}
 	},
 
 	toggle: function() {
@@ -213,45 +226,43 @@ function OldChannelUI() {
 		AutoPlay.button(Button)
 	]);
 
-	this.panel = DH.build({
-		attributes: {
-			'class': 'hid'
-		},
-		style: {
-			'display': 'none',
-			'margin-top': '7px'
-		},
-		children: this.panel
-	});
-
 	DH.append(DH.walk(DH.id('flag-video-panel'), '../h3/div'), [' ', this.button]);
 	DH.insertAfter(DH.id('flag-video-panel'), this.panel);
 }
 
 OldChannelUI.prototype = extend(UI, {
 	_def: {
-		icon: UI.prototype._def.icon,
-
 		button: function(click) {
 			return {
 				tag: 'button',
-				style: {
-					'padding': '0 4px'
-				},
 				attributes: {
 					'type': 'button',
 					'role': 'button',
 					'class': 'yt-uix-button yt-uix-button-default yt-uix-tooltip yt-uix-tooltip-reverse yt-uix-button-empty',
 					'title': _('Player settings')
 				},
-				children: this.icon,
+				style: {
+					'padding': '0 4px'
+				},
 				listeners: {
 					'click': click
-				}
+				},
+				children: UI.prototype._def.icon
 			};
 		},
 
-		panel: UI.prototype._def.panel
+		panel: function(buttons) {
+			return {
+				attributes: {
+					'class': 'hid'
+				},
+				style: {
+					'display': 'none',
+					'margin-top': '7px'
+				},
+				children: UI.prototype._def.panel(buttons)
+			};
+		}
 	},
 
 	toggle: function() {
