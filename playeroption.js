@@ -65,21 +65,27 @@ var AutoPlay = new PlayerOption('auto_play', {
 	states: ['ON', 'OFF', 'AUTO'],
 
 	_onFocus: function() {
-		if (! this._focused) {
-			this._timer = setTimeout(bind(function() {
-				if (this._applied) {
-					this._player.resetState();
-					this._player.playVideo();
+		if (this._focused)
+			return;
 
-					debug('Playback autostarted');
-				}
-				else
-					this._applied = true;
+		this._timer = setTimeout(bind(function() {
+			if (this._applied) {
+				this._player.resetState();
+				this._player.playVideo();
 
-				this._focused = true;
-				this._timer = null;
-			}, this), 500);
-		}
+				debug('Playback autostarted');
+			}
+			else {
+				this._applied = true;
+
+				debug('Player become visible, playback not affected');
+
+				this._mute(false);
+			}
+
+			this._focused = true;
+			this._timer = null;
+		}, this), 500);
 	},
 
 	_onBlur: function() {
@@ -87,6 +93,13 @@ var AutoPlay = new PlayerOption('auto_play', {
 			clearTimeout(this._timer);
 
 			this._timer = null;
+		}
+	},
+
+	_mute: function(state) {
+		if (this._muted != state) {
+			this._player[state ? 'mute' : 'unMute']();
+			this._muted = state;
 		}
 	},
 
@@ -128,10 +141,7 @@ var AutoPlay = new PlayerOption('auto_play', {
 
 	apply: function() {
 		if (! this._applied) {
-			if (! this._muted) {
-				this._player.mute();
-				this._muted = true;
-			}
+			this._mute(true);
 
 			if (this._player.getPlayerState() == Player.PLAYING) {
 				this._applied = true;
@@ -141,8 +151,7 @@ var AutoPlay = new PlayerOption('auto_play', {
 
 				debug('Playback paused');
 
-				this._player.unMute();
-				this._muted = false;
+				this._mute(false);
 			}
 		}
 		else {
