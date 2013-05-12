@@ -64,7 +64,7 @@ QO4MOQSjsUvKb9pn2crLa1ua4zOnAMRzrlhxly4PBn4BWEpBljV5iJUAAAAASUVORK5CYII='}
 					'font-size': '8px',
 					'border': '1px solid #e2e2e2'
 				},
-				children: Logger.display
+				children: Console.display
 // #endif
 			}];
 		}

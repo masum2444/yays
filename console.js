@@ -1,8 +1,8 @@
 /*
- * Logger singleton
+ * Console singleton
  */
 
-var Logger = {
+var Console = {
 // #if RELEASE
 	debug: function() {
 		unsafeWindow.console.debug.apply(unsafeWindow.console, Array.prototype.concat.apply(['['.concat(Meta.ns, ']')], arguments));
