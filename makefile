@@ -9,7 +9,7 @@ release: build
 
 $(BUILD_DIR)/yays.%.js: %.jst
 	gcc -E -P -CC -traditional -DRELEASE=$(RELEASE) -o $@ -x c $<
-	sed -ne $$'0,/==UserScript==/{h; d}; x; G; p; :1 n; s:??/047:\047:g; p; b1' -i $@
+	sed -e $$'0,/<<</d; s:??/047:\047:g' -i $@
 
 user.jst: $(addsuffix t, $(wildcard *.js))
 
