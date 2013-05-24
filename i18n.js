@@ -15,9 +15,9 @@ var _ = (function() {
 			case 'nl':
 				return ["Auto spelen", "AAN", "UIT", "AUTOMATISCH", "Stel automatisch afspelen in", "Kwaliteit", "AUTOMATISCH", null, "Stel standaard videokwaliteit in", null, null, null, null, null, null, null];
 
-			// spanish - yonane
+			// spanish - yonane, Dinepada
 			case 'es':
-				return ["Reproducci\u00f3n Autom\u00e1tica", null, null, "AUTO", "Modificar Reproducci\u00f3n Autom\u00e1tica", "Calidad", "AUTO", null, "Usar calidad por defecto", null, null, null, null, null, null, null];
+				return ["Reproducci\u00f3n Autom\u00e1tica", "Activado", "Desactivado", "Auto", "Cambiar Reproducci\u00f3n Autom\u00e1tica", "Calidad", "Auto", "Original", "Establecer calidad por defecto", "Tama\u00f1o", "Auto", "Ancho", "Ajustar", "Predeterminar tama\u00f1o del reproductor", "Configuraciones", "Ayuda"];
 
 			// german - xemino
 			case 'de':
@@ -53,7 +53,7 @@ var _ = (function() {
 
 			// polish - mkvs
 			case 'pl':
-				return ["Automatyczne odtwarzanie", "W\u0141\u0104CZONE", "WY\u0141ACZNONE", "AUTOMATYCZNE", "Ustaw automatyczne odtwarzanie film\u00f3w", "Jako\u015b\u0107", "AUTOMATYCZNA", "ORYGINALNA", "Ustaw domy\u015bln\u0105 jako\u015b\u0107 film\u00f3w", "Rozmiar", "AUTOMATYCZNY", "SZEROKI", "DOPASOWANY", "Ustaw domy\u015blny rozmiar odtwarzacza", "Ustawienia odtwarzacza", "Pomoc"];
+				return ["Automatyczne odtwarzanie", "W\u0141\u0104CZONE", "WY\u0141ACZONE", "AUTOMATYCZNE", "Ustaw automatyczne odtwarzanie film\u00f3w", "Jako\u015b\u0107", "AUTOMATYCZNA", "ORYGINALNA", "Ustaw domy\u015bln\u0105 jako\u015b\u0107 film\u00f3w", "Rozmiar", "AUTOMATYCZNY", "SZEROKI", "DOPASOWANY", "Ustaw domy\u015blny rozmiar odtwarzacza", "Ustawienia odtwarzacza", "Pomoc"];
 
 			// swedish - eson
 			case 'sv':
