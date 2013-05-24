@@ -2,7 +2,7 @@
 \
 // #define SCRIPT_NAME         Yays! (Yet Another Youtube Script)
 // #define SCRIPT_DESCRIPTION  A lightweight and non-intrusive userscript that control autoplaying and set the preferred player size and playback quality on YouTube.
-// #define SCRIPT_VERSION      1.6.2
+// #define SCRIPT_VERSION      1.6.3
 // #define SCRIPT_RELEASE_DATE RELEASE_DATE
 // #define SCRIPT_NS           yays
 \
