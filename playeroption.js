@@ -262,7 +262,7 @@ var PlayerSize = new PlayerOption('player_size', {
 							'width: 670px;',
 						'}',
 						'.watch-medium #watch7-playlist-tray-container {',
-							'height: 533px;',
+							'height: 560px;',
 						'}',
 						'.watch-medium #player-api {',
 							'width: 945px;',
