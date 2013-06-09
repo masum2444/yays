@@ -14,6 +14,8 @@ $(BUILD_DIR)/yays.%.js: %.jst
 
 user.jst: $(addsuffix t, $(wildcard *.js))
 
+i18n.jst: i18n.js $(wildcard i18n/*.js)
+
 %.jst: %.js
 	sed -r 's://\s*(#\w+):\1:' $< > $@
 

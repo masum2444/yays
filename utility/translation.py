@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import os
 import re
 import csv
 import itertools
@@ -14,13 +15,13 @@ class Vocabulary(object):
 	def __init__(self):
 		self._texts = []
 
-	def feed(self, field):
-		self._texts.append(field or None)
-
 	def __str__(self):
 		return """\
-	vocabulary = {},
+	var vocabulary = {0};
 """.format(json.dumps(self._texts))
+
+	def feed(self, field):
+		self._texts.append(field or None)
 
 class Translation(Vocabulary):
 	def __init__(self):
@@ -43,6 +44,10 @@ class Translation(Vocabulary):
 	complete=self._complete,
 	texts=json.dumps(self._texts)
 )
+
+	@property
+	def code(self):
+		return self._language_code
 
 	def feed(self, field):
 		if self._language is None:
@@ -70,5 +75,13 @@ for ln, line in enumerate(csv.reader(source)):
 	for translation, field in itertools.izip(translations, fields[1:]):
 		translation.feed(field)
 
-print vocabulary
-print '\n'.join(str(translation) for translation in translations)
+basedir = os.getcwd()
+if len(sys.argv) == 2:
+	basedir = os.path.abspath(sys.argv[1])
+
+with open(os.path.join(basedir, 'vocabulary.js'), 'w') as vocabulary_file:
+	vocabulary_file.write(str(vocabulary))
+
+for translation in translations:
+	with open(os.path.join(basedir, translation.code + '.js'), 'w') as translation_file:
+		translation_file.write(str(translation))

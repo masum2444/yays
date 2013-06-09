@@ -1,0 +1,1 @@
+	var vocabulary = ["Auto play", "ON", "OFF", "AUTO", "Toggle video autoplay", "Quality", "AUTO", "ORIGINAL", "Set default video quality", "Size", "AUTO", "WIDE", "FIT", "Set default player size", "Player settings", "Help"];
