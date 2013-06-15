@@ -61,7 +61,7 @@ QO4MOQSjsUvKb9pn2crLa1ua4zOnAMRzrlhxly4PBn4BWEpBljV5iJUAAAAASUVORK5CYII='}
 					'margin-top': '10px',
 					'padding': '5px',
 					'color': '#777777',
-					'font-size': '8px',
+					'font-size': '10px',
 					'border': '1px solid #e2e2e2'
 				},
 				children: Console.display
