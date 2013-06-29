@@ -2,7 +2,7 @@
  * Player singleton.
  */
 
-var Player = (function() {
+var Player = (function(context) {
 	function Player(element) {
 		this._element = element;
 		this._boot();
@@ -12,7 +12,8 @@ var Player = (function() {
 		_element: null,
 		_muted: 0,
 
-		_onReady: emptyFn,
+		_onReadyCallback: emptyFn,
+		_onStateChangeCallback: emptyFn,
 
 		_boot: function() {
 			if (typeof this._element.getApiInterface == 'function') {
@@ -37,15 +38,28 @@ var Player = (function() {
 			if (this.isAutoPlaying())
 				this.resetState();
 
-			this._onReady(this);
-			this._onReady = null;
+			this._onReadyCallback(this);
+			this._onReadyCallback = null;
+		},
+
+		_onStateChange: function(state) {
+			Console.debug('State changed to', ['unstarted', 'ended', 'playing', 'paused', 'buffering', undefined, 'cued'][state + 1]);
+
+			this._onStateChangeCallback(state);
 		},
 
 		onReady: function(callback) {
-			if (this._onReady)
-				this._onReady = callback;
+			if (this._onReadyCallback)
+				this._onReadyCallback = callback;
 			else
 				callback(this);
+		},
+
+		onStateChange: function(callback) {
+			this._onStateChangeCallback = callback;
+
+			context.onPlayerStateChange = asyncProxy(bind(this._onStateChange, this));
+			this.addEventListener('onStateChange', context.ns + '.onPlayerStateChange');
 		},
 
 		getArgument: function(name) {
@@ -126,5 +140,5 @@ var Player = (function() {
 			return instance = new Player(element);
 		}
 	};
-})();
+})(unsafeWindow[Meta.ns]);
 

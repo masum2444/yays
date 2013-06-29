@@ -20,7 +20,9 @@ var Meta = {
  * Script context.
  */
 
-unsafeWindow[Meta.ns] = {};
+unsafeWindow[Meta.ns] = {
+	ns: Meta.ns
+};
 
 // #include "util.jst"
 // #include "console.jst"
@@ -35,19 +37,6 @@ unsafeWindow[Meta.ns] = {};
 // #include "ui.jst"
 
 /*
- * Player state change callback.
- */
-
-unsafeWindow[Meta.ns].onPlayerStateChange = asyncProxy(function(state) {
-	Console.debug('State changed to', ['unstarted', 'ended', 'playing', 'paused', 'buffering', undefined, 'cued'][state + 1]);
-
-	AutoPlay.instance().apply();
-
-	// Pausing playback doesn't have any effect if we immediately rebuffer the video in the new quality level.
-	asyncCall(VideoQuality.instance().apply, VideoQuality.instance());
-});
-
-/*
  * Player ready callback.
  */
 
@@ -59,25 +48,34 @@ var onPlayerReady = asyncProxy(function() {
 			Player.initialize(DH.unwrap(element)).onReady(function(player) {
 				Console.debug('Player ready');
 
-				AutoPlay.instance(new AutoPlay(player));
-				VideoQuality.instance(new VideoQuality(player));
-				PlayerSize.instance(new PlayerSize(player));
+				var autoPlay = new AutoPlay(player), videoQuality = new VideoQuality(player), playerSize = new PlayerSize(player);
 
-				AutoPlay.instance().apply();
-				VideoQuality.instance().apply();
+				playerSize.apply();
+				autoPlay.apply();
+				videoQuality.apply();
 
-				player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange');
+				player.onStateChange(function(state) {
+					autoPlay.apply();
+					videoQuality.apply();
+				});
+
+				var page = DH.id('page');
+				if (page) {
+					if (DH.hasClass(page, 'watch')) {
+						new WatchUI([
+							videoQuality.button(Button),
+							playerSize.button(Button),
+							autoPlay.button(Button)
+						]);
+					}
+					else if (DH.hasClass(page, 'channel')) {
+						new ChannelUI([
+							videoQuality.button(Button),
+							autoPlay.button(Button)
+						]);
+					}
+				}
 			});
-
-			var page = DH.id('page');
-			if (page) {
-				if (DH.hasClass(page, 'watch')) {
-					new WatchUI();
-				}
-				else if (DH.hasClass(page, 'channel')) {
-					new ChannelUI();
-				}
-			}
 		}
 		catch (e) {
 			Console.debug(e);

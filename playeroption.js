@@ -4,14 +4,14 @@
 
 function PlayerOption(player) {
 	this._player = player;
+
+	PlayerOption.instances[this.key] = this;
 }
 
-PlayerOption.instance = function(object) {
-	if (object !== undefined) {
-		this._instance = object;
-	}
+PlayerOption.instances = {};
 
-	return this._instance;
+PlayerOption.instance = function(object) {
+	return PlayerOption.instances[this.prototype.key];
 };
 
 PlayerOption.prototype = {
