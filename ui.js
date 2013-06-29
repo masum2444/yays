@@ -163,10 +163,10 @@ function ChannelUI() {
 		AutoPlay.instance().button(Button)
 	]);
 
-	DH.append(DH.id('channel-navigation-menu'), DH.build({
+	DH.append(DH.id('channel-navigation-menu'), {
 		tag: 'li',
 		children: [this.button, this.panel]
-	}));
+	});
 }
 
 ChannelUI.prototype = extend(UI, {
