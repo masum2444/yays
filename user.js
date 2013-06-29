@@ -75,12 +75,7 @@ var onPlayerReady = asyncProxy(function() {
 					new WatchUI();
 				}
 				else if (DH.hasClass(page, 'channel')) {
-					try {
-						new ChannelUI();
-					}
-					catch (e) {
-						new OldChannelUI();
-					}
+					new ChannelUI();
 				}
 			}
 		}
