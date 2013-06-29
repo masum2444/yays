@@ -113,6 +113,7 @@ var Player = (function() {
 		PLAYING: 1,
 		PAUSED: 2,
 		BUFFERING: 3,
+		CUED: 5,
 
 		instance: function() {
 			return instance;

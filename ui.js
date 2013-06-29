@@ -87,15 +87,15 @@ QO4MOQSjsUvKb9pn2crLa1ua4zOnAMRzrlhxly4PBn4BWEpBljV5iJUAAAAASUVORK5CYII='}
 
 function WatchUI() {
 	UI.call(this, [
-		VideoQuality.button(Button),
-		PlayerSize.button(Button),
-		AutoPlay.button(Button)
+		VideoQuality.instance().button(Button),
+		PlayerSize.instance().button(Button),
+		AutoPlay.instance().button(Button)
 	]);
 
 	DH.append(DH.id('watch7-secondary-actions'), this.button);
 	DH.prepend(DH.id('watch7-action-panels'), this.panel);
 
-	PlayerSize.apply();
+	PlayerSize.instance().apply();
 }
 
 WatchUI.prototype = extend(UI, {
@@ -159,8 +159,8 @@ WatchUI.prototype = extend(UI, {
 
 function ChannelUI() {
 	UI.call(this, [
-		VideoQuality.button(Button),
-		AutoPlay.button(Button)
+		VideoQuality.instance().button(Button),
+		AutoPlay.instance().button(Button)
 	]);
 
 	DH.append(DH.id('channel-navigation-menu'), DH.build({
@@ -233,8 +233,8 @@ ChannelUI.prototype = extend(UI, {
 
 function OldChannelUI() {
 	UI.call(this, [
-		VideoQuality.button(Button),
-		AutoPlay.button(Button)
+		VideoQuality.instance().button(Button),
+		AutoPlay.instance().button(Button)
 	]);
 
 	DH.append(DH.walk(DH.id('flag-video-panel'), '../h3/div'), [' ', this.button]);

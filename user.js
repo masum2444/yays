@@ -39,12 +39,12 @@ unsafeWindow[Meta.ns] = {};
  */
 
 unsafeWindow[Meta.ns].onPlayerStateChange = asyncProxy(function(state) {
-	Console.debug('State changed to', ['unstarted', 'ended', 'playing', 'paused', 'buffering'][state + 1]);
+	Console.debug('State changed to', ['unstarted', 'ended', 'playing', 'paused', 'buffering', undefined, 'cued'][state + 1]);
 
-	AutoPlay.apply();
+	AutoPlay.instance().apply();
 
-	// Pausing playback doesn't have any effect if we rebuffer the video in the new quality level immediately.
-	asyncCall(VideoQuality.apply, VideoQuality);
+	// Pausing playback doesn't have any effect if we immediately rebuffer the video in the new quality level.
+	asyncCall(VideoQuality.instance().apply, VideoQuality.instance());
 });
 
 /*
@@ -59,15 +59,30 @@ var onPlayerReady = asyncProxy(function() {
 			Player.initialize(DH.unwrap(element)).onReady(function(player) {
 				Console.debug('Player ready');
 
-				each([AutoPlay, VideoQuality, PlayerSize], function(i, option) {
-					option.init(player);
-				});
+				AutoPlay.instance(new AutoPlay(player));
+				VideoQuality.instance(new VideoQuality(player));
+				PlayerSize.instance(new PlayerSize(player));
 
-				AutoPlay.apply();
-				VideoQuality.apply();
+				AutoPlay.instance().apply();
+				VideoQuality.instance().apply();
 
 				player.addEventListener('onStateChange', Meta.ns + '.onPlayerStateChange');
 			});
+
+			var page = DH.id('page');
+			if (page) {
+				if (DH.hasClass(page, 'watch')) {
+					new WatchUI();
+				}
+				else if (DH.hasClass(page, 'channel')) {
+					try {
+						new ChannelUI();
+					}
+					catch (e) {
+						new OldChannelUI();
+					}
+				}
+			}
 		}
 		catch (e) {
 			Console.debug(e);
@@ -80,21 +95,6 @@ each(['onYouTubePlayerReady', 'ytPlayerOnYouTubePlayerReady'], function(i, callb
 });
 
 onPlayerReady();
-
-var page = DH.id('page');
-if (page) {
-	if (DH.hasClass(page, 'watch')) {
-		new WatchUI();
-	}
-	else if (DH.hasClass(page, 'channel')) {
-		try {
-			new ChannelUI();
-		}
-		catch (e) {
-			new OldChannelUI();
-		}
-	}
-}
 
 } // YAYS
 

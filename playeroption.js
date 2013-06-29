@@ -2,16 +2,22 @@
  * PlayerOption class.
  */
 
-function PlayerOption(key, overrides) {
-	merge(this, overrides);
-
-	this._key = key;
+function PlayerOption(player) {
+	this._player = player;
 }
+
+PlayerOption.instance = function(object) {
+	if (object !== undefined) {
+		this._instance = object;
+	}
+
+	return this._instance;
+};
 
 PlayerOption.prototype = {
 	_player: null,
-	_key: null,
 
+	key: null,
 	label: null,
 	tooltip: null,
 	states: [],
@@ -25,11 +31,11 @@ PlayerOption.prototype = {
 	},
 
 	get: function() {
-		return Number(Config.get(this._key) || 0);
+		return Number(Config.get(this.key) || 0);
 	},
 
 	set: function(value) {
-		Config.set(this._key, Number(value));
+		Config.set(this.key, Number(value));
 	},
 
 	button: function(type) {
@@ -39,13 +45,6 @@ PlayerOption.prototype = {
 		});
 	},
 
-	init: function(player) {
-		this._player = player;
-
-		this.configure();
-	},
-
-	configure: emptyFn,
 	apply: emptyFn
 };
 
@@ -53,13 +52,48 @@ PlayerOption.prototype = {
  * Prevent autoplaying.
  */
 
-var AutoPlay = new PlayerOption('auto_play', {
+function AutoPlay(player) {
+	PlayerOption.call(this, player);
+
+	if (this._player.isAutoPlaying()) {
+		switch (this.get()) {
+			case 0: // ON
+				this._applied = true;
+				break;
+
+			case 1: // OFF
+				this._applied = false;
+				break;
+
+			case 2: // AUTO
+				// Video is visible or opened in the same window.
+				if (this._focused || this._isVisible() || unsafeWindow.history.length > 1) {
+					this._applied = true;
+				}
+				// Video is opened in a background tab.
+				else {
+					DH.on(unsafeWindow, 'focus', bind(this._onFocus, this));
+					DH.on(unsafeWindow, 'blur', bind(this._onBlur, this));
+
+					this._applied = false;
+				}
+				break;
+		}
+	}
+	else
+		this._applied = true;
+}
+
+AutoPlay.instance = PlayerOption.instance;
+
+AutoPlay.prototype = extend(PlayerOption, {
 	_applied: false,
 	_focused: false,
 	_muted: false,
 	_player: null,
 	_timer: null,
 
+	key: 'auto_play',
 	label: 'Auto play',
 	tooltip: 'Toggle video autoplay',
 	states: ['ON', 'OFF', 'AUTO'],
@@ -109,36 +143,6 @@ var AutoPlay = new PlayerOption('auto_play', {
 		return doc.hidden === false || doc.mozHidden === false || doc.webkitHidden === false;
 	},
 
-	configure: function() {
-		if (this._player.isAutoPlaying()) {
-			switch (this.get()) {
-				case 0: // ON
-					this._applied = true;
-					break;
-
-				case 1: // OFF
-					this._applied = false;
-					break;
-
-				case 2: // AUTO
-					// Video is visible or opened in the same window.
-					if (this._focused || this._isVisible() || unsafeWindow.history.length > 1) {
-						this._applied = true;
-					}
-					// Video is opened in a background tab.
-					else {
-						DH.on(unsafeWindow, 'focus', bind(this._onFocus, this));
-						DH.on(unsafeWindow, 'blur', bind(this._onBlur, this));
-
-						this._applied = false;
-					}
-					break;
-			}
-		}
-		else
-			this._applied = true;
-	},
-
 	apply: function() {
 		if (! this._applied) {
 			this._mute(true);
@@ -165,7 +169,15 @@ var AutoPlay = new PlayerOption('auto_play', {
  * Set video quality.
  */
 
-var VideoQuality = new PlayerOption('video_quality', {
+function VideoQuality(player) {
+	PlayerOption.call(this, player);
+
+	this._applied = ! this.get();
+}
+
+VideoQuality.instance = PlayerOption.instance;
+
+VideoQuality.prototype = extend(PlayerOption, {
 	_applied: false,
 	_muted: false,
 	_buffered: false,
@@ -173,13 +185,10 @@ var VideoQuality = new PlayerOption('video_quality', {
 
 	_qualities: [, 'small', 'medium', 'large', 'hd720', 'hd1080', 'highres'],
 
+	key: 'video_quality',
 	label: 'Quality',
 	tooltip: 'Set default video quality',
 	states: ['AUTO', '240p', '360p', '480p', '720p', '1080p', 'ORIGINAL'],
-
-	configure: function() {
-		this._applied = ! this.get();
-	},
 
 	apply: function() {
 		if (! this._applied) {
@@ -239,7 +248,14 @@ var VideoQuality = new PlayerOption('video_quality', {
  * Set player size.
  */
 
-var PlayerSize = new PlayerOption('player_size', {
+function PlayerSize(player) {
+	PlayerOption.call(this, player);
+}
+
+PlayerSize.instance = PlayerOption.instance;
+
+PlayerSize.prototype = extend(PlayerOption, {
+	key: 'player_size',
 	label: 'Size',
 	tooltip: 'Set default player size',
 	states: ['AUTO', 'WIDE', 'FIT'],
@@ -284,4 +300,3 @@ var PlayerSize = new PlayerOption('player_size', {
 		Console.debug('Size set to', ['wide', 'fit'][mode - 1]);
 	}
 });
-
