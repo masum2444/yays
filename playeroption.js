@@ -47,12 +47,27 @@ PlayerOption.Button.prototype = extend(Button, {
 	}
 });
 
+function SilentPlayerOption(option, key) {
+	PlayerOption.call(this, player, key);
+}
+
+SilentPlayerOption.prototype = extend(PlayerOption, {
+	_muted: false,
+
+	mute: function(state) {
+		if (this._muted != state) {
+			this._player[state ? 'mute' : 'unMute']();
+			this._muted = state;
+		}
+	}
+});
+
 /*
  * Prevent autoplaying.
  */
 
 function AutoPlay(player) {
-	PlayerOption.call(this, player, 'auto_play');
+	SilentPlayerOption.call(this, player, 'auto_play');
 
 	if (this._player.isAutoPlaying()) {
 		switch (this.get()) {
@@ -84,11 +99,9 @@ function AutoPlay(player) {
 	}
 }
 
-AutoPlay.prototype = extend(PlayerOption, {
+AutoPlay.prototype = extend(SilentPlayerOption, {
 	_applied: false,
 	_focused: false,
-	_muted: false,
-	_player: null,
 	_timer: null,
 
 	_onFocus: function() {
@@ -108,7 +121,7 @@ AutoPlay.prototype = extend(PlayerOption, {
 
 				Console.debug('Player become visible, playback not affected');
 
-				this._mute(false);
+				this.mute(false);
 			}
 
 			this._focused = true;
@@ -124,13 +137,6 @@ AutoPlay.prototype = extend(PlayerOption, {
 		}
 	},
 
-	_mute: function(state) {
-		if (this._muted != state) {
-			this._player[state ? 'mute' : 'unMute']();
-			this._muted = state;
-		}
-	},
-
 	// @see http://www.w3.org/TR/page-visibility/
 	_isVisible: function() {
 		var doc = unsafeWindow.document;
@@ -139,7 +145,7 @@ AutoPlay.prototype = extend(PlayerOption, {
 
 	apply: function() {
 		if (! this._applied) {
-			this._mute(true);
+			this.mute(true);
 
 			if (this._player.getPlayerState() == Player.PLAYING) {
 				this._applied = true;
@@ -149,7 +155,7 @@ AutoPlay.prototype = extend(PlayerOption, {
 
 				Console.debug('Playback paused');
 
-				this._mute(false);
+				this.mute(false);
 			}
 		}
 		else {
@@ -175,31 +181,24 @@ AutoPlay.Button.prototype = extend(PlayerOption.Button, {
  */
 
 function VideoQuality(player) {
-	PlayerOption.call(this, player, 'video_quality');
+	SilentPlayerOption.call(this, player, 'video_quality');
 
 	this._applied = ! this.get();
 }
 
-VideoQuality.prototype = extend(PlayerOption, {
+VideoQuality.prototype = extend(SilentPlayerOption, {
 	_applied: false,
-	_muted: false,
 	_buffered: false,
-	_player: null,
-
-	_qualities: [, 'small', 'medium', 'large', 'hd720', 'hd1080', 'highres'],
 
 	apply: function() {
 		if (! this._applied) {
-			if (! this._muted) {
-				this._player.mute();
-				this._muted = true;
-			}
+			this.mute(true);
 
 			if (this._player.getPlayerState() > Player.UNSTARTED) {
 				if (this._player.getAvailableQualityLevels().length) {
 					this._applied = true;
 
-					var quality = this._qualities[this.get()];
+					var quality = [, 'small', 'medium', 'large', 'hd720', 'hd1080', 'highres'][this.get()];
 
 					if (quality && quality != this._player.getPlaybackQuality()) {
 						this._buffered = false;
@@ -209,18 +208,15 @@ VideoQuality.prototype = extend(PlayerOption, {
 
 						Console.debug('Quality changed to', quality);
 
-						// Sometimes buffering event doesn't occur after the quality has changed.
+						// State change can happen immediately.
 						this.apply();
 
 						return;
 					}
 				}
-			}
-			else
-				return;
 
-			this._player.unMute();
-			this._muted = false;
+				this.mute(false);
+			}
 		}
 		else {
 			switch (this._player.getPlayerState()) {
@@ -233,9 +229,8 @@ VideoQuality.prototype = extend(PlayerOption, {
 					// no break;
 
 				default:
-					if (this._buffered && this._muted) {
-						this._player.unMute();
-						this._muted = false;
+					if (this._buffered) {
+						this.mute(false);
 					}
 			}
 		}
