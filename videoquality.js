@@ -1,0 +1,71 @@
+/*
+ * Set video quality.
+ */
+
+function VideoQuality(player) {
+	SilentPlayerOption.call(this, player, 'video_quality');
+
+	this._applied = ! this.get();
+}
+
+VideoQuality.prototype = extend(SilentPlayerOption, {
+	_applied: false,
+	_buffered: false,
+
+	apply: function() {
+		if (! this._applied) {
+			this.mute(true);
+
+			if (this._player.getPlayerState() > Player.UNSTARTED) {
+				if (this._player.getAvailableQualityLevels().length) {
+					this._applied = true;
+
+					var quality = [, 'small', 'medium', 'large', 'hd720', 'hd1080', 'highres'][this.get()];
+
+					if (quality && quality != this._player.getPlaybackQuality()) {
+						this._buffered = false;
+
+						this._player.seekToStart(true);
+						this._player.setPlaybackQuality(quality);
+
+						Console.debug('Quality changed to', quality);
+
+						// State change can happen immediately.
+						this.apply();
+
+						return;
+					}
+				}
+
+				this.mute(false);
+			}
+		}
+		else {
+			switch (this._player.getPlayerState()) {
+				case Player.BUFFERING:
+					this._buffered = true;
+					break;
+
+				case Player.PLAYING:
+					this._buffered = true;
+					// no break;
+
+				default:
+					if (this._buffered) {
+						this.mute(false);
+					}
+			}
+		}
+	}
+});
+
+VideoQuality.Button = function(option) {
+	PlayerOption.Button.call(this, option);
+};
+
+VideoQuality.Button.prototype = extend(PlayerOption.Button, {
+	label: _('Quality'),
+	tooltip: _('Set default video quality'),
+	states: [_('AUTO'), '240p', '360p', '480p', '720p', '1080p', _('ORIGINAL')]
+});
+
