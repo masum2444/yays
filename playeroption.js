@@ -2,58 +2,57 @@
  * PlayerOption class.
  */
 
-function PlayerOption(player) {
+function PlayerOption(player, key) {
 	this._player = player;
-
-	PlayerOption.instances[this.key] = this;
+	this._key = key;
 }
-
-PlayerOption.instances = {};
-
-PlayerOption.instance = function(object) {
-	return PlayerOption.instances[this.prototype.key];
-};
 
 PlayerOption.prototype = {
 	_player: null,
-
-	key: null,
-	label: null,
-	tooltip: null,
-	states: [],
-
-	_step: function() {
-		this.set((this.get() + 1) % this.states.length);
-	},
-
-	_indicator: function() {
-		return _(this.states[this.get()]);
-	},
+	_key: null,
 
 	get: function() {
-		return Number(Config.get(this.key) || 0);
+		return Number(Config.get(this._key) || '0');
 	},
 
 	set: function(value) {
-		Config.set(this.key, Number(value));
-	},
-
-	button: function(type) {
-		return new type(_(this.label), _(this.tooltip), {
-			handler: bind(this._step, this),
-			display: bind(this._indicator, this)
-		});
+		Config.set(this._key, Number(value));
 	},
 
 	apply: emptyFn
 };
+
+PlayerOption.Button = function(option) {
+	this._option = option;
+
+	Button.call(this, this.label, this.tooltip, {
+		handler: bind(this._step, this),
+		display: bind(this._indicator, this)
+	});
+};
+
+PlayerOption.Button.prototype = extend(Button, {
+	_option: null,
+
+	label: null,
+	tooltip: null,
+	states: null,
+
+	_step: function() {
+		this._option.set((this._option.get() + 1) % this.states.length);
+	},
+
+	_indicator: function() {
+		return this.states[this._option.get()];
+	}
+});
 
 /*
  * Prevent autoplaying.
  */
 
 function AutoPlay(player) {
-	PlayerOption.call(this, player);
+	PlayerOption.call(this, player, 'auto_play');
 
 	if (this._player.isAutoPlaying()) {
 		switch (this.get()) {
@@ -85,19 +84,12 @@ function AutoPlay(player) {
 	}
 }
 
-AutoPlay.instance = PlayerOption.instance;
-
 AutoPlay.prototype = extend(PlayerOption, {
 	_applied: false,
 	_focused: false,
 	_muted: false,
 	_player: null,
 	_timer: null,
-
-	key: 'auto_play',
-	label: 'Auto play',
-	tooltip: 'Toggle video autoplay',
-	states: ['ON', 'OFF', 'AUTO'],
 
 	_onFocus: function() {
 		if (this._focused) {
@@ -168,17 +160,25 @@ AutoPlay.prototype = extend(PlayerOption, {
 	}
 });
 
+AutoPlay.Button = function(option) {
+	PlayerOption.Button.call(this, option);
+};
+
+AutoPlay.Button.prototype = extend(PlayerOption.Button, {
+	label: _('Auto play'),
+	tooltip: _('Toggle video autoplay'),
+	states: [_('ON'), _('OFF'), _('AUTO')]
+});
+
 /*
  * Set video quality.
  */
 
 function VideoQuality(player) {
-	PlayerOption.call(this, player);
+	PlayerOption.call(this, player, 'video_quality');
 
 	this._applied = ! this.get();
 }
-
-VideoQuality.instance = PlayerOption.instance;
 
 VideoQuality.prototype = extend(PlayerOption, {
 	_applied: false,
@@ -187,11 +187,6 @@ VideoQuality.prototype = extend(PlayerOption, {
 	_player: null,
 
 	_qualities: [, 'small', 'medium', 'large', 'hd720', 'hd1080', 'highres'],
-
-	key: 'video_quality',
-	label: 'Quality',
-	tooltip: 'Set default video quality',
-	states: ['AUTO', '240p', '360p', '480p', '720p', '1080p', 'ORIGINAL'],
 
 	apply: function() {
 		if (! this._applied) {
@@ -247,22 +242,25 @@ VideoQuality.prototype = extend(PlayerOption, {
 	}
 });
 
+VideoQuality.Button = function(option) {
+	PlayerOption.Button.call(this, option);
+};
+
+VideoQuality.Button.prototype = extend(PlayerOption.Button, {
+	label: _('Quality'),
+	tooltip: _('Set default video quality'),
+	states: [_('AUTO'), '240p', '360p', '480p', '720p', '1080p', _('ORIGINAL')]
+});
+
 /*
  * Set player size.
  */
 
 function PlayerSize(player) {
-	PlayerOption.call(this, player);
+	PlayerOption.call(this, player, 'player_size');
 }
 
-PlayerSize.instance = PlayerOption.instance;
-
 PlayerSize.prototype = extend(PlayerOption, {
-	key: 'player_size',
-	label: 'Size',
-	tooltip: 'Set default player size',
-	states: ['AUTO', 'WIDE', 'FIT'],
-
 	apply: function() {
 		var mode = this.get();
 
@@ -303,3 +301,14 @@ PlayerSize.prototype = extend(PlayerOption, {
 		Console.debug('Size set to', ['wide', 'fit'][mode - 1]);
 	}
 });
+
+PlayerSize.Button = function(option) {
+	PlayerOption.Button.call(this, option);
+};
+
+PlayerSize.Button.prototype = extend(PlayerOption.Button, {
+	label: _('Size'),
+	tooltip: _('Set default player size'),
+	states: [_('AUTO'), _('WIDE'), _('FIT')]
+});
+

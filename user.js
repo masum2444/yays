@@ -58,17 +58,17 @@ var onPlayerReady = asyncProxy(function() {
 				if (page) {
 					if (DH.hasClass(page, 'watch')) {
 						new WatchUI([
-							videoQuality.button(Button),
-							playerSize.button(Button),
-							autoPlay.button(Button)
+							new VideoQuality.Button(videoQuality),
+							new PlayerSize.Button(playerSize),
+							new AutoPlay.Button(autoPlay)
 						]);
 
 						playerSize.apply();
 					}
 					else if (DH.hasClass(page, 'channel')) {
 						new ChannelUI([
-							videoQuality.button(Button),
-							autoPlay.button(Button)
+							new VideoQuality.Button(videoQuality),
+							new AutoPlay.Button(autoPlay)
 						]);
 					}
 				}
