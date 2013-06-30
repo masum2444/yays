@@ -49,10 +49,6 @@ var onPlayerReady = asyncProxy(function() {
 			Player.initialize(DH.unwrap(element)).onReady(function(player) {
 				var autoPlay = new AutoPlay(player), videoQuality = new VideoQuality(player), playerSize = new PlayerSize(player);
 
-				playerSize.apply();
-				autoPlay.apply();
-				videoQuality.apply();
-
 				player.onStateChange(function(state) {
 					autoPlay.apply();
 					videoQuality.apply();
@@ -66,6 +62,8 @@ var onPlayerReady = asyncProxy(function() {
 							playerSize.button(Button),
 							autoPlay.button(Button)
 						]);
+
+						playerSize.apply();
 					}
 					else if (DH.hasClass(page, 'channel')) {
 						new ChannelUI([
@@ -74,6 +72,9 @@ var onPlayerReady = asyncProxy(function() {
 						]);
 					}
 				}
+
+				autoPlay.apply();
+				videoQuality.apply();
 			});
 		}
 		catch (e) {
