@@ -1,7 +1,7 @@
-/*
+/**
+ * @class JSONRequest
  * Create XHR or JSONP requests.
  */
-
 var JSONRequest = (function() {
 	var Request = null;
 

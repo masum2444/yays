@@ -1,7 +1,6 @@
-/*
- * Prevent autoplaying.
+/**
+ * @class AutoPlay
  */
-
 function AutoPlay(player) {
 	SilentPlayerOption.call(this, player, 'auto_play');
 
@@ -102,6 +101,9 @@ AutoPlay.prototype = extend(SilentPlayerOption, {
 	}
 });
 
+/**
+ * @class AutoPlay.Button
+ */
 AutoPlay.Button = function(option) {
 	PlayerOption.Button.call(this, option);
 };

@@ -1,7 +1,6 @@
-/*
- * Set player size.
+/**
+ * @class PlayerSize
  */
-
 function PlayerSize(player) {
 	PlayerOption.call(this, player, 'player_size');
 }
@@ -48,6 +47,9 @@ PlayerSize.prototype = extend(PlayerOption, {
 	}
 });
 
+/**
+ * @class PlayerSize.Button
+ */
 PlayerSize.Button = function(option) {
 	PlayerOption.Button.call(this, option);
 };

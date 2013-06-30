@@ -76,9 +76,7 @@ var DH = {
 	},
 
 	hasClass: function(node, clss) {
-		return \
-			node.hasAttribute('class') &&
-			(clss instanceof RegExp ? clss.test(node.getAttribute('class')) : node.getAttribute('class').indexOf(clss) != -1);
+		return node.hasAttribute('class') && (clss instanceof RegExp ? clss.test(node.getAttribute('class')) : node.getAttribute('class').indexOf(clss) != -1);
 	},
 
 	addClass: function(node, clss) {

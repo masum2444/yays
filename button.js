@@ -1,7 +1,6 @@
-/*
- * Button class.
+/**
+ * @class Button
  */
-
 function Button(labelText, tooltipText, callbacks) {
 	var
 		node = DH.build(this._def.node),

@@ -1,5 +1,5 @@
 /*
- * Console singleton
+ * Console singleton.
  */
 
 var Console = {

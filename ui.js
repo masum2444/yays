@@ -1,7 +1,7 @@
-/*
+/**
+ * @class UI
  * Abstract UI class.
  */
-
 function UI(buttons) {
 	this.buttons = buttons;
 	this.button = DH.build(this._def.button(bind(this.toggle, this)));
@@ -81,10 +81,9 @@ QO4MOQSjsUvKb9pn2crLa1ua4zOnAMRzrlhxly4PBn4BWEpBljV5iJUAAAAASUVORK5CYII='}
 	toggle: emptyFn
 };
 
-/*
- * WatchUI class.
+/**
+ * @class WatchUI
  */
-
 function WatchUI(buttons) {
 	UI.call(this, buttons);
 
@@ -147,10 +146,9 @@ WatchUI.prototype = extend(UI, {
 	}
 });
 
-/*
- * ChannelUI class.
+/**
+ * @class ChannelUI
  */
-
 function ChannelUI(buttons) {
 	UI.call(this, buttons);
 

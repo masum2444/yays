@@ -1,7 +1,6 @@
-/*
- * Set video quality.
+/**
+ * @class VideoQuality
  */
-
 function VideoQuality(player) {
 	SilentPlayerOption.call(this, player, 'video_quality');
 
@@ -59,6 +58,9 @@ VideoQuality.prototype = extend(SilentPlayerOption, {
 	}
 });
 
+/**
+ * @class VideoQuality.Button
+ */
 VideoQuality.Button = function(option) {
 	PlayerOption.Button.call(this, option);
 };

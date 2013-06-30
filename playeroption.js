@@ -1,7 +1,6 @@
-/*
- * PlayerOption class.
+/**
+ * @class PlayerOption
  */
-
 function PlayerOption(player, key) {
 	this._player = player;
 	this._key = key;
@@ -47,6 +46,9 @@ PlayerOption.Button.prototype = extend(Button, {
 	}
 });
 
+/**
+ * @class SilentPlayerOption
+ */
 function SilentPlayerOption(player, key) {
 	PlayerOption.call(this, player, key);
 }
