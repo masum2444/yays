@@ -21,14 +21,16 @@ var Player = (function() {
 				this._exportApiInterface();
 				this._onReady();
 			}
-			else
+			else {
 				setTimeout(bind(this._boot, this), 10);
+			}
 		},
 
 		_exportApiInterface: function() {
 			each(this._element.getApiInterface(), function(i, method) {
-				if (! Player.prototype.hasOwnProperty(method))
+				if (! Player.prototype.hasOwnProperty(method)) {
 					this[method] = bind(this._element[method], this._element);
+				}
 			}, this);
 		},
 
@@ -39,28 +41,33 @@ var Player = (function() {
 			this._muted = Number(this.isMuted());
 
 			// The player sometimes reports inconsistent state.
-			if (this.isAutoPlaying())
+			if (this.isAutoPlaying()) {
 				this.resetState();
+			}
 
 			Context.onPlayerStateChange = asyncProxy(bind(this._onStateChange, this));
 			this.addEventListener('onStateChange', Context.ns + '.onPlayerStateChange');
 
-			if ('ready' in this._listeners)
+			if ('ready' in this._listeners) {
 				this._listeners['ready'](this);
+			}
 		},
 
 		_onStateChange: function(state) {
 			Console.debug('State changed to', ['unstarted', 'ended', 'playing', 'paused', 'buffering', undefined, 'cued'][state + 1]);
 
-			if ('statechange' in this._listeners)
+			if ('statechange' in this._listeners) {
 				this._listeners['statechange'](state);
+			}
 		},
 
 		onReady: function(listener) {
-			if (this._ready)
+			if (this._ready) {
 				listener(this);
-			else
+			}
+			else {
 				this._listeners['ready'] = listener;
+			}
 		},
 
 		onStateChange: function(listener) {
@@ -71,8 +78,9 @@ var Player = (function() {
 			// Flash
 			if (this._element.hasAttribute('flashvars')) {
 				var match = this._element.getAttribute('flashvars').match(new RegExp('(?:^|&)'.concat(name, '=(.+?)(?:&|$)')));
-				if (match)
+				if (match) {
 					return decodeURIComponent(match[1]);
+				}
 			}
 			// HTML5
 			else {
@@ -112,13 +120,15 @@ var Player = (function() {
 		},
 
 		mute: function() {
-			if (! this._muted++)
+			if (! this._muted++) {
 				this._element.mute();
+			}
 		},
 
 		unMute: function() {
-			if (! --this._muted)
+			if (! --this._muted) {
 				this._element.unMute();
+			}
 		}
 	};
 
@@ -139,8 +149,9 @@ var Player = (function() {
 		},
 
 		initialize: function(element) {
-			if (instance._element === element)
+			if (instance._element === element) {
 				throw 'Player already initialized';
+			}
 
 			return instance = new Player(element);
 		}

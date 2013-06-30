@@ -80,8 +80,9 @@ function AutoPlay(player) {
 				break;
 		}
 	}
-	else
+	else {
 		this._applied = true;
+	}
 }
 
 AutoPlay.instance = PlayerOption.instance;
@@ -99,8 +100,9 @@ AutoPlay.prototype = extend(PlayerOption, {
 	states: ['ON', 'OFF', 'AUTO'],
 
 	_onFocus: function() {
-		if (this._focused)
+		if (this._focused) {
 			return;
+		}
 
 		this._timer = setTimeout(bind(function() {
 			if (this._applied) {
@@ -159,8 +161,9 @@ AutoPlay.prototype = extend(PlayerOption, {
 			}
 		}
 		else {
-			if (this._player.getPlayerState() == Player.PLAYING)
+			if (this._player.getPlayerState() == Player.PLAYING) {
 				this._focused = true;
+			}
 		}
 	}
 });

@@ -9,8 +9,9 @@ function each(iterable, callback, scope) {
 	}
 	else {
 		for (var key in iterable)
-			if (iterable.hasOwnProperty(key))
+			if (iterable.hasOwnProperty(key)) {
 				callback.call(scope, key, iterable[key]);
+			}
 	}
 }
 
@@ -52,8 +53,9 @@ function merge(target, source, override) {
 	override = override === undefined || override;
 
 	for (var key in source) {
-		if (override || ! target.hasOwnProperty(key))
+		if (override || ! target.hasOwnProperty(key)) {
 			target[key] = source[key];
+		}
 	}
 
 	return target;
@@ -77,8 +79,9 @@ function asyncProxy(func) {
 }
 
 function extendFn(func, extension) {
-	if (! func)
+	if (! func) {
 		return extension;
+	}
 
 	return function() {
 		asyncCall(func, this, arguments);
@@ -97,8 +100,9 @@ function buildURL(path, parameters) {
 }
 
 function parseJSON(data) {
-	if (typeof JSON != 'undefined')
+	if (typeof JSON != 'undefined') {
 		return JSON.parse(data);
+	}
 
 	return eval('('.concat(data, ')'));
 }

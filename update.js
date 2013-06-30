@@ -3,16 +3,18 @@
  */
 
 (function() {
-	if (new Date().valueOf() - Number(Config.get('update_checked_at')) < 24 * 36e5) // 1 day
+	if (new Date().valueOf() - Number(Config.get('update_checked_at')) < 24 * 36e5) { // 1 day
 		return;
+	}
 
 	var popup = null;
 
 	new JSONRequest(Meta.site + '/changelog', {version: Meta.version}, function(changelog) {
 		Config.set('update_checked_at', new Date().valueOf().toFixed());
 
-		if (changelog && changelog.length)
+		if (changelog && changelog.length) {
 			popup = renderPopup(changelog);
+		}
 	});
 
 	function renderPopup(changelog) {

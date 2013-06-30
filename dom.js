@@ -12,17 +12,21 @@ var DH = {
 
 				var node = this.createElement(def.tag);
 
-				if (def.style !== null)
+				if (def.style !== null) {
 					this.style(node, def.style);
+				}
 
-				if (def.attributes !== null)
+				if (def.attributes !== null) {
 					this.attributes(node, def.attributes);
+				}
 
-				if (def.listeners !== null)
+				if (def.listeners !== null) {
 					this.listeners(node, def.listeners);
+				}
 
-				if (def.children !== null)
+				if (def.children !== null) {
 					this.append(node, def.children);
+				}
 
 				return node;
 
@@ -53,15 +57,18 @@ var DH = {
 			each([].concat(children), function(i, child) { parent.insertBefore(this.build(child), sibling); }, this);
 			parent.normalize();
 		}
-		else
+		else {
 			this.append(parent, children);
+		}
 	},
 
 	prepend: function(node, children) {
-		if (node.hasChildNodes())
+		if (node.hasChildNodes()) {
 			each([].concat(children), function(i, child) { node.insertBefore(this.build(child), node.firstChild); }, this);
-		else
+		}
+		else {
 			this.append(node, children);
+		}
 	},
 
 	attributes: function(node, attributes) {
@@ -76,18 +83,21 @@ var DH = {
 
 	addClass: function(node, clss) {
 		if (clss.indexOf(' ') == -1) {
-			if (! this.hasClass(node, clss))
+			if (! this.hasClass(node, clss)) {
 				node.setAttribute('class', (node.getAttribute('class') || '').concat(' ', clss).trim());
+			}
 		}
-		else
+		else {
 			each(clss.split(/ +/), function(i, clss) { this.addClass(node, clss); }, this);
+		}
 	},
 
 	delClass: function(node, clss) {
 		clss = clss.trim().replace(/ +/g, '|');
 
-		if (this.hasClass(node, new RegExp(clss)))
+		if (this.hasClass(node, new RegExp(clss))) {
 			node.setAttribute('class', node.getAttribute('class').replace(new RegExp('\\s*'.concat(clss, '\\s*'), 'g'), ' ').trim());
+		}
 	},
 
 	listeners: function(node, listeners) {
@@ -103,8 +113,9 @@ var DH = {
 	},
 
 	unwrap: function(element) {
-		if (typeof XPCNativeWrapper != 'undefined' && typeof XPCNativeWrapper.unwrap == 'function')
+		if (typeof XPCNativeWrapper != 'undefined' && typeof XPCNativeWrapper.unwrap == 'function') {
 			return XPCNativeWrapper.unwrap(element);
+		}
 
 		return element;
 	},
@@ -124,8 +135,9 @@ var DH = {
 				index = Number(selector[2]) || 0;
 
 			for (var i = 0, j = 0, nodes = node.childNodes; node = nodes.item(i); ++i)
-				if (node.nodeType == this.ELEMENT_NODE && (! name || node.tagName.toLowerCase() == name) && j++ == index)
+				if (node.nodeType == this.ELEMENT_NODE && (! name || node.tagName.toLowerCase() == name) && j++ == index) {
 					break;
+				}
 		}
 
 		return node;
