@@ -17,4 +17,7 @@ user.js: $(filter-out user.js, $(wildcard *.js))
 
 i18n.js: $(wildcard i18n/*.js)
 
+%.js:
+	@touch $@
+
 .PHONY: build release
