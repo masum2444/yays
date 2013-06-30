@@ -20,7 +20,7 @@ var Meta = {
  * Script context.
  */
 
-unsafeWindow[Meta.ns] = {
+var Context = unsafeWindow[Meta.ns] = {
 	ns: Meta.ns
 };
 
@@ -46,8 +46,6 @@ var onPlayerReady = asyncProxy(function() {
 	if (element) {
 		try {
 			Player.initialize(DH.unwrap(element)).onReady(function(player) {
-				Console.debug('Player ready');
-
 				var autoPlay = new AutoPlay(player), videoQuality = new VideoQuality(player), playerSize = new PlayerSize(player);
 
 				playerSize.apply();

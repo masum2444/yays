@@ -2,23 +2,24 @@
  * Player singleton.
  */
 
-var Player = (function(context) {
+var Player = (function() {
 	function Player(element) {
 		this._element = element;
+		this._listeners = {};
+
 		this._boot();
 	}
 
 	Player.prototype = {
 		_element: null,
+		_listeners: null,
+		_ready: false,
 		_muted: 0,
-
-		_onReadyCallback: emptyFn,
-		_onStateChangeCallback: emptyFn,
 
 		_boot: function() {
 			if (typeof this._element.getApiInterface == 'function') {
 				this._exportApiInterface();
-				this._onApiReady();
+				this._onReady();
 			}
 			else
 				setTimeout(bind(this._boot, this), 10);
@@ -31,35 +32,39 @@ var Player = (function(context) {
 			}, this);
 		},
 
-		_onApiReady: function() {
+		_onReady: function() {
+			Console.debug('Player ready');
+
+			this._ready = true;
 			this._muted = Number(this.isMuted());
 
 			// The player sometimes reports inconsistent state.
 			if (this.isAutoPlaying())
 				this.resetState();
 
-			this._onReadyCallback(this);
-			this._onReadyCallback = null;
+			Context.onPlayerStateChange = asyncProxy(bind(this._onStateChange, this));
+			this.addEventListener('onStateChange', Context.ns + '.onPlayerStateChange');
+
+			if ('ready' in this._listeners)
+				this._listeners['ready'](this);
 		},
 
 		_onStateChange: function(state) {
 			Console.debug('State changed to', ['unstarted', 'ended', 'playing', 'paused', 'buffering', undefined, 'cued'][state + 1]);
 
-			this._onStateChangeCallback(state);
+			if ('statechange' in this._listeners)
+				this._listeners['statechange'](state);
 		},
 
-		onReady: function(callback) {
-			if (this._onReadyCallback)
-				this._onReadyCallback = callback;
+		onReady: function(listener) {
+			if (this._ready)
+				listener(this);
 			else
-				callback(this);
+				this._listeners['ready'] = listener;
 		},
 
-		onStateChange: function(callback) {
-			this._onStateChangeCallback = callback;
-
-			context.onPlayerStateChange = asyncProxy(bind(this._onStateChange, this));
-			this.addEventListener('onStateChange', context.ns + '.onPlayerStateChange');
+		onStateChange: function(listener) {
+			this._listeners['statechange'] = listener;
 		},
 
 		getArgument: function(name) {
@@ -140,5 +145,5 @@ var Player = (function(context) {
 			return instance = new Player(element);
 		}
 	};
-})(unsafeWindow[Meta.ns]);
+})();
 

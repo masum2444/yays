@@ -2,7 +2,7 @@
  * Create XHR or JSONP requests.
  */
 
-var JSONRequest = (function(namespace) {
+var JSONRequest = (function() {
 	var Request = null;
 
 	// XHR
@@ -25,43 +25,37 @@ var JSONRequest = (function(namespace) {
 	}
 	// JSONP
 	else {
-		Request = (function() {
-			var requests = [], requestsNs = 'jsonp';
+		Context.jsonp = [];
 
-			function Request(url, parameters, callback) {
-				this._callback = callback;
-				this._id = requests.push(bind(this._onLoad, this)) - 1;
+		Request = function(url, parameters, callback) {
+			this._callback = callback;
+			this._id = Context.jsonp.push(bind(this._onLoad, this)) - 1;
 
-				parameters.callback = namespace.concat('.', requestsNs, '[', this._id, ']');
+			parameters.callback = Context.ns.concat('.jsonp[', this._id, ']');
 
-				this._scriptNode = document.body.appendChild(DH.build({
-					tag: 'script',
-					attributes: {
-						'type': 'text/javascript',
-						'src': buildURL(url, parameters)
-					}
-				}));
-			}
-
-			Request.prototype = {
-				_callback: null,
-				_id: null,
-				_scriptNode: null,
-
-				_onLoad: function(response) {
-					this._callback(response);
-
-					document.body.removeChild(this._scriptNode);
-					delete requests[this._id];
+			this._scriptNode = document.body.appendChild(DH.build({
+				tag: 'script',
+				attributes: {
+					'type': 'text/javascript',
+					'src': buildURL(url, parameters)
 				}
-			};
+			}));
+		};
 
-			unsafeWindow[namespace][requestsNs] = requests;
+		Request.prototype = {
+			_callback: null,
+			_id: null,
+			_scriptNode: null,
 
-			return Request;
-		})();
+			_onLoad: function(response) {
+				this._callback(response);
+
+				document.body.removeChild(this._scriptNode);
+				delete Context.jsonp[this._id];
+			}
+		};
 	}
 
 	return Request;
-})(Meta.ns);
+})();
 
