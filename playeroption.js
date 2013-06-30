@@ -22,16 +22,7 @@ PlayerOption.prototype = {
 	apply: emptyFn
 };
 
-PlayerOption.Button = function(option) {
-	this._option = option;
-
-	Button.call(this, this.label, this.tooltip, {
-		handler: bind(this._step, this),
-		display: bind(this._indicator, this)
-	});
-};
-
-PlayerOption.Button.prototype = extend(Button, {
+PlayerOption.Button = extend(Button, {
 	_option: null,
 
 	label: null,
@@ -44,6 +35,15 @@ PlayerOption.Button.prototype = extend(Button, {
 
 	_indicator: function() {
 		return this.states[this._option.get()];
+	},
+
+	constructor: function(option) {
+		this._option = option;
+
+		Button.call(this, this.label, this.tooltip, {
+			handler: bind(this._step, this),
+			display: bind(this._indicator, this)
+		});
 	}
 });
 
@@ -51,40 +51,7 @@ PlayerOption.Button.prototype = extend(Button, {
  * Prevent autoplaying.
  */
 
-function AutoPlay(player) {
-	PlayerOption.call(this, player, 'auto_play');
-
-	if (this._player.isAutoPlaying()) {
-		switch (this.get()) {
-			case 0: // ON
-				this._applied = true;
-				break;
-
-			case 1: // OFF
-				this._applied = false;
-				break;
-
-			case 2: // AUTO
-				// Video is visible or opened in the same window.
-				if (this._focused || this._isVisible() || unsafeWindow.history.length > 1) {
-					this._applied = true;
-				}
-				// Video is opened in a background tab.
-				else {
-					DH.on(unsafeWindow, 'focus', bind(this._onFocus, this));
-					DH.on(unsafeWindow, 'blur', bind(this._onBlur, this));
-
-					this._applied = false;
-				}
-				break;
-		}
-	}
-	else {
-		this._applied = true;
-	}
-}
-
-AutoPlay.prototype = extend(PlayerOption, {
+var AutoPlay = extend(PlayerOption, {
 	_applied: false,
 	_focused: false,
 	_muted: false,
@@ -137,6 +104,39 @@ AutoPlay.prototype = extend(PlayerOption, {
 		return doc.hidden === false || doc.mozHidden === false || doc.webkitHidden === false;
 	},
 
+	constructor: function(player) {
+		PlayerOption.call(this, player, 'auto_play');
+
+		if (this._player.isAutoPlaying()) {
+			switch (this.get()) {
+				case 0: // ON
+					this._applied = true;
+					break;
+
+				case 1: // OFF
+					this._applied = false;
+					break;
+
+				case 2: // AUTO
+					// Video is visible or opened in the same window.
+					if (this._focused || this._isVisible() || unsafeWindow.history.length > 1) {
+						this._applied = true;
+					}
+					// Video is opened in a background tab.
+					else {
+						DH.on(unsafeWindow, 'focus', bind(this._onFocus, this));
+						DH.on(unsafeWindow, 'blur', bind(this._onBlur, this));
+
+						this._applied = false;
+					}
+					break;
+			}
+		}
+		else {
+			this._applied = true;
+		}
+	},
+
 	apply: function() {
 		if (! this._applied) {
 			this._mute(true);
@@ -160,33 +160,33 @@ AutoPlay.prototype = extend(PlayerOption, {
 	}
 });
 
-AutoPlay.Button = function(option) {
-	PlayerOption.Button.call(this, option);
-};
-
-AutoPlay.Button.prototype = extend(PlayerOption.Button, {
+AutoPlay.Button = extend(PlayerOption.Button, {
 	label: _('Auto play'),
 	tooltip: _('Toggle video autoplay'),
-	states: [_('ON'), _('OFF'), _('AUTO')]
+	states: [_('ON'), _('OFF'), _('AUTO')],
+
+	constructor: function(option) {
+		PlayerOption.Button.call(this, option);
+	}
 });
 
 /*
  * Set video quality.
  */
 
-function VideoQuality(player) {
-	PlayerOption.call(this, player, 'video_quality');
-
-	this._applied = ! this.get();
-}
-
-VideoQuality.prototype = extend(PlayerOption, {
+var VideoQuality = extend(PlayerOption, {
 	_applied: false,
 	_muted: false,
 	_buffered: false,
 	_player: null,
 
 	_qualities: [, 'small', 'medium', 'large', 'hd720', 'hd1080', 'highres'],
+
+	constructor: function(player) {
+		PlayerOption.call(this, player, 'video_quality');
+
+		this._applied = ! this.get();
+	},
 
 	apply: function() {
 		if (! this._applied) {
@@ -242,25 +242,25 @@ VideoQuality.prototype = extend(PlayerOption, {
 	}
 });
 
-VideoQuality.Button = function(option) {
-	PlayerOption.Button.call(this, option);
-};
-
-VideoQuality.Button.prototype = extend(PlayerOption.Button, {
+VideoQuality.Button = extend(PlayerOption.Button, {
 	label: _('Quality'),
 	tooltip: _('Set default video quality'),
-	states: [_('AUTO'), '240p', '360p', '480p', '720p', '1080p', _('ORIGINAL')]
+	states: [_('AUTO'), '240p', '360p', '480p', '720p', '1080p', _('ORIGINAL')],
+
+	constructor: function(option) {
+		PlayerOption.Button.call(this, option);
+	}
 });
 
 /*
  * Set player size.
  */
 
-function PlayerSize(player) {
-	PlayerOption.call(this, player, 'player_size');
-}
+var PlayerSize = extend(PlayerOption, {
+	constructor: function(player) {
+		PlayerOption.call(this, player, 'player_size');
+	},
 
-PlayerSize.prototype = extend(PlayerOption, {
 	apply: function() {
 		var mode = this.get();
 
@@ -302,13 +302,13 @@ PlayerSize.prototype = extend(PlayerOption, {
 	}
 });
 
-PlayerSize.Button = function(option) {
-	PlayerOption.Button.call(this, option);
-};
-
-PlayerSize.Button.prototype = extend(PlayerOption.Button, {
+PlayerSize.Button = extend(PlayerOption.Button, {
 	label: _('Size'),
 	tooltip: _('Set default player size'),
-	states: [_('AUTO'), _('WIDE'), _('FIT')]
+	states: [_('AUTO'), _('WIDE'), _('FIT')],
+
+	constructor: function(option) {
+		PlayerOption.Button.call(this, option);
+	}
 });
 

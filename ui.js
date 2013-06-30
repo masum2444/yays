@@ -85,14 +85,7 @@ QO4MOQSjsUvKb9pn2crLa1ua4zOnAMRzrlhxly4PBn4BWEpBljV5iJUAAAAASUVORK5CYII='}
  * WatchUI class.
  */
 
-function WatchUI(buttons) {
-	UI.call(this, buttons);
-
-	DH.append(DH.id('watch7-secondary-actions'), this.button);
-	DH.prepend(DH.id('watch7-action-panels'), this.panel);
-}
-
-WatchUI.prototype = extend(UI, {
+var WatchUI = extend(UI, {
 	_def: {
 		button: function(click) {
 			return {
@@ -142,6 +135,13 @@ WatchUI.prototype = extend(UI, {
 		}
 	},
 
+	constructor: function(buttons) {
+		UI.call(this, buttons);
+
+		DH.append(DH.id('watch7-secondary-actions'), this.button);
+		DH.prepend(DH.id('watch7-action-panels'), this.panel);
+	},
+
 	toggle: function() {
 		this.refresh();
 	}
@@ -151,16 +151,7 @@ WatchUI.prototype = extend(UI, {
  * ChannelUI class.
  */
 
-function ChannelUI(buttons) {
-	UI.call(this, buttons);
-
-	DH.append(DH.id('channel-navigation-menu'), {
-		tag: 'li',
-		children: [this.button, this.panel]
-	});
-}
-
-ChannelUI.prototype = extend(UI, {
+var ChannelUI = extend(UI, {
 	_def: {
 		button: function(click) {
 			return {
@@ -211,6 +202,15 @@ ChannelUI.prototype = extend(UI, {
 				children: UI.prototype._def.panel(buttons)
 			};
 		}
+	},
+
+	constructor: function(buttons) {
+		UI.call(this, buttons);
+
+		DH.append(DH.id('channel-navigation-menu'), {
+			tag: 'li',
+			children: [this.button, this.panel]
+		});
 	},
 
 	toggle: function() {
