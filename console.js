@@ -3,11 +3,11 @@
  */
 
 var Console = {
-// #if RELEASE
+#if RELEASE
 	debug: function() {
 		unsafeWindow.console.debug.apply(unsafeWindow.console, Array.prototype.concat.apply(['['.concat(Meta.ns, ']')], arguments));
 	}
-// #else
+#else
 	display: document.createElement('pre'),
 
 	debug: function() {
@@ -16,6 +16,6 @@ var Console = {
 		this.display.appendChild(document.createTextNode(pieces.join(' ') + '\n'));
 		unsafeWindow.console.debug.apply(unsafeWindow.console, ['['.concat(Meta.ns, ']')].concat(pieces));
 	}
-// #endif
+#endif
 };
 

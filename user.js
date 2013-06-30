@@ -1,6 +1,6 @@
-// #include "meta.jst"
+#include "meta.js"
 
-// #include "license.jst"
+#include "license.js"
 
 function YAYS(unsafeWindow) {
 
@@ -11,6 +11,7 @@ function YAYS(unsafeWindow) {
 var Meta = {
 	title:       APOSTROPHIZE(SCRIPT_NAME),
 	version:     APOSTROPHIZE(SCRIPT_VERSION),
+	revision:    APOSTROPHIZE(SCRIPT_REVISION),
 	releasedate: APOSTROPHIZE(SCRIPT_RELEASE_DATE),
 	site:        APOSTROPHIZE(SCRIPT_SITE),
 	ns:          APOSTROPHIZE(SCRIPT_NS)
@@ -24,17 +25,17 @@ var Context = unsafeWindow[Meta.ns] = {
 	ns: Meta.ns
 };
 
-// #include "util.jst"
-// #include "console.jst"
-// #include "i18n.jst"
-// #include "dom.jst"
-// #include "config.jst"
-// #include "jsonrequest.jst"
-// #include "update.jst"
-// #include "player.jst"
-// #include "button.jst"
-// #include "playeroption.jst"
-// #include "ui.jst"
+#include "util.js"
+#include "console.js"
+#include "i18n.js"
+#include "dom.js"
+#include "config.js"
+#include "jsonrequest.js"
+#include "update.js"
+#include "player.js"
+#include "button.js"
+#include "playeroption.js"
+#include "ui.js"
 
 /*
  * Player ready callback.

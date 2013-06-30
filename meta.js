@@ -1,18 +1,19 @@
 // <<<
 \
-// #define SCRIPT_NAME         Yays! (Yet Another Youtube Script)
-// #define SCRIPT_DESCRIPTION  A lightweight and non-intrusive userscript that control autoplaying and set the preferred player size and playback quality on YouTube.
-// #define SCRIPT_VERSION      1.6.3
-// #define SCRIPT_RELEASE_DATE RELEASE_DATE
-// #define SCRIPT_NS           yays
+#define SCRIPT_NAME         Yays! (Yet Another Youtube Script)
+#define SCRIPT_DESCRIPTION  A lightweight and non-intrusive userscript that control autoplaying and set the preferred player size and playback quality on YouTube.
+#define SCRIPT_VERSION      1.6.3
+#define SCRIPT_REVISION     RELEASE_HASH
+#define SCRIPT_RELEASE_DATE RELEASE_DATE
+#define SCRIPT_NS           yays
 \
-// #define SCRIPT_SITE_ROOT https://eugenox.appspot.com
-// #define SCRIPT_SITE      SCRIPT_SITE_ROOT/script/yays
+#define SCRIPT_SITE_ROOT https://eugenox.appspot.com
+#define SCRIPT_SITE      SCRIPT_SITE_ROOT/script/yays
 \
-// #define SCRIPT_AUTHOR    Eugene Nouvellieu <eugenox_gmail_com>
+#define SCRIPT_AUTHOR    Eugene Nouvellieu <eugenox_gmail_com>
 \
-// #define ASTERIX *
-// #define APOSTROPHIZE(arg) ??/047arg??/047
+#define ASTERIX *
+#define APOSTROPHIZE(arg) ??/047arg??/047
 \
 // ==UserScript==
 // @name        SCRIPT_NAME

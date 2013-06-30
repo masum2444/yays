@@ -9,7 +9,7 @@
 
 	var popup = null;
 
-	new JSONRequest(Meta.site + '/changelog', {version: Meta.version}, function(changelog) {
+	new JSONRequest(Meta.site + '/changelog', {version: Meta.version, revision: Meta.revision}, function(changelog) {
 		Config.set('update_checked_at', new Date().valueOf().toFixed());
 
 		if (changelog && changelog.length) {

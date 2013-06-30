@@ -55,7 +55,7 @@ QO4MOQSjsUvKb9pn2crLa1ua4zOnAMRzrlhxly4PBn4BWEpBljV5iJUAAAAASUVORK5CYII='}
 					'text-align': 'center',
 				},
 				children: map(bind(Button.prototype.render.call, Button.prototype.render), buttons)
-// #if ! RELEASE
+#if ! RELEASE
 			}, {
 				style: {
 					'margin-top': '10px',
@@ -65,7 +65,7 @@ QO4MOQSjsUvKb9pn2crLa1ua4zOnAMRzrlhxly4PBn4BWEpBljV5iJUAAAAASUVORK5CYII='}
 					'border': '1px solid #e2e2e2'
 				},
 				children: Console.display
-// #endif
+#endif
 			}];
 		}
 	},
