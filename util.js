@@ -65,12 +65,7 @@ function extend(base, proto) {
 	function T() {}
 	T.prototype = base.prototype;
 
-	var constructor = proto.constructor || function() {};
-	delete proto.constructor;
-
-	constructor.prototype = merge(new T(), proto);
-
-	return constructor;
+	return merge(new T(), proto);
 }
 
 function asyncCall(func, scope, args) {
