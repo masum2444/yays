@@ -204,7 +204,7 @@ ChannelUI.prototype = extend(UI, {
 				},
 				style: {
 					'padding': '5px 10px 10px',
-					'width': '300px'
+					'width': '400px'
 				},
 				children: UI.prototype._def.panel(buttons)
 			};

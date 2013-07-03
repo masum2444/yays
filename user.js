@@ -41,7 +41,7 @@ var Context = unsafeWindow[Meta.ns] = {
  * Player ready callback.
  */
 
-var onPlayerReady = asyncProxy(function() {
+function onPlayerReady() {
 	var element = DH.id('movie_player') || DH.id('movie_player-flash') || DH.id('movie_player-html5');
 
 	if (element) {
@@ -53,6 +53,9 @@ var onPlayerReady = asyncProxy(function() {
 					autoPlay.apply();
 					videoQuality.apply();
 				});
+
+				autoPlay.apply();
+				videoQuality.apply();
 
 				var page = DH.id('page');
 				if (page) {
@@ -72,20 +75,15 @@ var onPlayerReady = asyncProxy(function() {
 						]);
 					}
 				}
-
-				autoPlay.apply();
-				videoQuality.apply();
 			});
 		}
 		catch (e) {
 			Console.debug(e);
 		}
 	}
-});
+}
 
-each(['onYouTubePlayerReady', 'ytPlayerOnYouTubePlayerReady'], function(i, callback) {
-	unsafeWindow[callback] = extendFn(unsafeWindow[callback], onPlayerReady);
-});
+unsafeWindow.onYouTubePlayerReady = extendFn(unsafeWindow.onYouTubePlayerReady, asyncProxy(onPlayerReady));
 
 onPlayerReady();
 
