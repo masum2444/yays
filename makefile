@@ -9,6 +9,9 @@ build: $(BUILD_DIR)/yays.user.js $(BUILD_DIR)/yays.meta.js
 release: RELEASE = 1
 release: build
 
+translation:
+	python utility/translation.py i18n
+
 $(BUILD_DIR)/yays.%.js: %.js
 	gcc -E -P -CC -traditional -DRELEASE=$(RELEASE) -DRELEASE_DATE="$(RELEASE_DATE)" -DRELEASE_HASH=$(RELEASE_HASH) -o $@ -x c $<
 	sed -e $$'0,/<<</d; s:??/047:\047:g' -i $@
@@ -20,4 +23,4 @@ i18n.js: $(wildcard i18n/*.js)
 %.js:
 	@touch $@
 
-.PHONY: build release
+.PHONY: build release translation
