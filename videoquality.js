@@ -19,7 +19,7 @@ VideoQuality.prototype = extend(SilentPlayerOption, {
 				if (this._player.getAvailableQualityLevels().length) {
 					this._applied = true;
 
-					var quality = [, 'small', 'medium', 'large', 'hd720', 'hd1080', 'highres'][this.get()];
+					var quality = [, 'tiny', 'small', 'medium', 'large', 'hd720', 'hd1080', 'highres'][this.get()];
 
 					if (quality && quality != this._player.getPlaybackQuality()) {
 						this._buffered = false;
@@ -68,6 +68,6 @@ VideoQuality.Button = function(option) {
 VideoQuality.Button.prototype = extend(PlayerOption.Button, {
 	label: _('Quality'),
 	tooltip: _('Set default video quality'),
-	states: [_('AUTO'), '240p', '360p', '480p', '720p', '1080p', _('ORIGINAL')]
+	states: [_('AUTO'), '144p', '240p', '360p', '480p', '720p', '1080p', _('ORIGINAL')]
 });
 
