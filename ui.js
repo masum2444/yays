@@ -88,7 +88,7 @@ function WatchUI(buttons) {
 	UI.call(this, buttons);
 
 	DH.append(DH.id('watch7-secondary-actions'), this.button);
-	DH.prepend(DH.id('watch7-action-panels'), this.panel);
+	DH.append(DH.id('watch7-action-panels'), this.panel);
 }
 
 WatchUI.prototype = extend(UI, {
