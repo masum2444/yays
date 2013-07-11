@@ -40,7 +40,7 @@ AutoPlay.prototype = extend(SilentPlayerOption, {
 	_timer: null,
 
 	_onFocus: function() {
-		if (this._focused) {
+		if (this._focused || this._timer !== null) {
 			return;
 		}
 
