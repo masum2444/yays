@@ -34,6 +34,12 @@ var Player = (function() {
 			}, this);
 		},
 
+		_dispatchEvent: function(name /* ... */) {
+			if (name in this._listeners) {
+				this._listeners[name].apply(null, [this].concat(Array.prototype.slice.call(arguments, 1)));
+			}
+		},
+
 		_onReady: function() {
 			Console.debug('Player ready');
 
@@ -48,25 +54,20 @@ var Player = (function() {
 			Context.onPlayerStateChange = asyncProxy(bind(this._onStateChange, this));
 			this.addEventListener('onStateChange', Context.ns + '.onPlayerStateChange');
 
-			if ('ready' in this._listeners) {
-				this._listeners['ready'](this);
-			}
+			this._dispatchEvent('ready');
 		},
 
 		_onStateChange: function(state) {
 			Console.debug('State changed to', ['unstarted', 'ended', 'playing', 'paused', 'buffering', undefined, 'cued'][state + 1]);
 
-			if ('statechange' in this._listeners) {
-				this._listeners['statechange'](state);
-			}
+			this._dispatchEvent('statechange', state);
 		},
 
 		onReady: function(listener) {
+			this._listeners['ready'] = listener;
+
 			if (this._ready) {
-				listener(this);
-			}
-			else {
-				this._listeners['ready'] = listener;
+				this._dispatchEvent('ready');
 			}
 		},
 

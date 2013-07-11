@@ -46,12 +46,17 @@ function onPlayerReady() {
 
 	if (element) {
 		try {
-			Player.initialize(DH.unwrap(element)).onReady(function(player) {
+			Player.initialize(DH.unwrap(element)).onReady(function onReady(player) {
 				var autoPlay = new AutoPlay(player), videoQuality = new VideoQuality(player), playerSize = new PlayerSize(player);
 
-				player.onStateChange(function(state) {
-					autoPlay.apply();
-					videoQuality.apply();
+				player.onStateChange(function(player, state) {
+					if (state == Player.CUED) {
+						onReady(player);
+					}
+					else {
+						autoPlay.apply();
+						videoQuality.apply();
+					}
 				});
 
 				autoPlay.apply();
