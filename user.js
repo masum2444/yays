@@ -36,6 +36,7 @@ var Context = unsafeWindow[Meta.ns] = {
 #include "button.js"
 #include "playeroption.js"
 #include "ui.js"
+#include "migrations.js"
 
 /*
  * Player ready callback.
