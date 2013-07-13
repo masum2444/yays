@@ -2,38 +2,40 @@
  * Migrations
  */
 
-(function(current_version) {
-	function versionLower(a, b) {
-		for (var i = 0, a = a.split('.'), b = b.split('.'), parts = Math.max(a.length, b.length); i < parts; ++i) {
-			if (a[i] != b[i]) {
-				return Number(a[i] || 0) < Number(b[i] || 0);
-			}
-		}
+#define MIGRATION(_version) version: APOSTROPHIZE(_version), apply: function()
 
-		return false;
-	}
+(function(currentVersion) {
+	var previousVersion = Config.get('version') || '1.0';
 
-	var previous_version = Config.get('version') || '1.0';
-
-	if (previous_version == current_version) {
+	if (previousVersion == currentVersion) {
 		return;
 	}
 
-	var migrations = [
-		// Added "144p" to the quality levels.
-		['1.7', function() {
-			var video_quality = Number(Config.get('video_quality'));
-			if (video_quality > 0 && video_quality < 7) {
-				Config.set('video_quality', ++video_quality);
+	previousVersion = map(Number, previousVersion.split('.'));
+
+	each([
+		{
+			// Added "144p" to the quality levels.
+			MIGRATION(1.7) {
+				var videoQuality = Number(Config.get('video_quality'));
+				if (videoQuality > 0 && videoQuality < 7) {
+					Config.set('video_quality', ++videoQuality);
+				}
 			}
-		}]
-	];
+		}
+	], function(i, migration) {
+		var migrationVersion = map(Number, migration.version.split('.'));
 
-	while (versionLower(migrations[0][0], previous_version) && migrations.shift());
+		for (var i = 0, parts = Math.max(previousVersion.length, migrationVersion.length); i < parts; ++i) {
+			if ((previousVersion[i] || 0) < (migrationVersion[i] || 0)) {
+				Console.debug('Applying migration', migration.version);
 
-	for (var i = 0, len = migrations.length; i < len; ++i) {
-		migrations[i][1]();
-	}
+				migration.apply();
 
-	Config.set('version', current_version);
+				break;
+			}
+		}
+	});
+
+	Config.set('version', currentVersion);
 })(Meta.version);
