@@ -4,14 +4,16 @@
 
 function each(iterable, callback, scope) {
 	if (iterable.length) {
-		for (var i = 0, len = iterable.length; i < len; ++i)
+		for (var i = 0, len = iterable.length; i < len; ++i) {
 			callback.call(scope, i, iterable[i]);
+		}
 	}
 	else {
-		for (var key in iterable)
+		for (var key in iterable) {
 			if (iterable.hasOwnProperty(key)) {
 				callback.call(scope, key, iterable[key]);
 			}
+		}
 	}
 }
 
@@ -25,12 +27,14 @@ function map() {
 		var i = 0, len = Math.max.apply(Math, map(function(arg) { return arg.length; }, args));
 		function getter(arg) { return arg[i]; }
 
-		for (; i < len; ++i)
+		for (; i < len; ++i) {
 			buffer.push(callback.apply(null, map(getter, args)));
+		}
 	}
 	else {
-		for (var i = 0, arg = args[0], len = arg.length; i < len; ++i)
+		for (var i = 0, arg = args[0], len = arg.length; i < len; ++i) {
 			buffer.push(callback(arg[i]));
+		}
 	}
 
 	return buffer;
