@@ -71,6 +71,10 @@ var DH = {
 		}
 	},
 
+	remove: function(node) {
+		node.parentNode.removeChild(node);
+	},
+
 	attributes: function(node, attributes) {
 		each(attributes, node.setAttribute, node);
 	},

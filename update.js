@@ -21,97 +21,91 @@
 		return document.body.appendChild(DH.build({
 			style: {
 				'position': 'fixed',
-				'top': '15px',
-				'right': '15px',
+				'bottom': '0',
+				'width': '100%',
 				'z-index': '1000',
-				'padding': '10px 15px 10px',
-				'background-color': '#f8f8f8',
-				'border': '1px solid #cccccc'
+				'background-color': '#f1f1f1',
+				'border-top': '1px solid #cccccc'
 			},
-			children: [{
-				tag: 'h3',
+			children: {
 				style: {
-					'text-align': 'center',
+					'margin': '15px'
 				},
-				children: Meta.title
-			}, {
-				style: {
-					'font-size': '11px',
-					'color': '#808080',
-					'text-align': 'center'
-				},
-				children: 'User Script update notification.'
-			}, {
-				tag: 'p',
-				style: {
-					'margin': '10px 0'
-				},
-				children: [
-					'You are using version ',
-					{
-						tag: 'strong',
-						children: Meta.version
+				children: [{
+					tag: 'strong',
+					children: ['There is an update available for ', Meta.title, '.']
+				}, {
+					tag: 'p',
+					style: {
+						'margin': '10px 0'
 					},
-					', released on ',
-					{
-						tag: 'em',
-						children: Meta.releasedate
-					},
-					'.',
-					{
-						tag: 'br'
-					},
-					'Please consider updating to the latest release.'
-				]
-			}, {
-				children: map(function(entry) {
-					return {
-						style: {
-							'margin-bottom': '5px'
-						},
-						children: [{
+					children: [
+						'You are using version ', {
 							tag: 'strong',
-							style: {
-								'font-size': '11px'
-							},
-							children: entry.version
-						}, {
+							children: Meta.version
+						}, ', released on ', {
 							tag: 'em',
-							style: {
-								'margin-left': '5px'
-							},
-							children: entry.date
-						}, {
-							style: {
-								'padding': '0 0 2px 10px',
-								'white-space': 'pre'
-							},
-							children: [].concat(entry.note).join('\n')
-						}]
-					};
-				}, [].concat(changelog))
-			}, {
-				style: {
-					'text-align': 'center',
-					'padding': '10px 0'
-				},
-				children: map(function(text, handler) {
-					return DH.build({
-						tag: 'span',
-						attributes: {
-							'class': 'yt-uix-button yt-uix-button-default'
-						},
-						style: {
-							'margin': '0 5px',
-							'padding': '5px 10px'
-						},
-						children: text,
+							children: Meta.releasedate
+						}, '. Please consider updating to the latest version.'
+					]
+				}, {
+					style: {
+						'margin': '10px 0',
+						'max-height': '150px',
+						'overflow-y': 'auto'
+					},
+					children: {
+						tag: 'a',
+						children: 'Show changes',
 						listeners: {
-							'click': handler
+							click: function(e) {
+								e.preventDefault();
+
+								DH.insertAfter(e.target, map(function(entry) {
+									return {
+										style: {
+											'margin-bottom': '5px'
+										},
+										children: [{
+											tag: 'strong',
+											children: entry.version
+										}, ' ', {
+											tag: 'em',
+											children: ['(', entry.date, ')']
+										}, {
+											style: {
+												'padding': '0 0 2px 10px',
+												'white-space': 'pre'
+											},
+											children: [].concat(entry.note).join('\n')
+										}]
+									};
+								}, [].concat(changelog)));
+
+								DH.remove(e.target);
+							}
 						}
-					});
-				}, ['Update', 'Dismiss'], [openDownloadSite, removePopup])
-			}]
+					}
+				}, {
+					children: map(function(text, handler) {
+						return DH.build({
+							tag: 'button',
+							attributes: {
+								'type': 'button',
+								'class': 'yt-uix-button yt-uix-button-default'
+							},
+							style: {
+								'margin-right': '10px',
+								'padding': '5px 15px'
+							},
+							children: text,
+							listeners: {
+								'click': handler
+							}
+						});
+					}, ['Update', 'Dismiss'], [openDownloadSite, removePopup])
+				}]
+			}
 		}));
 	}
 
