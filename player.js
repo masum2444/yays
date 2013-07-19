@@ -98,7 +98,6 @@ var Player = (function() {
 			return (this.getArgument('autoplay') || '1') == 1;
 		},
 
-		// Suppressing random exception.
 		seekTo: function() {
 			try {
 				this._element.seekTo.apply(this._element, arguments);
@@ -106,7 +105,6 @@ var Player = (function() {
 			catch (e) {}
 		},
 
-		// Seek to the beginning of the video considering deep-links.
 		seekToStart: function(ahead) {
 			var
 				code = (location.hash + location.search).match(/\bt=(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?/) || new Array(4),
@@ -115,7 +113,6 @@ var Player = (function() {
 			this.seekTo(seconds, ahead);
 		},
 
-		// This hack resets some aspects of the player.
 		resetState: function() {
 			this.seekTo(this.getCurrentTime(), true);
 		},
@@ -158,4 +155,3 @@ var Player = (function() {
 		}
 	};
 })();
-

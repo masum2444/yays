@@ -72,4 +72,3 @@ Button.prototype = {
 	handler: emptyFn,
 	display: emptyFn
 };
-

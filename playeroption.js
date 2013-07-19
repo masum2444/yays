@@ -67,6 +67,7 @@ SilentPlayerOption.prototype = extend(PlayerOption, {
 });
 
 #include "autoplay.js"
-#include "videoquality.js"
-#include "playersize.js"
 
+#include "videoquality.js"
+
+#include "playersize.js"

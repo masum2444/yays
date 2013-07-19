@@ -58,4 +58,3 @@ var JSONRequest = (function() {
 
 	return Request;
 })();
-

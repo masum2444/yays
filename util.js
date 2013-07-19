@@ -110,4 +110,3 @@ function parseJSON(data) {
 
 	return eval('('.concat(data, ')'));
 }
-

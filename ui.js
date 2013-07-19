@@ -215,4 +215,3 @@ ChannelUI.prototype = extend(UI, {
 		this.refresh();
 	}
 });
-

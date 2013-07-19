@@ -113,4 +113,3 @@ AutoPlay.Button.prototype = extend(PlayerOption.Button, {
 	tooltip: _('Toggle video autoplay'),
 	states: [_('ON'), _('OFF'), _('AUTO')]
 });
-

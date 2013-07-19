@@ -46,4 +46,3 @@ var Config = (function(namespace) {
 		}
 	};
 })(Meta.ns);
-

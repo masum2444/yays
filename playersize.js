@@ -59,4 +59,3 @@ PlayerSize.Button.prototype = extend(PlayerOption.Button, {
 	tooltip: _('Set default player size'),
 	states: [_('AUTO'), _('WIDE'), _('FIT')]
 });
-

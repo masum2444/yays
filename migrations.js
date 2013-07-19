@@ -1,5 +1,5 @@
 /*
- * Migrations
+ * Migrations.
  */
 
 #define MIGRATION(_version) version: APOSTROPHIZE(_version), apply: function()

@@ -18,4 +18,3 @@ var Console = {
 	}
 #endif
 };
-

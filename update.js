@@ -118,4 +118,3 @@
 		unsafeWindow.open(buildURL(Meta.site + '/download', {version: Meta.version}));
 	}
 })();
-

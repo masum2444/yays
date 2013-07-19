@@ -26,4 +26,3 @@ var _ = (function() {
 
 	return function(text) { return dictionary[text] || text; };
 })();
-

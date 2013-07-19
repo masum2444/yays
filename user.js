@@ -26,16 +26,27 @@ var Context = unsafeWindow[Meta.ns] = {
 };
 
 #include "util.js"
+
 #include "console.js"
+
 #include "i18n.js"
+
 #include "dom.js"
+
 #include "config.js"
+
 #include "jsonrequest.js"
+
 #include "update.js"
+
 #include "migrations.js"
+
 #include "player.js"
+
 #include "button.js"
+
 #include "playeroption.js"
+
 #include "ui.js"
 
 /*
