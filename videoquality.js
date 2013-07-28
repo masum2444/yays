@@ -15,7 +15,7 @@ VideoQuality.prototype = extend(SilentPlayerOption, {
 		if (! this._applied) {
 			this.mute(true);
 
-			if (this._player.getPlayerState() > Player.UNSTARTED) {
+			if ([Player.PLAYING, Player.PAUSED, Player.BUFFERING].indexOf(this._player.getPlayerState()) > -1) {
 				if (this._player.getAvailableQualityLevels().length) {
 					this._applied = true;
 

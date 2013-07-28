@@ -98,6 +98,15 @@ var Player = (function() {
 			return (this.getArgument('autoplay') || '1') == 1;
 		},
 
+		getVideoId: function() {
+			try {
+				return this.getVideoData().video_id;
+			}
+			catch (e) {
+				return (this.getVideoUrl().match(/\bv=([\w-]+)/) || [, undefined])[1];
+			}
+		},
+
 		seekTo: function() {
 			try {
 				this._element.seekTo.apply(this._element, arguments);

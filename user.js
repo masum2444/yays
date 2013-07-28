@@ -59,19 +59,21 @@ function onPlayerReady() {
 	if (element) {
 		try {
 			Player.initialize(DH.unwrap(element)).onReady(function onReady(player) {
-				var autoPlay = new AutoPlay(player), videoQuality = new VideoQuality(player), playerSize = new PlayerSize(player);
+				var videoPlayback = new VideoPlayback(player), videoQuality = new VideoQuality(player), playerSize = new PlayerSize(player);
+
+				var videoId = player.getVideoId();
 
 				player.onStateChange(function(player, state) {
-					if (state == Player.CUED) {
+					if (state == Player.CUED && videoId != player.getVideoId()) {
 						onReady(player);
 					}
 					else {
-						autoPlay.apply();
+						videoPlayback.apply();
 						videoQuality.apply();
 					}
 				});
 
-				autoPlay.apply();
+				videoPlayback.apply();
 				videoQuality.apply();
 
 				var page = DH.id('page');
@@ -80,7 +82,7 @@ function onPlayerReady() {
 						new WatchUI([
 							new VideoQuality.Button(videoQuality),
 							new PlayerSize.Button(playerSize),
-							new AutoPlay.Button(autoPlay)
+							new VideoPlayback.Button(videoPlayback)
 						]);
 
 						playerSize.apply();
@@ -88,7 +90,7 @@ function onPlayerReady() {
 					else if (DH.hasClass(page, 'channel')) {
 						new ChannelUI([
 							new VideoQuality.Button(videoQuality),
-							new AutoPlay.Button(autoPlay)
+							new VideoPlayback.Button(videoPlayback)
 						]);
 					}
 				}
