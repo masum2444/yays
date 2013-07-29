@@ -6,16 +6,12 @@ function VideoPlayback(player) {
 
 	if (player.isAutoPlaying()) {
 		switch (this.get()) {
-			case 0: // PLAYING
+			case 0: // PLAY
 				this._applied = true;
 				break;
 
-			case 1: // PAUSED
-			case 2: // STOPPED
-				break;
-
-			case 3: // AUTO PAUSED
-			case 4: // AUTO STOPPED
+			case 3: // AUTO PAUSE
+			case 4: // AUTO STOP
 				// Video is visible or opened in the same window.
 				if (this._isVisible() || unsafeWindow.history.length > 1) {
 					this._applied = true;
@@ -91,12 +87,12 @@ VideoPlayback.prototype = extend(SilentPlayerOption, {
 
 				this._player.seekToStart(true);
 
-				if (this.get() % 2) {
+				if (this.get() % 2) { // (AUTO) PAUSE
 					this._player.pauseVideo();
 
 					Console.debug('Playback paused');
 				}
-				else {
+				else { // (AUTO) STOP
 					this._player.stopVideo();
 
 					Console.debug('Playback stopped');
