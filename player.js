@@ -120,11 +120,11 @@ Player.prototype = {
 
 	isHTML5: function() {
 		try {
-			return unsafeWindow.ytplayer.config.html5;
+			return unsafeWindow.ytplayer.config.html5 === true;
 		}
-		catch (e) {}
-
-		return false;
+		catch (e) {
+			return this._element.tagName == 'DIV';
+		}
 	},
 
 	getVideoId: function() {
