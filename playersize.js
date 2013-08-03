@@ -24,10 +24,12 @@ PlayerSize.prototype = extend(PlayerOption, {
 							'width: 670px;',
 						'}',
 						'.watch-medium #watch7-playlist-tray-container {',
-							'height: 560px;',
+							'left: 670px;',
 						'}',
-						'.watch-medium #player-api {',
+						'.watch-medium .player-width {',
 							'width: 945px;',
+						'}',
+						'.watch-medium .player-height {',
 							'height: 560px;',
 						'}'
 					]
