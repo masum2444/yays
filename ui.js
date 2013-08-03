@@ -8,6 +8,18 @@ function UI(buttons) {
 	this.panel = DH.build(this._def.panel(buttons));
 }
 
+merge(UI, {
+	instance: null,
+
+	initialize: function(type, buttons) {
+		if (this.instance) {
+			this.instance.destroy();
+		}
+
+		return this.instance = new type(buttons);
+	}
+});
+
 UI.prototype = {
 	_def: {
 		icon: {
@@ -74,11 +86,14 @@ QO4MOQSjsUvKb9pn2crLa1ua4zOnAMRzrlhxly4PBn4BWEpBljV5iJUAAAAASUVORK5CYII='}
 	button: null,
 	panel: null,
 
-	refresh: function() {
-		each(this.buttons, function(i, button) { button.refresh(); });
+	destroy: function() {
+		DH.remove(this.button);
+		DH.remove(this.panel);
 	},
 
-	toggle: emptyFn
+	toggle: function() {
+		each(this.buttons, function(i, button) { button.refresh(); });
+	}
 };
 
 /**
@@ -139,10 +154,6 @@ WatchUI.prototype = extend(UI, {
 				children: UI.prototype._def.panel(buttons)
 			};
 		}
-	},
-
-	toggle: function() {
-		this.refresh();
 	}
 });
 
@@ -209,9 +220,5 @@ ChannelUI.prototype = extend(UI, {
 				children: UI.prototype._def.panel(buttons)
 			};
 		}
-	},
-
-	toggle: function() {
-		this.refresh();
 	}
 });

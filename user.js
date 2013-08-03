@@ -54,51 +54,49 @@ var Context = unsafeWindow[Meta.ns] = {
  */
 
 function onPlayerReady() {
-	var element = DH.id('movie_player') || DH.id('movie_player-flash') || DH.id('movie_player-html5');
+	try {
+		var element = DH.unwrap(DH.id('movie_player') || DH.id('movie_player-flash') || DH.id('movie_player-html5'));
 
-	if (element) {
-		try {
-			Player.initialize(DH.unwrap(element)).onReady(function onReady(player) {
-				var videoPlayback = new VideoPlayback(player), videoQuality = new VideoQuality(player), playerSize = new PlayerSize(player);
+		Player.initialize(element).onReady(function onReady(player) {
+			var videoPlayback = new VideoPlayback(player), videoQuality = new VideoQuality(player), playerSize = new PlayerSize(player);
 
-				var videoId = player.getVideoId();
+			var videoId = player.getVideoId();
 
-				player.onStateChange(function(player, state) {
-					if (state == Player.CUED && videoId != player.getVideoId()) {
-						onReady(player);
-					}
-					else {
-						videoPlayback.apply();
-						videoQuality.apply();
-					}
-				});
-
-				videoPlayback.apply();
-				videoQuality.apply();
-
-				var page = DH.id('page');
-				if (page) {
-					if (DH.hasClass(page, 'watch')) {
-						new WatchUI([
-							new VideoQuality.Button(videoQuality),
-							new PlayerSize.Button(playerSize),
-							new VideoPlayback.Button(videoPlayback)
-						]);
-
-						playerSize.apply();
-					}
-					else if (DH.hasClass(page, 'channel')) {
-						new ChannelUI([
-							new VideoQuality.Button(videoQuality),
-							new VideoPlayback.Button(videoPlayback)
-						]);
-					}
+			player.onStateChange(function(player, state) {
+				if (state == Player.CUED && videoId != player.getVideoId()) {
+					onReady(player);
+				}
+				else {
+					videoPlayback.apply();
+					videoQuality.apply();
 				}
 			});
-		}
-		catch (e) {
-			Console.debug(e);
-		}
+
+			videoPlayback.apply();
+			videoQuality.apply();
+
+			var page = DH.id('page');
+			if (page) {
+				if (DH.hasClass(page, 'watch')) {
+					UI.initialize(WatchUI, [
+						new VideoQuality.Button(videoQuality),
+						new PlayerSize.Button(playerSize),
+						new VideoPlayback.Button(videoPlayback)
+					]);
+
+					playerSize.apply();
+				}
+				else if (DH.hasClass(page, 'channel')) {
+					UI.initialize(ChannelUI, [
+						new VideoQuality.Button(videoQuality),
+						new VideoPlayback.Button(videoPlayback)
+					]);
+				}
+			}
+		});
+	}
+	catch (e) {
+		Console.debug(e);
 	}
 }
 

@@ -1,7 +1,6 @@
-/*
- * Player singleton.
+/**
+ * @class Player
  */
-
 function Player(element) {
 	this._element = element;
 	this._listeners = {};
@@ -22,6 +21,10 @@ merge(Player, {
 	},
 
 	initialize: function(element) {
+		if (! element instanceof HTMLElement) {
+			throw 'Invalid player element';
+		}
+
 		if (this.instance._element === element) {
 			throw 'Player already initialized';
 		}
@@ -96,14 +99,12 @@ Player.prototype = {
 	},
 
 	getArgument: function(name) {
-		// Flash
 		if (this._element.hasAttribute('flashvars')) {
 			var match = this._element.getAttribute('flashvars').match(new RegExp('(?:^|&)'.concat(name, '=(.+?)(?:&|$)')));
 			if (match) {
 				return decodeURIComponent(match[1]);
 			}
 		}
-		// HTML5
 		else {
 			try {
 				return unsafeWindow.ytplayer.config.args[name];
