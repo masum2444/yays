@@ -8,23 +8,21 @@ var DH = {
 	build: function(def) {
 		switch (Object.prototype.toString.call(def)) {
 			case '[object Object]':
-				def = merge({tag: 'div', style: null, attributes: null, listeners: null, children: null}, def);
+				var node = this.createElement(def.tag || 'div');
 
-				var node = this.createElement(def.tag);
-
-				if (def.style !== null) {
+				if ('style' in def) {
 					this.style(node, def.style);
 				}
 
-				if (def.attributes !== null) {
+				if ('attributes' in def) {
 					this.attributes(node, def.attributes);
 				}
 
-				if (def.listeners !== null) {
+				if ('listeners' in def) {
 					this.listeners(node, def.listeners);
 				}
 
-				if (def.children !== null) {
+				if ('children' in def) {
 					this.append(node, def.children);
 				}
 
@@ -115,11 +113,12 @@ var DH = {
 	},
 
 	unwrap: function(element) {
-		if (typeof XPCNativeWrapper != 'undefined' && typeof XPCNativeWrapper.unwrap == 'function') {
+		try {
 			return XPCNativeWrapper.unwrap(element);
 		}
-
-		return element;
+		catch (e) {
+			return element;
+		}
 	},
 
 	walk: function(node, path) {
