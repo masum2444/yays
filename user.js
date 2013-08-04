@@ -11,7 +11,6 @@ function YAYS(unsafeWindow) {
 var Meta = {
 	title:       APOSTROPHIZE(SCRIPT_NAME),
 	version:     APOSTROPHIZE(SCRIPT_VERSION),
-	revision:    APOSTROPHIZE(SCRIPT_REVISION),
 	releasedate: APOSTROPHIZE(SCRIPT_RELEASE_DATE),
 	site:        APOSTROPHIZE(SCRIPT_SITE),
 	ns:          APOSTROPHIZE(SCRIPT_NS)
