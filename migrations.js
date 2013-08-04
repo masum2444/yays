@@ -1,3 +1,5 @@
+#if RELEASE
+
 /*
  * Migrations.
  */
@@ -22,6 +24,22 @@
 					Config.set('video_quality', ++videoQuality);
 				}
 			}
+		},
+		{
+			// Autoplay reworked.
+			MIGRATION(1.8) {
+				switch (Number(Config.get('auto_play'))) {
+					case 1: // OFF > PAUSE
+						Config.set('video_playback', 1);
+						break;
+
+					case 2: // AUTO > AUTO PAUSE
+						Config.set('video_playback', 3);
+						break;
+				}
+
+				Config.del('auto_play');
+			}
 		}
 	], function(i, migration) {
 		var migrationVersion = map(Number, migration.version.split('.'));
@@ -39,3 +57,5 @@
 
 	Config.set('version', currentVersion);
 })(Meta.version);
+
+#endif
