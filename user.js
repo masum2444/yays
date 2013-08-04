@@ -34,8 +34,6 @@ var Context = unsafeWindow[Meta.ns] = {
 
 #include "config.js"
 
-#include "jsonrequest.js"
-
 #include "update.js"
 
 #include "migrations.js"

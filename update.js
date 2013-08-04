@@ -1,3 +1,7 @@
+#if RELEASE
+
+#include "jsonrequest.js"
+
 /*
  * Update checker.
  */
@@ -118,3 +122,5 @@
 		unsafeWindow.open(buildURL(Meta.site + '/download', {version: Meta.version}));
 	}
 })();
+
+#endif
