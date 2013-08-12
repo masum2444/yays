@@ -145,13 +145,6 @@ Player.prototype = {
 		}
 	},
 
-	seekTo: function() {
-		try {
-			this._element.seekTo.apply(this._element, arguments);
-		}
-		catch (e) {}
-	},
-
 	seekToStart: function(ahead) {
 		var
 			code = (location.hash + location.search).match(/\bt=(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?|\bat=(\d+)/) || new Array(5),
