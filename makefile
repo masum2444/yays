@@ -2,7 +2,7 @@ BUILD_DIR := ../build
 
 RELEASE := 0
 RELEASE_DATE := $(shell LC_TIME=C date "+%b %d, %Y")
-RELEASE_VERSION := $(shell git describe --tags HEAD | sed -r 's/^.//;s/-([0-9]+).+/.0\1/')
+RELEASE_VERSION := $(shell git describe --tags HEAD | sed -r 's/^.//;s/-([0-9]+).+/.\1/')
 
 build: $(BUILD_DIR)/yays.user.js $(BUILD_DIR)/yays.meta.js
 
