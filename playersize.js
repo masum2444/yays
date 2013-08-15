@@ -38,7 +38,7 @@ PlayerSize.prototype = extend(PlayerOption, {
 
 			case 1: // WIDE
 				DH.addClass(DH.id('watch7-container'), 'watch-wide');
-				DH.addClass(DH.id('player'), 'watch-medium watch-playlist-collapsed');
+				DH.addClass(DH.id('player') || DH.id('player-legacy'), 'watch-medium watch-playlist-collapsed');
 				break;
 
 			default:
