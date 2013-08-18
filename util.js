@@ -21,23 +21,24 @@ function map() {
 	var
 		args = Array.prototype.constructor.apply([], arguments),
 		callback = args.shift() || bind(Array.prototype.constructor, []),
-		buffer = [];
+		results = [];
 
 	if (args.length > 1) {
-		var i = 0, len = Math.max.apply(Math, map(function(arg) { return arg.length; }, args));
-		function getter(arg) { return arg[i]; }
+		var i, getter = function(arg) { return arg[i]; }, len = Math.max.apply(Math, map(function(arg) { return arg.length; }, args));
 
-		for (; i < len; ++i) {
-			buffer.push(callback.apply(null, map(getter, args)));
+		for (i = 0; i < len; ++i) {
+			results.push(callback.apply(null, map(getter, args)));
 		}
 	}
 	else {
-		for (var i = 0, arg = args[0], len = arg.length; i < len; ++i) {
-			buffer.push(callback(arg[i]));
+		var i, arg = args[0], len = arg.length;
+
+		for (i = 0; i < len; ++i) {
+			results.push(callback(arg[i]));
 		}
 	}
 
-	return buffer;
+	return results;
 }
 
 function combine(keys, values) {
