@@ -21,13 +21,13 @@ PlayerOption.prototype = {
 	apply: emptyFn
 };
 
+/**
+ * @class PlayerOption.Button
+ */
 PlayerOption.Button = function(option) {
-	this._option = option;
+	Button.call(this, this.label, this.tooltip);
 
-	Button.call(this, this.label, this.tooltip, {
-		handler: bind(this._step, this),
-		display: bind(this._indicator, this)
-	});
+	this._option = option;
 };
 
 PlayerOption.Button.prototype = extend(Button, {
@@ -37,11 +37,11 @@ PlayerOption.Button.prototype = extend(Button, {
 	tooltip: null,
 	states: null,
 
-	_step: function() {
+	handler: function() {
 		this._option.set((this._option.get() + 1) % this.states.length);
 	},
 
-	_indicator: function() {
+	display: function() {
 		return this.states[this._option.get()];
 	}
 });
