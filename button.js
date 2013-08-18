@@ -77,7 +77,17 @@ Button.prototype = {
 Button.FeatherDecorator = function(button) {
 	this._button = button;
 
-	DH.attributes(button._node, {'class': 'b'});
+	DH.attributes(button._node, {
+		'class': 'b'
+	});
+
+	DH.style(DH.walk(button._node, 'span[0]'), {
+		'font-size': '11px'
+	});
+
+	DH.style(DH.walk(button._node, 'span[1]'), {
+		'font-weight': 'bold'
+	});
 };
 
 Button.FeatherDecorator.prototype = {

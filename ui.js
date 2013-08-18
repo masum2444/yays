@@ -251,7 +251,8 @@ FeatherUI.prototype = extend(UI, {
 				},
 				children: merge({
 					style: {
-						'vertical-align': 'sub'
+						'vertical-align': 'sub',
+						'opacity': '0.82'
 					}
 				}, UI.prototype._def.icon)
 			};
