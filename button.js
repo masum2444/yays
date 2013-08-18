@@ -1,7 +1,7 @@
 /**
  * @class Button
  */
-function Button(labelText, tooltipText, callbacks) {
+function Button(labelText, tooltipText) {
 	var
 		node = DH.build(this._def.node),
 		label = DH.build(this._def.label),
@@ -15,8 +15,6 @@ function Button(labelText, tooltipText, callbacks) {
 
 	this._node = node;
 	this._indicator = indicator.firstChild;
-
-	merge(this, callbacks);
 }
 
 Button.prototype = {
@@ -71,4 +69,25 @@ Button.prototype = {
 
 	handler: emptyFn,
 	display: emptyFn
+};
+
+/**
+ * @class Button.FeatherDecorator
+ */
+Button.FeatherDecorator = function(button) {
+	this._button = button;
+
+	DH.attributes(button._node, {'class': 'b'});
+};
+
+Button.FeatherDecorator.prototype = {
+	_button: null,
+
+	refresh: function() {
+		return this._button.refresh();
+	},
+
+	render: function() {
+		return this._button.render();
+	}
 };

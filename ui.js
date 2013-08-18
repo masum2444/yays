@@ -66,7 +66,7 @@ QO4MOQSjsUvKb9pn2crLa1ua4zOnAMRzrlhxly4PBn4BWEpBljV5iJUAAAAASUVORK5CYII='}
 				style: {
 					'text-align': 'center',
 				},
-				children: map(bind(Button.prototype.render.call, Button.prototype.render), buttons)
+				children: map(function(button) { return button.render(); }, buttons)
 #if ! RELEASE
 			}, {
 				style: {
@@ -220,5 +220,60 @@ ChannelUI.prototype = extend(UI, {
 				children: UI.prototype._def.panel(buttons)
 			};
 		}
+	}
+});
+
+/**
+ * @class FeatherUI
+ */
+function FeatherUI(buttons) {
+	UI.call(this, map(function(button) { return new Button.FeatherDecorator(button); }, buttons));
+
+	var toolbar = DH.walk(DH.id('movie_player'), '../../div[2]');
+
+	DH.append(toolbar, this.button);
+	DH.insertAfter(toolbar, this.panel);
+}
+
+FeatherUI.prototype = extend(UI, {
+	_def: {
+		button: function(click) {
+			return {
+				tag: 'button',
+				attributes: {
+					'class': 'b'
+				},
+				style: {
+					'margin-left': '10px'
+				},
+				listeners: {
+					'click': click
+				},
+				children: merge({
+					style: {
+						'vertical-align': 'sub'
+					}
+				}, UI.prototype._def.icon)
+			};
+		},
+
+		panel: function(buttons) {
+			return {
+				attributes: {
+					'class': 'hid'
+				},
+				style: {
+					'padding': '10px',
+					'margin-top': '0.5em'
+				},
+				children: UI.prototype._def.panel(buttons)
+			}
+		}
+	},
+
+	toggle: function() {
+		UI.prototype.toggle.call(this);
+
+		(DH.hasClass(this.panel, 'hid') ? DH.delClass : DH.addClass).call(DH, this.panel, 'hid');
 	}
 });

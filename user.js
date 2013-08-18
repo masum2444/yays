@@ -90,6 +90,12 @@ function onPlayerReady() {
 					]);
 				}
 			}
+			else {
+				UI.initialize(FeatherUI, [
+					new VideoQuality.Button(videoQuality),
+					new VideoPlayback.Button(videoPlayback)
+				]);
+			}
 		});
 	}
 	catch (e) {
