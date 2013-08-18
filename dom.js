@@ -77,26 +77,17 @@ var DH = {
 		each(attributes, node.setAttribute, node);
 	},
 
-	hasClass: function(node, clss) {
-		return node.hasAttribute('class') && (clss instanceof RegExp ? clss : new RegExp('\\b'.concat(clss, '\\b'))).test(node.getAttribute('class'));
+	hasClass: function(node, cls) {
+		return node.hasAttribute('class') && new RegExp('\\b'.concat(cls, '\\b')).test(node.getAttribute('class'));
 	},
 
 	addClass: function(node, clss) {
-		if (clss.indexOf(' ') == -1) {
-			if (! this.hasClass(node, clss)) {
-				node.setAttribute('class', (node.getAttribute('class') || '').concat(' ', clss).trim());
-			}
-		}
-		else {
-			each(clss.split(/ +/), function(i, clss) { this.addClass(node, clss); }, this);
-		}
+		node.setAttribute('class', node.hasAttribute('class') ? unique(node.getAttribute('class').concat(' ', clss).trim().split(/ +/)).join(' ') : clss);
 	},
 
 	delClass: function(node, clss) {
-		clss = '\\b(?:'.concat(clss.trim().replace(/ +/g, '|'), ')\\b');
-
-		if (this.hasClass(node, new RegExp(clss))) {
-			node.setAttribute('class', node.getAttribute('class').replace(new RegExp('\\s*'.concat(clss, '\\s*'), 'g'), ' ').trim());
+		if (node.hasAttribute('class')) {
+			node.setAttribute('class', node.getAttribute('class').replace(new RegExp('\\s*\\b(?:'.concat(clss.replace(/ +/g, '|'), ')\\b\\s*'), 'g'), ' ').trim());
 		}
 	},
 
@@ -130,10 +121,7 @@ var DH = {
 				continue;
 			}
 
-			var
-				selector = /^(\w*)(?:\[(\d+)\])?$/.exec(step),
-				name = selector[1],
-				index = Number(selector[2]) || 0;
+			var selector = /^(\w*)(?:\[(\d+)\])?$/.exec(step), name = selector[1], index = Number(selector[2]) || 0;
 
 			for (var i = 0, j = 0, nodes = node.childNodes; node = nodes.item(i); ++i)
 				if (node.nodeType == this.ELEMENT_NODE && (! name || node.tagName.toLowerCase() == name) && j++ == index) {

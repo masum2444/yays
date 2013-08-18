@@ -41,8 +41,30 @@ function map() {
 	return results;
 }
 
+function unique(values) {
+	values.sort();
+
+	for (var i = 0, j; i < values.length; ) {
+		j = i;
+
+		while (values[j] === values[j - 1]) {
+			j++;
+		}
+
+		if (j - i) {
+			values.splice(i, j - i);
+		}
+		else {
+			++i;
+		}
+	}
+
+	return values;
+}
+
 function combine(keys, values) {
 	var object = {};
+
 	map(function(key, value) { object[key] = value; }, keys, values);
 
 	return object;
