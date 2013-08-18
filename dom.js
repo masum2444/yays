@@ -78,7 +78,7 @@ var DH = {
 	},
 
 	hasClass: function(node, clss) {
-		return node.hasAttribute('class') && (clss instanceof RegExp ? clss.test(node.getAttribute('class')) : node.getAttribute('class').indexOf(clss) != -1);
+		return node.hasAttribute('class') && (clss instanceof RegExp ? clss : new RegExp('\\b'.concat(clss, '\\b'))).test(node.getAttribute('class'));
 	},
 
 	addClass: function(node, clss) {
@@ -93,7 +93,7 @@ var DH = {
 	},
 
 	delClass: function(node, clss) {
-		clss = clss.trim().replace(/ +/g, '|');
+		clss = '\\b(?:'.concat(clss.trim().replace(/ +/g, '|'), ')\\b');
 
 		if (this.hasClass(node, new RegExp(clss))) {
 			node.setAttribute('class', node.getAttribute('class').replace(new RegExp('\\s*'.concat(clss, '\\s*'), 'g'), ' ').trim());
