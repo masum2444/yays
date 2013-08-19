@@ -131,5 +131,5 @@ function parseJSON(data) {
 		return JSON.parse(data);
 	}
 
-	return eval('('.concat(data, ')'));
+	return eval('(' + data + ')');
 }

@@ -78,7 +78,7 @@ var DH = {
 	},
 
 	hasClass: function(node, cls) {
-		return node.hasAttribute('class') && new RegExp('\\b'.concat(cls, '\\b')).test(node.getAttribute('class'));
+		return node.hasAttribute('class') && new RegExp('\\b' + cls + '\\b').test(node.getAttribute('class'));
 	},
 
 	addClass: function(node, clss) {
@@ -87,7 +87,7 @@ var DH = {
 
 	delClass: function(node, clss) {
 		if (node.hasAttribute('class')) {
-			node.setAttribute('class', node.getAttribute('class').replace(new RegExp('\\s*\\b(?:'.concat(clss.replace(/ +/g, '|'), ')\\b\\s*'), 'g'), ' ').trim());
+			node.setAttribute('class', node.getAttribute('class').replace(new RegExp('\\s*\\b(?:' + clss.replace(/ +/g, '|') + ')\\b\\s*', 'g'), ' ').trim());
 		}
 	},
 

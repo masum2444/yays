@@ -116,7 +116,7 @@ if (window.top === window.self) {
 	else {
 		var node = document.createElement('script');
 		node.setAttribute('type', 'text/javascript');
-		node.text = '('.concat(YAYS.toString(), ')(window);');
+		node.text = '(' + YAYS.toString() + ')(window);';
 
 		document.body.appendChild(node);
 		document.body.removeChild(node);

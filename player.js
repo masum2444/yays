@@ -100,7 +100,7 @@ Player.prototype = {
 
 	getArgument: function(name) {
 		if (this._element.hasAttribute('flashvars')) {
-			var match = this._element.getAttribute('flashvars').match(new RegExp('(?:^|&)'.concat(name, '=(.+?)(?:&|$)')));
+			var match = this._element.getAttribute('flashvars').match(new RegExp('(?:^|&)' + name + '=(.+?)(?:&|$)'));
 			if (match) {
 				return decodeURIComponent(match[1]);
 			}

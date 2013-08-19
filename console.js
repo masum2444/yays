@@ -5,7 +5,7 @@
 var Console = {
 #if RELEASE
 	debug: function() {
-		unsafeWindow.console.debug.apply(unsafeWindow.console, Array.prototype.concat.apply(['['.concat(Meta.ns, ']')], arguments));
+		unsafeWindow.console.debug.apply(unsafeWindow.console, Array.prototype.concat.apply(['[' + Meta.ns + ']'], arguments));
 	}
 #else
 	display: document.createElement('pre'),
@@ -14,7 +14,7 @@ var Console = {
 		var pieces = Array.prototype.concat.apply([], arguments);
 
 		this.display.appendChild(document.createTextNode(pieces.join(' ') + '\n'));
-		unsafeWindow.console.debug.apply(unsafeWindow.console, ['['.concat(Meta.ns, ']')].concat(pieces));
+		unsafeWindow.console.debug.apply(unsafeWindow.console, ['[' + Meta.ns + ']'].concat(pieces));
 	}
 #endif
 };

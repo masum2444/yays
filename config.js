@@ -34,7 +34,7 @@ var Config = (function(namespace) {
 	// Cookie
 	return {
 		get: function(key) {
-			return (document.cookie.match(new RegExp('(?:^|; *)'.concat(prefix, key, '=(\\w+)(?:$|;)'))) || [, null])[1];
+			return (document.cookie.match(new RegExp('(?:^|; *)' + prefix + key + '=(\\w+)(?:$|;)')) || [, null])[1];
 		},
 
 		set: function(key, value) {
