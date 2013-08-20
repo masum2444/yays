@@ -32,4 +32,5 @@
 // @homepageURL SCRIPT_SITE
 // @updateURL   SCRIPT_SITE_ROOT/blob/yays/yays.meta.js
 // @downloadURL SCRIPT_SITE_ROOT/blob/yays/yays.user.js
+// @icon        SCRIPT_SITE_ROOT/blob/yays/yays.icon.png
 // ==/UserScript==
