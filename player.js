@@ -5,7 +5,7 @@ function Player(element) {
 	this._element = element;
 	this._listeners = {};
 
-	this._boot();
+	this._initialize();
 }
 
 merge(Player, {
@@ -39,13 +39,13 @@ Player.prototype = {
 	_ready: false,
 	_muted: 0,
 
-	_boot: function() {
+	_initialize: function() {
 		if (typeof this._element.getApiInterface == 'function') {
 			this._exportApiInterface();
 			this._onReady();
 		}
 		else {
-			setTimeout(bind(this._boot, this), 10);
+			setTimeout(bind(this._initialize, this), 10);
 		}
 	},
 
@@ -55,6 +55,10 @@ Player.prototype = {
 				this[method] = bind(this._element[method], this._element);
 			}
 		}, this);
+	},
+
+	_listenEvent: function(name, listener) {
+		this._listeners[name] = listener;
 	},
 
 	_dispatchEvent: function(name /* ... */) {
@@ -87,7 +91,7 @@ Player.prototype = {
 	},
 
 	onReady: function(listener) {
-		this._listeners['ready'] = listener;
+		this._listenEvent('ready', listener);
 
 		if (this._ready) {
 			this._dispatchEvent('ready');
@@ -95,7 +99,7 @@ Player.prototype = {
 	},
 
 	onStateChange: function(listener) {
-		this._listeners['statechange'] = listener;
+		this._listenEvent('statechange', listener);
 	},
 
 	getArgument: function(name) {
