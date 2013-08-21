@@ -5,16 +5,16 @@
 var Console = {
 #if RELEASE
 	debug: function() {
-		unsafeWindow.console.debug(Array.prototype.concat.apply(['[' + Meta.ns + ']'], arguments).join(' '));
+		unsafeWindow.console.debug.apply(unsafeWindow.console, Array.prototype.concat.apply(['[' + Meta.ns + ']'], arguments));
 	}
 #else
 	display: document.createElement('pre'),
 
 	debug: function() {
-		var message = Array.prototype.join.call(arguments, ' ');
+		var pieces = Array.prototype.concat.apply([], arguments);
 
-		this.display.appendChild(document.createTextNode(message + '\n'));
-		unsafeWindow.console.debug('[' + Meta.ns + '] ' + message);
+		this.display.appendChild(document.createTextNode(pieces.join(' ') + '\n'));
+		unsafeWindow.console.debug.apply(unsafeWindow.console, ['[' + Meta.ns + ']'].concat(pieces));
 	}
 #endif
 };
