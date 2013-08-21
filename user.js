@@ -54,20 +54,15 @@ function onPlayerReady() {
 	try {
 		var element = DH.unwrap(DH.id('movie_player') || DH.id('movie_player-flash') || DH.id('movie_player-html5'));
 
-		Player.initialize(element).onReady(function onReady(player) {
+		Player.initialize(element).onReady(function(player) {
 			var videoPlayback = new VideoPlayback(player), videoQuality = new VideoQuality(player);
 
-			var videoId = player.getVideoId();
-
 			player.onStateChange(function(player, state) {
-				if (state == Player.CUED && videoId != player.getVideoId()) {
-					onReady(player);
-				}
-				else {
-					videoPlayback.apply();
-					videoQuality.apply();
-				}
+				videoPlayback.apply();
+				videoQuality.apply();
 			});
+
+			player.onVideoChange(arguments.callee);
 
 			videoPlayback.apply();
 			videoQuality.apply();

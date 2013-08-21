@@ -38,6 +38,7 @@ Player.prototype = {
 	_listeners: null,
 	_ready: false,
 	_muted: 0,
+	_video: null,
 
 	_initialize: function() {
 		if (typeof this._element.getApiInterface == 'function') {
@@ -72,6 +73,7 @@ Player.prototype = {
 
 		this._ready = true;
 		this._muted = Number(this.isMuted());
+		this._video = this.getVideoId();
 
 		// The player sometimes reports inconsistent state.
 		if (this.isAutoPlaying()) {
@@ -88,6 +90,10 @@ Player.prototype = {
 		Console.debug('State changed to', ['unstarted', 'ended', 'playing', 'paused', 'buffering', undefined, 'cued'][state + 1]);
 
 		this._dispatchEvent('statechange', state);
+
+		if (state == Player.CUED && this._video != this.getVideoId()) {
+			this._dispatchEvent('videochange');
+		}
 	},
 
 	onReady: function(listener) {
@@ -100,6 +106,10 @@ Player.prototype = {
 
 	onStateChange: function(listener) {
 		this._listenEvent('statechange', listener);
+	},
+
+	onVideoChange: function(listener) {
+		this._listenEvent('videochange', listener);
 	},
 
 	getArgument: function(name) {
