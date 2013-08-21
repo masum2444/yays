@@ -55,7 +55,7 @@ function onPlayerReady() {
 		var element = DH.unwrap(DH.id('movie_player') || DH.id('movie_player-flash') || DH.id('movie_player-html5'));
 
 		Player.initialize(element).onReady(function onReady(player) {
-			var videoPlayback = new VideoPlayback(player), videoQuality = new VideoQuality(player), playerSize = new PlayerSize(player);
+			var videoPlayback = new VideoPlayback(player), videoQuality = new VideoQuality(player);
 
 			var videoId = player.getVideoId();
 
@@ -75,6 +75,8 @@ function onPlayerReady() {
 			var page = DH.id('page');
 			if (page) {
 				if (DH.hasClass(page, 'watch')) {
+					var playerSize = new PlayerSize(player);
+
 					UI.initialize(WatchUI, [
 						new VideoQuality.Button(videoQuality),
 						new PlayerSize.Button(playerSize),
