@@ -89,11 +89,19 @@ Player.prototype = {
 	_onStateChange: function(state) {
 		Console.debug('State changed to', ['unstarted', 'ended', 'playing', 'paused', 'buffering', undefined, 'cued'][state + 1]);
 
-		this._dispatchEvent('statechange', state);
-
-		if (state == Player.CUED && this._video != this.getVideoId()) {
-			this._dispatchEvent('videochange');
+		if (state == Player.UNSTARTED && this._video != this.getVideoId()) {
+			this._onVideoChange();
 		}
+
+		this._dispatchEvent('statechange', state);
+	},
+
+	_onVideoChange: function() {
+		Console.debug('Video changed');
+
+		this._video = this.getVideoId();
+
+		this._dispatchEvent('ready');
 	},
 
 	onReady: function(listener) {
@@ -106,10 +114,6 @@ Player.prototype = {
 
 	onStateChange: function(listener) {
 		this._listenEvent('statechange', listener);
-	},
-
-	onVideoChange: function(listener) {
-		this._listenEvent('videochange', listener);
 	},
 
 	getArgument: function(name) {

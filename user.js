@@ -62,8 +62,6 @@ function onPlayerReady() {
 				videoQuality.apply();
 			});
 
-			player.onVideoChange(arguments.callee);
-
 			videoPlayback.apply();
 			videoQuality.apply();
 
