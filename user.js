@@ -54,10 +54,10 @@ function onPlayerReady() {
 	try {
 		var element = DH.unwrap(DH.id('movie_player') || DH.id('movie_player-flash') || DH.id('movie_player-html5'));
 
-		Player.initialize(element).onReady(function(player) {
+		Player.initialize(element).onReady(function onReady(player) {
 			var videoPlayback = new VideoPlayback(player), videoQuality = new VideoQuality(player);
 
-			player.onVideoChange(arguments.callee);
+			player.onVideoChange(onReady);
 
 			player.onStateChange(function() {
 				videoPlayback.apply();
