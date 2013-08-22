@@ -70,34 +70,3 @@ Button.prototype = {
 	handler: emptyFn,
 	display: emptyFn
 };
-
-/**
- * @class Button.FeatherDecorator
- */
-Button.FeatherDecorator = function(button) {
-	this._button = button;
-
-	DH.attributes(button._node, {
-		'class': 'b'
-	});
-
-	DH.style(DH.walk(button._node, 'span[0]'), {
-		'font-size': '11px'
-	});
-
-	DH.style(DH.walk(button._node, 'span[1]'), {
-		'font-weight': 'bold'
-	});
-};
-
-Button.FeatherDecorator.prototype = {
-	_button: null,
-
-	refresh: function() {
-		return this._button.refresh();
-	},
-
-	render: function() {
-		return this._button.render();
-	}
-};

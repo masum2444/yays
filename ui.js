@@ -73,7 +73,7 @@ QO4MOQSjsUvKb9pn2crLa1ua4zOnAMRzrlhxly4PBn4BWEpBljV5iJUAAAAASUVORK5CYII='}
 					'margin-top': '10px',
 					'padding': '5px',
 					'max-height': '200px',
-					'overflow-y': 'scroll',
+					'overflow-y': 'auto',
 					'color': '#777777',
 					'font-size': '10px',
 					'border': '1px solid #e2e2e2'
@@ -229,7 +229,7 @@ ChannelUI.prototype = extend(UI, {
  * @class FeatherUI
  */
 function FeatherUI(buttons) {
-	UI.call(this, map(function(button) { return new Button.FeatherDecorator(button); }, buttons));
+	UI.call(this, map(function(button) { return new FeatherUI.ButtonDecorator(button); }, buttons));
 
 	var toolbar = DH.walk(DH.id('movie_player'), '../../div[2]');
 
@@ -280,3 +280,34 @@ FeatherUI.prototype = extend(UI, {
 		(DH.hasClass(this.panel, 'hid') ? DH.delClass : DH.addClass).call(DH, this.panel, 'hid');
 	}
 });
+
+/**
+ * @class FeatherUI.ButtonDecorator
+ */
+FeatherUI.ButtonDecorator = function(button) {
+	this._button = button;
+
+	DH.attributes(button._node, {
+		'class': 'b'
+	});
+
+	DH.style(DH.walk(button._node, 'span[0]'), {
+		'font-size': '11px'
+	});
+
+	DH.style(DH.walk(button._node, 'span[1]'), {
+		'font-weight': 'bold'
+	});
+};
+
+FeatherUI.ButtonDecorator.prototype = {
+	_button: null,
+
+	refresh: function() {
+		return this._button.refresh();
+	},
+
+	render: function() {
+		return this._button.render();
+	}
+};
