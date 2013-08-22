@@ -11,29 +11,32 @@ PlayerSize.prototype = extend(PlayerOption, {
 
 		switch (mode) {
 			case 2: // FIT
-				DH.append(document.body, {
-					tag: 'style',
-					attributes: {
-						'type': 'text/css'
-					},
-					children: [
-						'.watch-medium .watch7-playlist-bar {',
-							'width: 945px;',
-						'}',
-						'.watch-medium .watch7-playlist-bar-left {',
-							'width: 670px;',
-						'}',
-						'.watch-medium #watch7-playlist-tray-container {',
-							'left: 670px;',
-						'}',
-						'.watch-medium .player-width {',
-							'width: 945px;',
-						'}',
-						'.watch-medium .player-height {',
-							'height: 560px;',
-						'}'
-					]
-				});
+				if (! DH.id('yays-player-size')) {
+					DH.append(document.body, {
+						tag: 'style',
+						attributes: {
+							'type': 'text/css',
+							'id': 'yays-player-size'
+						},
+						children: [
+							'.watch-medium .watch7-playlist-bar {',
+								'width: 945px;',
+							'}',
+							'.watch-medium .watch7-playlist-bar-left {',
+								'width: 670px;',
+							'}',
+							'.watch-medium #watch7-playlist-tray-container {',
+								'left: 670px;',
+							'}',
+							'.watch-medium .player-width {',
+								'width: 945px;',
+							'}',
+							'.watch-medium .player-height {',
+								'height: 560px;',
+							'}'
+						]
+					});
+				}
 				// no break;
 
 			case 1: // WIDE
