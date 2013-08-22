@@ -57,7 +57,9 @@ function onPlayerReady() {
 		Player.initialize(element).onReady(function(player) {
 			var videoPlayback = new VideoPlayback(player), videoQuality = new VideoQuality(player);
 
-			player.onStateChange(function(player, state) {
+			player.onVideoChange(arguments.callee);
+
+			player.onStateChange(function() {
 				videoPlayback.apply();
 				videoQuality.apply();
 			});

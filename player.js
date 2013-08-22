@@ -101,7 +101,7 @@ Player.prototype = {
 
 		this._video = this.getVideoId();
 
-		this._dispatchEvent('ready');
+		this._dispatchEvent('videochange');
 	},
 
 	onReady: function(listener) {
@@ -114,6 +114,10 @@ Player.prototype = {
 
 	onStateChange: function(listener) {
 		this._listenEvent('statechange', listener);
+	},
+
+	onVideoChange: function(listener) {
+		this._listenEvent('videochange', listener);
 	},
 
 	getArgument: function(name) {
@@ -155,8 +159,8 @@ Player.prototype = {
 		}
 	},
 
-	setPlaybackQuality: function() {
-		this._element.setPlaybackQuality.apply(this._element, arguments);
+	setPlaybackQuality: function(quality) {
+		this._element.setPlaybackQuality(quality);
 
 		if (this.isHTML5() && [Player.PLAYING, Player.BUFFERING].indexOf(this.getPlayerState()) > -1) {
 			this.playVideo();
