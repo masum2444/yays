@@ -21,7 +21,7 @@ merge(Player, {
 	},
 
 	initialize: function(element) {
-		if (! (element instanceof DH.unwrap(HTMLElement))) {
+		if (! element) {
 			throw 'Invalid player element';
 		}
 
