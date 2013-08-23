@@ -5,7 +5,7 @@ RELEASE_VERSION := $(shell git describe --tags HEAD | sed -r 's/^.//;s/-([0-9]+)
 build: build/yays.user.js build/yays.meta.js
 
 release: RELEASE = 1
-release: build
+release: clean build
 
 translation:
 	python utility/translation.py i18n
