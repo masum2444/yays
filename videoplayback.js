@@ -82,7 +82,7 @@ VideoPlayback.prototype = extend(SilentPlayerOption, {
 		if (! this._applied) {
 			this.mute(true);
 
-			if (this._player.getPlayerState() == Player.PLAYING) {
+			if (this._player.isPlayerState(Player.PLAYING)) {
 				this._applied = true;
 
 				this._player.seekToStart(true);

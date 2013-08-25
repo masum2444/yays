@@ -141,13 +141,8 @@ Player.prototype = {
 		return (this.getArgument('autoplay') || '1') == 1;
 	},
 
-	isHTML5: function() {
-		try {
-			return unsafeWindow.ytplayer.config.html5 === true;
-		}
-		catch (e) {
-			return this._element.tagName == 'DIV';
-		}
+	isPlayerState: function() {
+		return Array.prototype.indexOf.call(arguments, this.getPlayerState()) > -1;
 	},
 
 	getVideoId: function() {
@@ -162,7 +157,7 @@ Player.prototype = {
 	setPlaybackQuality: function(quality) {
 		this._element.setPlaybackQuality(quality);
 
-		if (this.isHTML5() && [Player.PLAYING, Player.BUFFERING].indexOf(this.getPlayerState()) > -1) {
+		if (this.isPlayerState(Player.PLAYING, Player.BUFFERING)) {
 			this.playVideo();
 		}
 	},

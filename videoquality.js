@@ -9,51 +9,30 @@ function VideoQuality(player) {
 
 VideoQuality.prototype = extend(SilentPlayerOption, {
 	_applied: false,
-	_buffered: false,
 
 	apply: function() {
 		if (! this._applied) {
 			this.mute(true);
 
-			if ([Player.PLAYING, Player.PAUSED, Player.BUFFERING].indexOf(this._player.getPlayerState()) > -1) {
-				if (this._player.getAvailableQualityLevels().length) {
-					this._applied = true;
+			if (this._player.isPlayerState(Player.PLAYING, Player.PAUSED, Player.BUFFERING)) {
+				this._applied = true;
 
-					var quality = [, 'tiny', 'small', 'medium', 'large', 'hd720', 'hd1080', 'highres'][this.get()];
+				var quality = [, 'tiny', 'small', 'medium', 'large', 'hd720', 'hd1080', 'highres'][this.get()];
 
-					if (quality && quality != this._player.getPlaybackQuality()) {
-						this._buffered = false;
+				if (quality && quality != this._player.getPlaybackQuality()) {
+					this._player.seekToStart(true);
+					this._player.setPlaybackQuality(quality);
 
-						this._player.seekToStart(true);
-						this._player.setPlaybackQuality(quality);
-
-						Console.debug('Quality changed to', quality);
-
-						// State change can happen immediately.
-						this.apply();
-
-						return;
-					}
+					Console.debug('Quality changed to', quality);
 				}
-
-				this.mute(false);
+			}
+			else {
+				return;
 			}
 		}
-		else {
-			switch (this._player.getPlayerState()) {
-				case Player.BUFFERING:
-					this._buffered = true;
-					break;
 
-				case Player.PLAYING:
-					this._buffered = true;
-					// no break;
-
-				default:
-					if (this._buffered) {
-						this.mute(false);
-					}
-			}
+		if (this._player.isPlayerState(Player.PLAYING, Player.CUED)) {
+			this.mute(false);
 		}
 	}
 });
