@@ -158,7 +158,7 @@ Player.prototype = {
 		this._element.setPlaybackQuality(quality);
 
 		if (this.isPlayerState(Player.PLAYING, Player.BUFFERING)) {
-			this.playVideo();
+			asyncCall(this.playVideo, this);
 		}
 	},
 
