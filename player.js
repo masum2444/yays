@@ -75,11 +75,6 @@ Player.prototype = {
 		this._muted = Number(this.isMuted());
 		this._video = this.getVideoId();
 
-		// The player sometimes reports inconsistent state.
-		if (this.isAutoPlaying()) {
-			this.resetState();
-		}
-
 		Context.onPlayerStateChange = asyncProxy(bind(this._onStateChange, this));
 		this.addEventListener('onStateChange', Context.ns + '.onPlayerStateChange');
 
