@@ -5,7 +5,8 @@ function Player(element) {
 	this._element = element;
 	this._listeners = {};
 
-	this._initialize();
+	this._exportApiInterface();
+	this._onReady();
 }
 
 merge(Player, {
@@ -20,6 +21,17 @@ merge(Player, {
 		_element: null
 	},
 
+	create: function(element) {
+		switch (element.tagName) {
+			case 'EMBED':
+				return new FlashPlayer(element);
+			case 'DIV':
+				return new HTML5Player(element);
+		}
+
+		throw 'Unknown player type';
+	},
+
 	initialize: function(element) {
 		if (! element) {
 			throw 'Invalid player element';
@@ -29,7 +41,7 @@ merge(Player, {
 			throw 'Player already initialized';
 		}
 
-		return this.instance = new this(element);
+		return this.instance = this.create(element);
 	}
 });
 
@@ -40,19 +52,9 @@ Player.prototype = {
 	_muted: 0,
 	_video: null,
 
-	_initialize: function() {
-		if (typeof this._element.getApiInterface == 'function') {
-			this._exportApiInterface();
-			this._onReady();
-		}
-		else {
-			setTimeout(bind(this._initialize, this), 10);
-		}
-	},
-
 	_exportApiInterface: function() {
 		each(this._element.getApiInterface(), function(i, method) {
-			if (! Player.prototype.hasOwnProperty(method)) {
+			if (! (method in this)) {
 				this[method] = bind(this._element[method], this._element);
 			}
 		}, this);
@@ -116,19 +118,6 @@ Player.prototype = {
 	},
 
 	getArgument: function(name) {
-		if (this._element.hasAttribute('flashvars')) {
-			var match = this._element.getAttribute('flashvars').match(new RegExp('(?:^|&)' + name + '=(.+?)(?:&|$)'));
-			if (match) {
-				return decodeURIComponent(match[1]);
-			}
-		}
-		else {
-			try {
-				return unsafeWindow.ytplayer.config.args[name];
-			}
-			catch (e) {}
-		}
-
 		return;
 	},
 
@@ -146,14 +135,6 @@ Player.prototype = {
 		}
 		catch (e) {
 			return (this.getVideoUrl().match(/\bv=([\w-]+)/) || [, undefined])[1];
-		}
-	},
-
-	setPlaybackQuality: function(quality) {
-		this._element.setPlaybackQuality(quality);
-
-		if (this.isPlayerState(Player.PLAYING, Player.BUFFERING)) {
-			asyncCall(this.playVideo, this);
 		}
 	},
 
@@ -181,3 +162,52 @@ Player.prototype = {
 		}
 	}
 };
+
+/**
+ * @class FlashPlayer
+ */
+function FlashPlayer(element) {
+	Player.call(this, element);
+}
+
+FlashPlayer.prototype = extend(Player, {
+	_exportApiInterface: function() {
+		try {
+			Player.prototype._exportApiInterface.call(this);
+		}
+		catch (e) {
+			throw 'Player not loaded yet';
+		}
+	},
+
+	getArgument: function(name) {
+		var match = new RegExp('(?:^|&)' + name + '=(.+?)(?:&|$)').exec(this._element.getAttribute('flashvars') || '');
+		return match ? decodeURIComponent(match[1]) : undefined;
+	}
+});
+
+/**
+ * @class HTML5Player
+ */
+function HTML5Player(element) {
+	Player.call(this, element);
+}
+
+HTML5Player.prototype = extend(Player, {
+	getArgument: function(name) {
+		try {
+			return unsafeWindow.ytplayer.config.args[name];
+		}
+		catch (e) {
+			return;
+		}
+	},
+
+	setPlaybackQuality: function(quality) {
+		this._element.setPlaybackQuality(quality);
+
+		if (this.isPlayerState(Player.PLAYING, Player.BUFFERING)) {
+			asyncCall(this.playVideo, this);
+		}
+	}
+});
