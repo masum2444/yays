@@ -9,52 +9,49 @@ import json
 import urllib
 
 SPREADSHEET_URL = 'https://docs.google.com/spreadsheet/pub?key=0Al9obkz_TwDLdEpqcEM5bVRSc3FXczF3Vl80Wk53eEE&output=csv'
+FLAGS_URL = 'https://raw.github.com/markjames/famfamfam-flag-icons/master/icons/png'
 
 class Vocabulary(object):
+	template = """\
+	var vocabulary = {texts!s};
+"""
+
+	class Texts(list):
+		def __str__(self):
+			return json.dumps(self)
+
 	def __init__(self):
-		self._texts = []
+		self.texts = Vocabulary.Texts()
 
 	def __str__(self):
-		return """\
-	var vocabulary = {0};
-""".format(json.dumps(self._texts))
+		return self.template.format(**self.__dict__)
 
 	def feed(self, field):
-		self._texts.append(field or None)
+		self.texts.append(field or None)
 
 class Translation(Vocabulary):
+	template = """\
+			// {language} - {translator}
+			case '{code}':
+				return {texts!s};
+"""
+
 	def __init__(self):
 		super(Translation, self).__init__()
 
-		self._language = None
-		self._language_code = None
-		self._author = None
-		self._complete = None
-
-	def __str__(self):
-		return """\
-			// {language} - {author}
-			case '{language_code}':
-				return {texts};
-""".format(
-	language=self._language,
-	language_code=self._language_code,
-	author=self._author,
-	complete=self._complete,
-	texts=json.dumps(self._texts)
-)
-
-	@property
-	def code(self):
-		return self._language_code
+		self.language = None
+		self.code = None
+		self.country = None
+		self.translator = None
+		self.completeness = None
 
 	def feed(self, field):
-		if self._language is None:
-			self._language, self._language_code = (part.strip().lower() for part in field.split('/'))
-		elif self._author is None:
-			self._author = field
-		elif self._complete is None:
-			self._complete = field
+		if self.language is None:
+			self.language, self.code, self.country = (part.strip() for part in field.split('/'))
+		elif self.translator is None:
+			self.translator = field
+		elif self.completeness is None:
+			self.completeness = field
 		else:
 			super(Translation, self).feed(field)
 
@@ -74,6 +71,8 @@ for ln, line in enumerate(csv.reader(source)):
 	for translation, field in itertools.izip(translations, fields[1:]):
 		translation.feed(field)
 
+source.close()
+
 basedir = os.getcwd()
 if len(sys.argv) == 2:
 	basedir = os.path.abspath(sys.argv[1])
@@ -84,3 +83,18 @@ with open(os.path.join(basedir, 'vocabulary.js'), 'w') as vocabulary_file:
 for translation in translations:
 	with open(os.path.join(basedir, translation.code + '.js'), 'w') as translation_file:
 		translation_file.write(str(translation))
+
+with open(os.path.join(basedir, 'translators.md'), 'w') as translators_file:
+	translators_file.write("""\
+Translators
+===========
+
+""")
+
+	for translation in translations:
+		translators_file.write('[{0.code}]: {1}/{0.country}.png "{0.language}"\n'.format(translation, FLAGS_URL))
+
+	translators_file.write('\n')
+
+	for translation in translations:
+		translators_file.write('![{0.language}][{0.code}] {0.translator}  \n'.format(translation))
