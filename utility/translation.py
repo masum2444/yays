@@ -9,7 +9,6 @@ import json
 import urllib
 
 SPREADSHEET_URL = 'https://docs.google.com/spreadsheet/pub?key=0Al9obkz_TwDLdEpqcEM5bVRSc3FXczF3Vl80Wk53eEE&output=csv'
-FLAGS_URL = 'https://raw.github.com/markjames/famfamfam-flag-icons/master/icons/png'
 
 class Vocabulary(object):
 	template = """\
@@ -41,17 +40,16 @@ class Translation(Vocabulary):
 
 		self.language = None
 		self.code = None
-		self.country = None
 		self.translator = None
 		self.completeness = None
 
 	def feed(self, field):
 		if self.language is None:
-			self.language, self.code, self.country = (part.strip() for part in field.split('/'))
+			self.language, self.code = (part.strip() for part in field.split('/'))
 		elif self.translator is None:
 			self.translator = field
 		elif self.completeness is None:
-			self.completeness = field
+			self.completeness = float(field[:-1])
 		else:
 			super(Translation, self).feed(field)
 
@@ -85,16 +83,11 @@ for translation in translations:
 		translation_file.write(str(translation))
 
 with open(os.path.join(basedir, 'translators.md'), 'w') as translators_file:
-	translators_file.write("""\
-Translators
-===========
+	column_widths = (max(len(t.language) for t in translations), max(len(t.translator) for t in translations))
+	line_format = '| {{0:{0}s}} | {{1:{1}s}} |\n'.format(*column_widths)
 
-""")
-
-	for translation in translations:
-		translators_file.write('[{0.code}]: {1}/{0.country}.png "{0.language}"\n'.format(translation, FLAGS_URL))
-
-	translators_file.write('\n')
+	translators_file.write(line_format.format('Language', 'Translators'))
+	translators_file.write(line_format.format('-' * column_widths[0], '-' * column_widths[1]))
 
 	for translation in translations:
-		translators_file.write('![{0.language}][{0.code}] {0.translator}  \n'.format(translation))
+		translators_file.write(line_format.format(translation.language, translation.translator))
