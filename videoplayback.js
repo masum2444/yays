@@ -114,5 +114,5 @@ VideoPlayback.Button = function(option) {
 VideoPlayback.Button.prototype = extend(PlayerOption.Button, {
 	label: _('Playback'),
 	tooltip: _('Set default playback state'),
-	states: [_('PLAY'), _('PAUSE'), _('STOP'), _('AUTO PAUSE'), _('AUTO STOP')]
+	states: [_('START'), _('PAUSE'), _('STOP'), _('AUTO PAUSE'), _('AUTO STOP')]
 });
