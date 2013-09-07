@@ -4,6 +4,8 @@
 
 function YAYS(unsafeWindow) {
 
+'use strict';
+
 /*
  * Meta.
  */
