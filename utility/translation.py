@@ -2,7 +2,6 @@
 
 import sys
 import os
-import re
 import csv
 import itertools
 import json
@@ -30,7 +29,7 @@ class Vocabulary(object):
 
 class Translation(Vocabulary):
 	template = """\
-			// {language} - {translator}
+			// {language} - {translators}
 			case '{code}':
 				return {texts!s};
 """
@@ -40,54 +39,45 @@ class Translation(Vocabulary):
 
 		self.language = None
 		self.code = None
-		self.translator = None
+		self.translators = None
 		self.completeness = None
 
 	def feed(self, field):
 		if self.language is None:
 			self.language, self.code = (part.strip() for part in field.split('/'))
-		elif self.translator is None:
-			self.translator = field
+		elif self.translators is None:
+			self.translators = field
 		elif self.completeness is None:
 			self.completeness = float(field[:-1])
 		else:
 			super(Translation, self).feed(field)
 
-source = urllib.urlopen(SPREADSHEET_URL)
+def main(output_dir):
+	sheet = urllib.urlopen(SPREADSHEET_URL)
 
-vocabulary = Vocabulary()
-translations = None
-for ln, line in enumerate(csv.reader(source)):
-	fields = [field.decode('utf-8').strip() for field in line]
+	vocabulary = Vocabulary()
+	translations = None
 
-	if translations is None:
-		translations = [Translation() for field in fields[1:]]
+	for ln, line in enumerate(csv.reader(sheet)):
+		fields = [field.decode('utf-8').strip() for field in line]
 
-	if ln > 2:
-		vocabulary.feed(fields[0])
+		if translations is None:
+			translations = [Translation() for field in fields[1:]]
 
-	for translation, field in itertools.izip(translations, fields[1:]):
-		translation.feed(field)
+		if ln > 2:
+			vocabulary.feed(fields[0])
 
-source.close()
+		for translation, field in itertools.izip(translations, fields[1:]):
+			translation.feed(field)
 
-basedir = os.getcwd()
-if len(sys.argv) == 2:
-	basedir = os.path.abspath(sys.argv[1])
+	sheet.close()
 
-with open(os.path.join(basedir, 'vocabulary.js'), 'w') as vocabulary_file:
-	vocabulary_file.write(str(vocabulary))
-
-for translation in translations:
-	with open(os.path.join(basedir, translation.code + '.js'), 'w') as translation_file:
-		translation_file.write(str(translation))
-
-with open(os.path.join(basedir, 'translators.md'), 'w') as translators_file:
-	column_widths = (max(len(t.language) for t in translations), max(len(t.translator) for t in translations))
-	line_format = '| {{0:{0}s}} | {{1:{1}s}} |\n'.format(*column_widths)
-
-	translators_file.write(line_format.format('Language', 'Translators'))
-	translators_file.write(line_format.format('-' * column_widths[0], '-' * column_widths[1]))
+	with open(os.path.join(output_dir, 'vocabulary.js'), 'w') as vocabulary_file:
+		vocabulary_file.write(str(vocabulary))
 
 	for translation in translations:
-		translators_file.write(line_format.format(translation.language, translation.translator))
+		with open(os.path.join(output_dir, translation.code + '.js'), 'w') as translation_file:
+			translation_file.write(str(translation))
+
+if __name__ == '__main__':
+	main(os.path.abspath(sys.argv[1]) if len(sys.argv) == 2 else os.getcwd())

@@ -7,11 +7,7 @@ build: build/yays.user.js build/yays.meta.js
 release: RELEASE = 1
 release: clean build
 
-translation:
-	python utility/translation.py i18n
-
-vocabulary:
-	@python utility/vocabulary.py
+include utility/i18n.mk
 
 clean:
 	$(RM) build/*
@@ -27,4 +23,4 @@ i18n.js: $(wildcard i18n/*.js)
 %.js:
 	@touch $@
 
-.PHONY: build release vocabulary translation
+.PHONY: build
