@@ -24,14 +24,11 @@ VideoQuality.prototype = extend(SilentPlayerOption, {
 					this._player.setPlaybackQuality(quality);
 
 					Console.debug('Quality changed to', quality);
+
+					asyncCall(this.apply, this);
 				}
 			}
-			else {
-				return;
-			}
-		}
-
-		if (this._player.isPlayerState(Player.PLAYING, Player.CUED)) {
+		} else if (this._player.isPlayerState(Player.PLAYING, Player.CUED)) {
 			this.mute(false);
 		}
 	}
