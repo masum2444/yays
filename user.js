@@ -74,13 +74,13 @@ function onPlayerReady() {
 				if (DH.hasClass(page, 'watch')) {
 					var playerSize = new PlayerSize(player);
 
+					playerSize.apply();
+
 					UI.initialize(WatchUI, [
 						new VideoQuality.Button(videoQuality),
 						new PlayerSize.Button(playerSize),
 						new VideoPlayback.Button(videoPlayback)
 					]);
-
-					playerSize.apply();
 				}
 				else if (DH.hasClass(page, 'channel')) {
 					UI.initialize(ChannelUI, [

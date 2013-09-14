@@ -11,37 +11,32 @@ PlayerSize.prototype = extend(PlayerOption, {
 
 		switch (mode) {
 			case 2: // FIT
-				if (! DH.id('yays-player-size')) {
-					DH.append(document.body, {
-						tag: 'style',
-						attributes: {
-							'type': 'text/css',
-							'id': 'yays-player-size'
-						},
-						children: [
-							'.watch-medium .watch7-playlist-bar {',
-								'width: 945px;',
-							'}',
-							'.watch-medium .watch7-playlist-bar-left {',
-								'width: 670px;',
-							'}',
-							'.watch-medium #watch7-playlist-tray-container {',
-								'left: 670px;',
-							'}',
-							'.watch-medium .player-width {',
-								'width: 945px;',
-							'}',
-							'.watch-medium .player-height {',
-								'height: 560px;',
-							'}'
-						]
-					});
-				}
+				DH.id('yays-player-size') || DH.append(document.body, {
+					tag: 'style',
+					attributes: {
+						'id': 'yays-player-size',
+						'type': 'text/css'
+					},
+					children: [
+						'.watch-medium .player-width {',
+							'width: 945px;',
+						'}',
+						'.watch-medium .player-height {',
+							'height: 560px;',
+						'}',
+						'.watch-medium .watch7-playlist-bar-left {',
+							'width: 670px;',
+						'}',
+						'.watch-medium #watch7-playlist-tray-container {',
+							'left: 670px;',
+						'}'
+					]
+				});
 				// no break;
 
 			case 1: // WIDE
 				DH.addClass(DH.id('watch7-container'), 'watch-wide');
-				DH.addClass(DH.id('player') || DH.id('player-legacy'), 'watch-medium watch-playlist-collapsed');
+				DH.addClass(DH.id('player'), 'watch-medium watch-playlist-collapsed');
 				break;
 
 			default:
