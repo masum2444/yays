@@ -242,8 +242,12 @@ HTML5Player.prototype = extend(Player, {
 	setPlaybackQuality: function(quality) {
 		this._element.setPlaybackQuality(quality);
 
-		if (this.isPlayerState(Player.PLAYING, Player.BUFFERING)) {
-			asyncCall(this.playVideo, this);
-		}
+		this._state = Player.BUFFERING;
+
+		asyncCall(function() {
+			if (this.isPlayerState(Player.PLAYING, Player.BUFFERING)) {
+				this.playVideo();
+			}
+		}, this);
 	}
 });
