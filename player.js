@@ -194,6 +194,24 @@ function HTML5Player(element) {
 }
 
 HTML5Player.prototype = extend(Player, {
+	_state: null,
+
+	_onReady: function() {
+		Player.prototype._onReady.call(this);
+
+		this._state = this.getPlayerState();
+	},
+
+	_onStateChange: function(state) {
+		this._state = state;
+
+		Player.prototype._onStateChange.call(this, state);
+	},
+
+	getPlayerState: function() {
+		return this._state;
+	},
+
 	getArgument: function(name) {
 		try {
 			return unsafeWindow.ytplayer.config.args[name];
@@ -201,6 +219,24 @@ HTML5Player.prototype = extend(Player, {
 		catch (e) {
 			return;
 		}
+	},
+
+	playVideo: function() {
+		this._element.playVideo();
+
+		this._state = Player.PLAYING;
+	},
+
+	pauseVideo: function() {
+		this._element.pauseVideo();
+
+		this._state = Player.PAUSED;
+	},
+
+	stopVideo: function() {
+		this._element.stopVideo();
+
+		this._state = Player.CUED;
 	},
 
 	setPlaybackQuality: function(quality) {
