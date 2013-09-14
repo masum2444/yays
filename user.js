@@ -62,12 +62,12 @@ function onPlayerReady() {
 			player.onVideoChange(onReady);
 
 			player.onStateChange(function() {
-				videoPlayback.apply();
 				videoQuality.apply();
+				videoPlayback.apply();
 			});
 
-			videoPlayback.apply();
 			videoQuality.apply();
+			videoPlayback.apply();
 
 			var page = DH.id('page');
 			if (page) {
