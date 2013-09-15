@@ -49,53 +49,55 @@ var Context = unsafeWindow[Meta.ns] = {
 #include "ui.js"
 
 /*
- * Player ready callback.
+ * Ready callbacks.
  */
+
+function onReady(player) {
+	var videoPlayback = new VideoPlayback(player), videoQuality = new VideoQuality(player);
+
+	player.onVideoChange(onReady);
+
+	player.onStateChange(function() {
+		videoQuality.apply();
+		videoPlayback.apply();
+	});
+
+	videoQuality.apply();
+	videoPlayback.apply();
+
+	var page = DH.id('page');
+	if (page) {
+		if (DH.hasClass(page, 'watch')) {
+			var playerSize = new PlayerSize(player);
+
+			playerSize.apply();
+
+			UI.initialize(WatchUI, [
+				new VideoQuality.Button(videoQuality),
+				new PlayerSize.Button(playerSize),
+				new VideoPlayback.Button(videoPlayback)
+			]);
+		}
+		else if (DH.hasClass(page, 'channel')) {
+			UI.initialize(ChannelUI, [
+				new VideoQuality.Button(videoQuality),
+				new VideoPlayback.Button(videoPlayback)
+			]);
+		}
+	}
+	else {
+		UI.initialize(FeatherUI, [
+			new VideoQuality.Button(videoQuality),
+			new VideoPlayback.Button(videoPlayback)
+		]);
+	}
+}
 
 function onPlayerReady() {
 	try {
-		var element = DH.unwrap(DH.id('movie_player') || DH.id('movie_player-flash') || DH.id('movie_player-html5'));
+		var player = Player.initialize(DH.unwrap(DH.id('movie_player')));
 
-		Player.initialize(element).onReady(function onReady(player) {
-			var videoPlayback = new VideoPlayback(player), videoQuality = new VideoQuality(player);
-
-			player.onVideoChange(onReady);
-
-			player.onStateChange(function() {
-				videoQuality.apply();
-				videoPlayback.apply();
-			});
-
-			videoQuality.apply();
-			videoPlayback.apply();
-
-			var page = DH.id('page');
-			if (page) {
-				if (DH.hasClass(page, 'watch')) {
-					var playerSize = new PlayerSize(player);
-
-					playerSize.apply();
-
-					UI.initialize(WatchUI, [
-						new VideoQuality.Button(videoQuality),
-						new PlayerSize.Button(playerSize),
-						new VideoPlayback.Button(videoPlayback)
-					]);
-				}
-				else if (DH.hasClass(page, 'channel')) {
-					UI.initialize(ChannelUI, [
-						new VideoQuality.Button(videoQuality),
-						new VideoPlayback.Button(videoPlayback)
-					]);
-				}
-			}
-			else {
-				UI.initialize(FeatherUI, [
-					new VideoQuality.Button(videoQuality),
-					new VideoPlayback.Button(videoPlayback)
-				]);
-			}
-		});
+		onReady(player);
 	}
 	catch (e) {
 		Console.debug(e);

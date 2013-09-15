@@ -48,7 +48,6 @@ merge(Player, {
 Player.prototype = {
 	_element: null,
 	_listeners: null,
-	_ready: false,
 	_muted: 0,
 	_video: null,
 
@@ -73,14 +72,11 @@ Player.prototype = {
 	_onReady: function() {
 		Console.debug('Player ready');
 
-		this._ready = true;
 		this._muted = Number(this.isMuted());
 		this._video = this.getVideoId();
 
 		Context.onPlayerStateChange = asyncProxy(bind(this._onStateChange, this));
 		this.addEventListener('onStateChange', Context.ns + '.onPlayerStateChange');
-
-		this._dispatchEvent('ready');
 	},
 
 	_onStateChange: function(state) {
@@ -99,14 +95,6 @@ Player.prototype = {
 		this._video = this.getVideoId();
 
 		this._dispatchEvent('videochange');
-	},
-
-	onReady: function(listener) {
-		this._listenEvent('ready', listener);
-
-		if (this._ready) {
-			this._dispatchEvent('ready');
-		}
 	},
 
 	onStateChange: function(listener) {
