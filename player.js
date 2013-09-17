@@ -3,10 +3,17 @@
  */
 function Player(element) {
 	this._element = element;
-	this._listeners = {};
 
 	this._exportApiInterface();
-	this._onReady();
+
+	Console.debug('Player ready');
+
+	this._listeners = {};
+	this._muted = Number(this.isMuted());
+	this._video = this.getVideoId();
+
+	Context.onPlayerStateChange = asyncProxy(bind(this._onStateChange, this));
+	this.addEventListener('onStateChange', Context.ns + '.onPlayerStateChange');
 }
 
 merge(Player, {
@@ -67,16 +74,6 @@ Player.prototype = {
 		if (name in this._listeners) {
 			this._listeners[name].apply(null, [this].concat(Array.prototype.slice.call(arguments, 1)));
 		}
-	},
-
-	_onReady: function() {
-		Console.debug('Player ready');
-
-		this._muted = Number(this.isMuted());
-		this._video = this.getVideoId();
-
-		Context.onPlayerStateChange = asyncProxy(bind(this._onStateChange, this));
-		this.addEventListener('onStateChange', Context.ns + '.onPlayerStateChange');
 	},
 
 	_onStateChange: function(state) {
@@ -179,16 +176,12 @@ FlashPlayer.prototype = extend(Player, {
  */
 function HTML5Player(element) {
 	Player.call(this, element);
+
+	this._state = this.getPlayerState();
 }
 
 HTML5Player.prototype = extend(Player, {
 	_state: null,
-
-	_onReady: function() {
-		Player.prototype._onReady.call(this);
-
-		this._state = this.getPlayerState();
-	},
 
 	_onStateChange: function(state) {
 		this._state = state;
