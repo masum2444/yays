@@ -1,56 +1,46 @@
 /**
  * @class Button
  */
-function Button(labelText, tooltipText) {
-	var
-		node = DH.build(this._def.node),
-		label = DH.build(this._def.label),
-		indicator = DH.build(this._def.indicator);
-
-	DH.attributes(node, {title: tooltipText});
-	DH.append(label, labelText);
-	DH.append(node, [label, indicator]);
-
-	DH.on(node, 'click', bind(this._onClick, this));
-
-	this._node = node;
-	this._indicator = indicator.firstChild;
+function Button(label, tooltip) {
+	this._node = DH.build(this._def(tooltip, label, this._indicator = DH.build('-')));
 }
 
 Button.prototype = {
 	_indicator: null,
 	_node: null,
 
-	_def: {
-		node: {
+	_def: function(tooltip, label, indicator) {
+		return {
 			tag: 'button',
 			style: {
 				'margin': '2px'
 			},
 			attributes: {
 				'type': 'button',
-				'class': 'yt-uix-button yt-uix-button-default yt-uix-tooltip'
-			}
-		},
-
-		label: {
-			tag: 'span',
-			attributes: {
-				'class': 'yt-uix-button-content'
-			}
-		},
-
-		indicator: {
-			tag: 'span',
-			style: {
-				'font-size': '14px',
-				'margin-left': '5px'
+				'class': 'yt-uix-button yt-uix-button-default yt-uix-tooltip',
+				'title': tooltip
 			},
-			attributes: {
-				'class': 'yt-uix-button-content'
+			listeners: {
+				'click': bind(this._onClick, this)
 			},
-			children: '-'
-		}
+			children: [{
+				tag: 'span',
+				attributes: {
+					'class': 'yt-uix-button-content'
+				},
+				children: label
+			}, {
+				tag: 'span',
+				style: {
+					'font-size': '14px',
+					'margin-left': '5px'
+				},
+				attributes: {
+					'class': 'yt-uix-button-content'
+				},
+				children: indicator
+			}]
+		};
 	},
 
 	_onClick: function() {
