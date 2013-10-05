@@ -177,7 +177,7 @@ FlashPlayer.prototype = extend(Player, {
 function HTML5Player(element) {
 	Player.call(this, element);
 
-	this._state = this.getPlayerState();
+	this._state = element.getPlayerState();
 }
 
 HTML5Player.prototype = extend(Player, {
@@ -222,8 +222,6 @@ HTML5Player.prototype = extend(Player, {
 
 	setPlaybackQuality: function(quality) {
 		this._element.setPlaybackQuality(quality);
-
-		this._state = Player.BUFFERING;
 
 		asyncCall(function() {
 			if (this.isPlayerState(Player.PLAYING, Player.BUFFERING)) {
