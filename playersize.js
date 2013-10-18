@@ -25,10 +25,10 @@ PlayerSize.prototype = extend(PlayerOption, {
 							'height: 560px;',
 						'}',
 						'.watch-medium .watch7-playlist-bar-left {',
-							'width: 670px;',
+							'width: 645px;',
 						'}',
 						'.watch-medium #watch7-playlist-tray-container {',
-							'left: 670px;',
+							'left: 645px;',
 						'}'
 					]
 				});
