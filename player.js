@@ -125,8 +125,8 @@ Player.prototype = {
 
 	seekToStart: function(ahead) {
 		var
-			code = (location.hash + location.search).match(/\bt=(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?|\bat=(\d+)/) || new Array(5),
-			seconds = (Number(code[1]) || 0) * 3600 + (Number(code[2]) || 0) * 60 + (Number(code[3]) || Number(code[4]) || 0);
+			code = (location.hash + location.search).match(/\bt=(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s?)?/) || new Array(4),
+			seconds = (Number(code[1]) || 0) * 3600 + (Number(code[2]) || 0) * 60 + (Number(code[3]) || 0);
 
 		this.seekTo(seconds, ahead);
 	},
