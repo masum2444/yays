@@ -79,7 +79,7 @@ Player.prototype = {
 	_onStateChange: function(state) {
 		Console.debug('State changed to', ['unstarted', 'ended', 'playing', 'paused', 'buffering', undefined, 'cued'][state + 1]);
 
-		if (state == Player.UNSTARTED && this._video != this.getVideoId()) {
+		if (this._video != this.getVideoId()) {
 			this._onVideoChange();
 		}
 
