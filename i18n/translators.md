@@ -13,6 +13,7 @@
 | Chinese    | [blankhang][12]              |
 | Polish     | [mkvs][13]                   |
 | Swedish    | [eson][14]                   |
+| Ukrainian  | [mukolah][15]                |
 
 [01]: http://userscripts.org/users/mikeraware
 [02]: http://userscripts.org/users/121583
@@ -28,3 +29,4 @@
 [12]: http://userscripts.org/users/497706
 [13]: http://userscripts.org/users/499788
 [14]: http://userscripts.org/users/367569
+[15]: http://userscripts.org/users/536809
