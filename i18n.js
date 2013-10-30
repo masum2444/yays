@@ -19,6 +19,7 @@ var _ = (function() {
 #include "i18n/zh.js"
 #include "i18n/pl.js"
 #include "i18n/sv.js"
+#include "i18n/uk.js"
 		}
 
 		return [];
