@@ -114,6 +114,10 @@ Player.prototype = {
 		return Array.prototype.indexOf.call(arguments, this.getPlayerState()) > -1;
 	},
 
+	isVideoLoaded: function() {
+		return Boolean(this._video);
+	},
+
 	getVideoId: function() {
 		try {
 			return this.getVideoData().video_id;

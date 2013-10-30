@@ -18,7 +18,8 @@ PlayerOption.prototype = {
 		Config.set(this._key, Number(value));
 	},
 
-	apply: emptyFn
+	apply: emptyFn,
+	cease: emptyFn
 };
 
 /**
@@ -63,6 +64,10 @@ SilentPlayerOption.prototype = extend(PlayerOption, {
 
 			Console.debug('Player', state ? 'muted' : 'unmuted');
 		}
+	},
+
+	cease: function() {
+		this.mute(false);
 	}
 });
 

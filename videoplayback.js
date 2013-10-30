@@ -79,7 +79,7 @@ VideoPlayback.prototype = extend(SilentPlayerOption, {
 	},
 
 	apply: function() {
-		if (! this._applied) {
+		if (! this._applied && this._player.isVideoLoaded()) {
 			this.mute(true);
 
 			if (this._player.isPlayerState(Player.PLAYING)) {
