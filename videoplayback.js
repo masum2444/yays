@@ -107,11 +107,7 @@ VideoPlayback.prototype = extend(SilentPlayerOption, {
 /**
  * @class VideoPlayback.Button
  */
-VideoPlayback.Button = function(option) {
-	PlayerOption.Button.call(this, option);
-};
-
-VideoPlayback.Button.prototype = extend(PlayerOption.Button, {
+VideoPlayback.Button = PlayerOption.Button.extend({
 	label: _('Playback'),
 	tooltip: _('Set default playback state'),
 	states: [_('START'), _('PAUSE'), _('STOP'), _('AUTO PAUSE'), _('AUTO STOP')]

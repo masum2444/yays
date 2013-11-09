@@ -31,6 +31,18 @@ PlayerOption.Button = function(option) {
 	this._option = option;
 };
 
+PlayerOption.Button.extend = function(attributes) {
+	var superclass = this;
+
+	function Button(option) {
+		superclass.call(this, option);
+	}
+
+	Button.prototype = extend(superclass, attributes);
+
+	return Button;
+};
+
 PlayerOption.Button.prototype = extend(Button, {
 	_option: null,
 

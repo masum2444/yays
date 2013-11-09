@@ -50,11 +50,7 @@ PlayerSize.prototype = extend(PlayerOption, {
 /**
  * @class PlayerSize.Button
  */
-PlayerSize.Button = function(option) {
-	PlayerOption.Button.call(this, option);
-};
-
-PlayerSize.Button.prototype = extend(PlayerOption.Button, {
+PlayerSize.Button = PlayerOption.Button.extend({
 	label: _('Size'),
 	tooltip: _('Set default player size'),
 	states: [_('AUTO'), _('WIDE'), _('FIT')]

@@ -37,11 +37,7 @@ VideoQuality.prototype = extend(SilentPlayerOption, {
 /**
  * @class VideoQuality.Button
  */
-VideoQuality.Button = function(option) {
-	PlayerOption.Button.call(this, option);
-};
-
-VideoQuality.Button.prototype = extend(PlayerOption.Button, {
+VideoQuality.Button = PlayerOption.Button.extend({
 	label: _('Quality'),
 	tooltip: _('Set default video quality'),
 	states: [_('AUTO'), '144p', '240p', '360p', '480p', '720p', '1080p', _('ORIGINAL')]
