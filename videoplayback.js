@@ -4,7 +4,7 @@
 function VideoPlayback(player) {
 	SilentPlayerOption.call(this, player, 'video_playback');
 
-	if (player.isAutoPlaying()) {
+	if (player.isVideoLoaded() && player.isAutoPlaying()) {
 		switch (this.get()) {
 			case 0: // PLAY
 				this._applied = true;
@@ -79,7 +79,7 @@ VideoPlayback.prototype = extend(SilentPlayerOption, {
 	},
 
 	apply: function() {
-		if (! this._applied && this._player.isVideoLoaded()) {
+		if (! this._applied) {
 			this.mute(true);
 
 			if (this._player.isPlayerState(Player.PLAYING)) {

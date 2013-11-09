@@ -4,14 +4,14 @@
 function VideoQuality(player) {
 	SilentPlayerOption.call(this, player, 'video_quality');
 
-	this._applied = ! this.get();
+	this._applied = ! (player.isVideoLoaded() && this.get());
 }
 
 VideoQuality.prototype = extend(SilentPlayerOption, {
 	_applied: false,
 
 	apply: function() {
-		if (! this._applied && this._player.isVideoLoaded()) {
+		if (! this._applied) {
 			this.mute(true);
 
 			if (this._player.isPlayerState(Player.PLAYING, Player.PAUSED, Player.BUFFERING)) {
