@@ -2,7 +2,7 @@
  * @class WatchUI
  */
 function WatchUI(buttons) {
-	UI.call(this, buttons);
+	UI.call(this, new UI.Content(buttons));
 
 	DH.append(DH.id('watch7-secondary-actions'), this.button);
 	DH.append(DH.id('watch7-action-panels'), this.panel);
@@ -42,7 +42,7 @@ WatchUI.prototype = extend(UI, {
 			};
 		},
 
-		panel: function(buttons) {
+		panel: function(content) {
 			return {
 				attributes: {
 					'id': 'action-panel-yays',
@@ -53,7 +53,7 @@ WatchUI.prototype = extend(UI, {
 					'display': 'none',
 					'color': '#333'
 				},
-				children: UI.prototype._def.panel(buttons)
+				children: UI.prototype._def.panel(content)
 			};
 		}
 	}

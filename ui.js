@@ -2,21 +2,21 @@
  * @class UI
  * Abstract UI class.
  */
-function UI(buttons) {
-	this.buttons = buttons;
+function UI(content) {
+	this.content = content;
 	this.button = DH.build(this._def.button(bind(this.toggle, this)));
-	this.panel = DH.build(this._def.panel(buttons));
+	this.panel = DH.build(this._def.panel(content));
 }
 
 merge(UI, {
 	instance: null,
 
-	initialize: function(type, buttons) {
+	initialize: function(type, content) {
 		if (this.instance) {
 			this.instance.destroy();
 		}
 
-		return this.instance = new type(buttons);
+		return this.instance = new type(content);
 	}
 });
 
@@ -30,7 +30,8 @@ iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAA4ElEQVQoz32RMU4CQRhG38xqQ0e7\
 CbHCnnxHEM/AEUiIthZegFAYErIhegTuwAWIGYiWWGKypY0bkgUZCxZ2JIuvmnkz8//fzECA2ppq\
 qnbozJ8NOZfA2tVKZwE0lFcGbADwoExeo6KCujxTzb1LLBBxDgsRpK/xmtuK5Uf3BEZvNKgXakEH\
 mNAq5t+sjHxw5tp9gJosT27xHxe8By0m2rc4kPFpAPTAoDJkHyJQj2Fl9Zv4K51Z4OdsgB1YcC8k\
-QO4MOQSjsUvKb9pn2crLa1ua4zOnAMRzrlhxly4PBn4BWEpBljV5iJUAAAAASUVORK5CYII='}
+QO4MOQSjsUvKb9pn2crLa1ua4zOnAMRzrlhxly4PBn4BWEpBljV5iJUAAAAASUVORK5CYII='
+			}
 		},
 
 		button: function(click) {
@@ -41,7 +42,7 @@ QO4MOQSjsUvKb9pn2crLa1ua4zOnAMRzrlhxly4PBn4BWEpBljV5iJUAAAAASUVORK5CYII='}
 			};
 		},
 
-		panel: function(buttons) {
+		panel: function(content) {
 			return [{
 				style: {
 					'margin-bottom': '10px'
@@ -64,9 +65,9 @@ QO4MOQSjsUvKb9pn2crLa1ua4zOnAMRzrlhxly4PBn4BWEpBljV5iJUAAAAASUVORK5CYII='}
 				}]
 			}, {
 				style: {
-					'text-align': 'center',
+					'text-align': 'center'
 				},
-				children: map(function(button) { return button.render(); }, buttons)
+				children: content.render()
 #if ! RELEASE
 			}, {
 				style: {
@@ -84,7 +85,7 @@ QO4MOQSjsUvKb9pn2crLa1ua4zOnAMRzrlhxly4PBn4BWEpBljV5iJUAAAAASUVORK5CYII='}
 		}
 	},
 
-	buttons: null,
+	content: null,
 	button: null,
 	panel: null,
 
@@ -94,7 +95,26 @@ QO4MOQSjsUvKb9pn2crLa1ua4zOnAMRzrlhxly4PBn4BWEpBljV5iJUAAAAASUVORK5CYII='}
 	},
 
 	toggle: function() {
-		each(this.buttons, function(i, button) { button.refresh(); });
+		this.content.refresh();
+	}
+};
+
+/**
+ * @class UI.Content
+ */
+UI.Content = function(buttons) {
+	this._buttons = buttons;
+};
+
+UI.Content.prototype = {
+	_buttons: null,
+
+	render: function() {
+		return map(function(button) { return button.render(); }, this._buttons);
+	},
+
+	refresh: function() {
+		each(this._buttons, function(i, button) { button.refresh(); });
 	}
 };
 

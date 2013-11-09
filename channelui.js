@@ -2,7 +2,7 @@
  * @class ChannelUI
  */
 function ChannelUI(buttons) {
-	UI.call(this, buttons);
+	UI.call(this, new UI.Content(buttons));
 
 	DH.append(DH.id('channel-navigation-menu'), {
 		tag: 'li',
@@ -48,7 +48,7 @@ ChannelUI.prototype = extend(UI, {
 			};
 		},
 
-		panel: function(buttons) {
+		panel: function(content) {
 			return {
 				attributes: {
 					'id': 'yays-panel-dropdown',
@@ -56,9 +56,9 @@ ChannelUI.prototype = extend(UI, {
 				},
 				style: {
 					'padding': '5px 10px 10px',
-					'width': '400px'
+					'width': '450px'
 				},
-				children: UI.prototype._def.panel(buttons)
+				children: UI.prototype._def.panel(content)
 			};
 		}
 	}

@@ -12,9 +12,6 @@ Button.prototype = {
 	_def: function(tooltip, label, indicator) {
 		return {
 			tag: 'button',
-			style: {
-				'margin': '2px'
-			},
 			attributes: {
 				'type': 'button',
 				'class': 'yt-uix-button yt-uix-button-default yt-uix-tooltip',
@@ -22,6 +19,9 @@ Button.prototype = {
 			},
 			listeners: {
 				'click': bind(this._onClick, this)
+			},
+			style: {
+				'margin': '0 0.5%'
 			},
 			children: [{
 				tag: 'span',

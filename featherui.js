@@ -2,7 +2,7 @@
  * @class FeatherUI
  */
 function FeatherUI(buttons) {
-	UI.call(this, map(function(button) { return new FeatherUI.ButtonDecorator(button); }, buttons));
+	UI.call(this, new FeatherUI.Content(buttons));
 
 	var toolbar = DH.walk(DH.id('movie_player'), '../../div[2]');
 
@@ -33,7 +33,7 @@ FeatherUI.prototype = extend(UI, {
 			};
 		},
 
-		panel: function(buttons) {
+		panel: function(content) {
 			return {
 				attributes: {
 					'class': 'hid'
@@ -42,7 +42,7 @@ FeatherUI.prototype = extend(UI, {
 					'padding': '10px',
 					'margin-top': '0.5em'
 				},
-				children: UI.prototype._def.panel(buttons)
+				children: UI.prototype._def.panel(content)
 			}
 		}
 	},
@@ -55,32 +55,30 @@ FeatherUI.prototype = extend(UI, {
 });
 
 /**
- * @class FeatherUI.ButtonDecorator
+ * @class FeatherUI.Content
  */
-FeatherUI.ButtonDecorator = function(button) {
-	this._button = button;
-
-	DH.attributes(button._node, {
-		'class': 'b'
-	});
-
-	DH.style(DH.walk(button._node, 'span[0]'), {
-		'font-size': '11px'
-	});
-
-	DH.style(DH.walk(button._node, 'span[1]'), {
-		'font-weight': 'bold'
-	});
+FeatherUI.Content = function(buttons) {
+	UI.Content.call(this, buttons);
 };
 
-FeatherUI.ButtonDecorator.prototype = {
-	_button: null,
-
-	refresh: function() {
-		return this._button.refresh();
-	},
-
+FeatherUI.Content.prototype = extend(UI.Content, {
 	render: function() {
-		return this._button.render();
+		var nodes = UI.Content.prototype.render.call(this);
+
+		return map(function(node) {
+			DH.attributes(node, {
+				'class': 'b'
+			});
+
+			DH.style(DH.walk(node, 'span[0]'), {
+				'font-size': '11px'
+			});
+
+			DH.style(DH.walk(node, 'span[1]'), {
+				'font-weight': 'bold'
+			});
+
+			return node;
+		}, nodes);
 	}
-};
+});
