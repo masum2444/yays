@@ -98,9 +98,26 @@ function onReady(player) {
 	}
 }
 
+function findPlayerNode() {
+	function findApiNode(nodes) {
+		for (var i = 0, node; node = nodes.item(i); ++i) {
+			do {
+				if (node.hasAttribute('id') && node.getAttribute('id').indexOf('player') > -1) {
+					return node;
+				}
+			}
+			while (node = node.parentNode);
+		}
+
+		return null;
+	}
+
+	return findApiNode(DH.tagName('video')) || findApiNode(DH.tagName('embed'));
+}
+
 function onPlayerReady() {
 	try {
-		var player = Player.initialize(DH.unwrap(DH.id('movie_player')));
+		var player = Player.initialize(DH.unwrap(findPlayerNode()));
 
 		onReady(player);
 	}

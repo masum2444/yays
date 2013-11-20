@@ -37,6 +37,7 @@ var DH = {
 	},
 
 	id: bind(unsafeWindow.document.getElementById, unsafeWindow.document),
+	tagName: bind(unsafeWindow.document.getElementsByTagName, unsafeWindow.document),
 	createElement: bind(unsafeWindow.document.createElement, unsafeWindow.document),
 	createTextNode: bind(unsafeWindow.document.createTextNode, unsafeWindow.document),
 
