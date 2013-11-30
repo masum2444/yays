@@ -59,7 +59,7 @@ function onReady(player) {
 		videoQuality.cease();
 		videoPlayback.cease();
 
-		onReady(player);
+		asyncCall(onReady, null, [player]);
 	});
 
 	player.onStateChange(function() {
