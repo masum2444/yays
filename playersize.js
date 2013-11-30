@@ -22,13 +22,19 @@ PlayerSize.prototype = extend(PlayerOption, {
 							'width: 945px;',
 						'}',
 						'.watch-medium .player-height {',
-							'height: 560px;',
+							'height: 562px;',
 						'}',
 						'.watch-medium .watch7-playlist-bar-left {',
 							'width: 645px;',
 						'}',
 						'.watch-medium #watch7-playlist-tray-container {',
 							'left: 645px;',
+						'}',
+						'.watch-medium .html5-video-content, .watch-medium .html5-main-video {',
+							'top: 0 !important;',
+							'left: 0 !important;',
+							'width: 100% !important;',
+							'height: 100% !important;',
 						'}'
 					]
 				});
