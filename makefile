@@ -2,7 +2,7 @@ RELEASE := 0
 RELEASE_DATE := $(shell LC_TIME=C date "+%b %d, %Y")
 RELEASE_VERSION := $(shell git describe HEAD | sed -r 's/^.//;s/-([0-9]+).+/.\1/')
 
-RELEASE_FLAGS := -DRELEASE=$(RELEASE) -DRELEASE_DATE="$(RELEASE_DATE)" -DRELEASE_VERSION=$(RELEASE_VERSION)
+RELEASE_FLAGS = -DRELEASE=$(RELEASE) -DRELEASE_DATE="$(RELEASE_DATE)" -DRELEASE_VERSION=$(RELEASE_VERSION)
 
 build: build/yays.user.js build/yays.meta.js
 
