@@ -53,24 +53,35 @@ var Context = unsafeWindow[Meta.ns] = {
  */
 
 function onReady(player) {
-	var videoPlayback = new VideoPlayback(player), videoQuality = new VideoQuality(player);
+	var videoPlayback = new VideoPlayback(player), videoQuality = new VideoQuality(player), previousVideo = player.getVideoId();
 
-	player.onVideoChange(function(player) {
-		videoQuality.cease();
-		videoPlayback.cease();
+	player.onStateChange = function(state) {
+		var currentVideo = player.getVideoId();
 
-		asyncCall(onReady, null, [player]);
-	});
+		if (currentVideo == previousVideo) {
+			videoQuality.apply();
+			videoPlayback.apply();
+		}
+		else {
+			videoQuality.cease();
+			videoPlayback.cease();
 
-	player.onStateChange(function() {
-		videoQuality.apply();
-		videoPlayback.apply();
-	});
+			if (currentVideo) {
+				previousVideo = currentVideo;
+
+				asyncCall(onReady, null, [player]);
+			}
+			else {
+				asyncCall(onPlayerReady);
+			}
+		}
+	};
 
 	videoQuality.apply();
 	videoPlayback.apply();
 
 	var page = DH.id('page');
+
 	if (page) {
 		if (DH.hasClass(page, 'watch')) {
 			var playerSize = new PlayerSize(player);

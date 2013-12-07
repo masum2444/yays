@@ -8,9 +8,7 @@ function Player(element) {
 
 	Console.debug('Player ready');
 
-	this._listeners = {};
 	this._muted = Number(this.isMuted());
-	this._video = this.getVideoId();
 
 	Context.onPlayerStateChange = asyncProxy(bind(this._onStateChange, this));
 	this.addEventListener('onStateChange', Context.ns + '.onPlayerStateChange');
@@ -54,9 +52,7 @@ merge(Player, {
 
 Player.prototype = {
 	_element: null,
-	_listeners: null,
 	_muted: 0,
-	_video: null,
 
 	_exportApiInterface: function() {
 		each(this._element.getApiInterface(), function(i, method) {
@@ -66,41 +62,13 @@ Player.prototype = {
 		}, this);
 	},
 
-	_listenEvent: function(name, listener) {
-		this._listeners[name] = listener;
-	},
-
-	_dispatchEvent: function(name /* ... */) {
-		if (name in this._listeners) {
-			this._listeners[name].apply(null, [this].concat(Array.prototype.slice.call(arguments, 1)));
-		}
-	},
-
 	_onStateChange: function(state) {
 		Console.debug('State changed to', ['unstarted', 'ended', 'playing', 'paused', 'buffering', undefined, 'cued'][state + 1]);
 
-		if (this._video != this.getVideoId()) {
-			this._onVideoChange();
-		}
-
-		this._dispatchEvent('statechange', state);
+		this.onStateChange(state);
 	},
 
-	_onVideoChange: function() {
-		Console.debug('Video changed');
-
-		this._video = this.getVideoId();
-
-		this._dispatchEvent('videochange');
-	},
-
-	onStateChange: function(listener) {
-		this._listenEvent('statechange', listener);
-	},
-
-	onVideoChange: function(listener) {
-		this._listenEvent('videochange', listener);
-	},
+	onStateChange: emptyFn,
 
 	getArgument: function(name) {
 		return;
@@ -115,7 +83,7 @@ Player.prototype = {
 	},
 
 	isVideoLoaded: function() {
-		return Boolean(this._video);
+		return Boolean(this.getVideoId());
 	},
 
 	getVideoId: function() {
