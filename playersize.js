@@ -5,6 +5,21 @@ function PlayerSize(player) {
 	PlayerOption.call(this, player, 'player_size');
 }
 
+#define CONTENT_WIDTH  960
+#define PLAYER_WIDTH   854
+#define PLAYER_HEIGHT  480
+#define CONTROL_HEIGHT  30
+#define PLAYLIST_WIDTH 300
+
+#define SCALE                (CONTENT_WIDTH / PLAYER_WIDTH)
+#define TRANSLATE(dimension) ((SCALE - 1) / 2 * dimension)
+
+// |sx  0  0|   | 1  0 tx|   |     sx       0 sx * tx|
+// | 0 sy  0| * | 0  1 ty| = |      0      sy sy * ty|
+// | 0  0  1|   | 0  0  1|   |      0       0       1|
+
+#define TRANSFORM [SCALE, 0, 0, SCALE, SCALE * TRANSLATE(PLAYER_WIDTH), SCALE * TRANSLATE(PLAYER_HEIGHT)]
+
 PlayerSize.prototype = extend(PlayerOption, {
 	apply: function() {
 		var mode = this.get();
@@ -19,22 +34,22 @@ PlayerSize.prototype = extend(PlayerOption, {
 					},
 					children: [
 						'.watch-medium .player-width {',
-							'width: 945px;',
+							'width: ' + CONTENT_WIDTH + 'px;',
 						'}',
 						'.watch-medium .player-height {',
-							'height: 562px;',
+							'height: ' + (CONTENT_WIDTH / (PLAYER_WIDTH / PLAYER_HEIGHT) + CONTROL_HEIGHT) + 'px;',
 						'}',
 						'.watch-medium .watch7-playlist-bar-left {',
-							'width: 645px;',
+							'width: ' + (CONTENT_WIDTH - PLAYLIST_WIDTH) + 'px;',
 						'}',
 						'.watch-medium #watch7-playlist-tray-container {',
-							'left: 645px;',
+							'left: ' + (CONTENT_WIDTH - PLAYLIST_WIDTH) + 'px;',
 						'}',
-						'.watch-medium .html5-video-content, .watch-medium .html5-main-video {',
-							'top: 0 !important;',
-							'left: 0 !important;',
-							'width: 100% !important;',
-							'height: 100% !important;',
+						'.watch-medium .html5-video-container {',
+							'transform: matrix(' + TRANSFORM.join(', ') + ');',
+							'-o-transform: matrix(' + TRANSFORM.join(', ') + ');',
+							'-moz-transform: matrix(' + TRANSFORM.join(', ') + ');',
+							'-webkit-transform: matrix(' + TRANSFORM.join(', ') + ');',
 						'}'
 					]
 				});
