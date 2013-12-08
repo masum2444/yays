@@ -4,7 +4,7 @@
  * Migrations.
  */
 
-#define MIGRATION(_version) version: APOSTROPHIZE(_version), apply: function()
+#define MIGRATION(_version) version: STRINGIZE(_version), apply: function()
 
 (function(currentVersion) {
 	var previousVersion = Config.get('version') || '1.0';

@@ -11,11 +11,11 @@ function YAYS(unsafeWindow) {
  */
 
 var Meta = {
-	title:       APOSTROPHIZE(SCRIPT_NAME),
-	version:     APOSTROPHIZE(SCRIPT_VERSION),
-	releasedate: APOSTROPHIZE(SCRIPT_RELEASE_DATE),
-	site:        APOSTROPHIZE(SCRIPT_SITE),
-	ns:          APOSTROPHIZE(SCRIPT_NS)
+	title:       STRINGIZE(SCRIPT_NAME),
+	version:     STRINGIZE(SCRIPT_VERSION),
+	releasedate: STRINGIZE(SCRIPT_RELEASE_DATE),
+	site:        STRINGIZE(SCRIPT_SITE),
+	ns:          STRINGIZE(SCRIPT_NS)
 };
 
 /*

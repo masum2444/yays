@@ -10,7 +10,6 @@
 #define SCRIPT_AUTHOR    Eugene Nouvellieu <eugenox_gmail_com>
 \
 #define ASTERIX *
-#define APOSTROPHIZE(arg) ??/047arg??/047
 \
 // ==UserScript==
 // @name        SCRIPT_NAME

@@ -7,7 +7,7 @@
  */
 
 (function() {
-	if (new Date().valueOf() - Number(Config.get('update_checked_at')) < 24 * 36e5) { // 1 day
+	if (new Date().valueOf() - Number(Config.get('update_checked_at')) < EVALUATE(24 * 3600 * 1000)) { // 1 day
 		return;
 	}
 

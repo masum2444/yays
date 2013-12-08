@@ -13,7 +13,7 @@ function PlayerSize(player) {
 
 #define SCALE (CONTENT_WIDTH / PLAYER_WIDTH)
 #define TRANSLATE(dimension) ((SCALE - 1) / 2 * dimension)
-#define TRANSFORM [SCALE, 0, 0, SCALE, TRANSLATE(PLAYER_WIDTH), TRANSLATE(PLAYER_HEIGHT)]
+#define TRANSFORM (SCALE, 0, 0, SCALE, TRANSLATE(PLAYER_WIDTH), TRANSLATE(PLAYER_HEIGHT))
 
 PlayerSize.prototype = extend(PlayerOption, {
 	apply: function() {
@@ -29,23 +29,23 @@ PlayerSize.prototype = extend(PlayerOption, {
 					},
 					children: [
 						'.watch-medium .player-width {',
-							'width: ' + CONTENT_WIDTH + 'px;',
+							CONCATENATE('width: ', CONTENT_WIDTH, 'px;'),
 						'}',
 						'.watch-medium .player-height {',
-							'height: ' + (CONTENT_WIDTH / (PLAYER_WIDTH / PLAYER_HEIGHT) + CONTROL_HEIGHT) + 'px;',
+							CONCATENATE('height: ', EVALUATE(CONTENT_WIDTH / (PLAYER_WIDTH / PLAYER_HEIGHT) + CONTROL_HEIGHT), 'px;'),
 						'}',
 						'.watch-medium .watch7-playlist-bar-left {',
-							'width: ' + (CONTENT_WIDTH - PLAYLIST_WIDTH) + 'px;',
+							CONCATENATE('width: ', EVALUATE(CONTENT_WIDTH - PLAYLIST_WIDTH), 'px;'),
 						'}',
 						'.watch-medium #watch7-playlist-tray-container {',
-							'left: ' + (CONTENT_WIDTH - PLAYLIST_WIDTH) + 'px;',
+							CONCATENATE('left: ', EVALUATE(CONTENT_WIDTH - PLAYLIST_WIDTH), 'px;'),
 						'}',
 						'.watch-medium .html5-video-content,',
 						'.watch-medium .html5-main-video {',
-							'transform: matrix(' + TRANSFORM.join(', ') + ') !important;',
-							'-o-transform: matrix(' + TRANSFORM.join(', ') + ') !important;',
-							'-moz-transform: matrix(' + TRANSFORM.join(', ') + ') !important;',
-							'-webkit-transform: matrix(' + TRANSFORM.join(', ') + ') !important;',
+							CONCATENATE('transform: matrix', EVALUATE(TRANSFORM), ' !important;'),
+							CONCATENATE('-o-transform: matrix', EVALUATE(TRANSFORM), ' !important;'),
+							CONCATENATE('-moz-transform: matrix', EVALUATE(TRANSFORM), ' !important;'),
+							CONCATENATE('-webkit-transform: matrix', EVALUATE(TRANSFORM), ' !important;'),
 						'}',
 						'.watch-medium .html5-main-video {',
 							'z-index: -1;',

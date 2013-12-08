@@ -9,13 +9,13 @@ build: build/yays.user.js build/yays.meta.js
 release: RELEASE = 1
 release: clean build
 
-include utility/i18n.mk
+include utility/utility.mk
 
 clean:
 	$(RM) build/*
 
 build/yays.%.js: %.js
-	gcc -E -P -CC -nostdinc -traditional $(RELEASE_FLAGS) -x c $< | sed -e $$'s:??/047:\047:g' > $@
+	gcc -E -P -CC -nostdinc -traditional $(RELEASE_FLAGS) -x c $< | $(POSTPROCESS) > $@
 
 user.js: $(filter-out user.js, $(wildcard *.js))
 
