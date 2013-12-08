@@ -11,14 +11,9 @@ function PlayerSize(player) {
 #define CONTROL_HEIGHT  30
 #define PLAYLIST_WIDTH 300
 
-#define SCALE                (CONTENT_WIDTH / PLAYER_WIDTH)
+#define SCALE (CONTENT_WIDTH / PLAYER_WIDTH)
 #define TRANSLATE(dimension) ((SCALE - 1) / 2 * dimension)
-
-// |sx  0  0|   | 1  0 tx|   |     sx       0 sx * tx|
-// | 0 sy  0| * | 0  1 ty| = |      0      sy sy * ty|
-// | 0  0  1|   | 0  0  1|   |      0       0       1|
-
-#define TRANSFORM [SCALE, 0, 0, SCALE, SCALE * TRANSLATE(PLAYER_WIDTH), SCALE * TRANSLATE(PLAYER_HEIGHT)]
+#define TRANSFORM [SCALE, 0, 0, SCALE, TRANSLATE(PLAYER_WIDTH), TRANSLATE(PLAYER_HEIGHT)]
 
 PlayerSize.prototype = extend(PlayerOption, {
 	apply: function() {
@@ -45,11 +40,15 @@ PlayerSize.prototype = extend(PlayerOption, {
 						'.watch-medium #watch7-playlist-tray-container {',
 							'left: ' + (CONTENT_WIDTH - PLAYLIST_WIDTH) + 'px;',
 						'}',
-						'.watch-medium .html5-video-container {',
-							'transform: matrix(' + TRANSFORM.join(', ') + ');',
-							'-o-transform: matrix(' + TRANSFORM.join(', ') + ');',
-							'-moz-transform: matrix(' + TRANSFORM.join(', ') + ');',
-							'-webkit-transform: matrix(' + TRANSFORM.join(', ') + ');',
+						'.watch-medium .html5-video-content,',
+						'.watch-medium .html5-main-video {',
+							'transform: matrix(' + TRANSFORM.join(', ') + ') !important;',
+							'-o-transform: matrix(' + TRANSFORM.join(', ') + ') !important;',
+							'-moz-transform: matrix(' + TRANSFORM.join(', ') + ') !important;',
+							'-webkit-transform: matrix(' + TRANSFORM.join(', ') + ') !important;',
+						'}',
+						'.watch-medium .html5-main-video {',
+							'z-index: -1;',
 						'}'
 					]
 				});
