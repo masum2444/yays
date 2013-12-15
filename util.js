@@ -70,12 +70,6 @@ function combine(keys, values) {
 	return object;
 }
 
-function bind(func, scope, args) {
-	return function() {
-		return func.apply(scope, typeof args == 'undefined' ? arguments : args);
-	};
-}
-
 function merge(target, source, override) {
 	override = override === undefined || override;
 
@@ -95,6 +89,26 @@ function extend(base, proto) {
 	return merge(new T(), proto);
 }
 
+function noop() {
+	return;
+}
+
+function bind(func, scope, args) {
+	return function() {
+		return func.apply(scope, args === undefined ? arguments : args);
+	};
+}
+
+function intercept(original, extension) {
+	original = original || noop;
+
+	return function() {
+		extension.apply(this, arguments);
+
+		return original.apply(this, arguments);
+	};
+}
+
 function asyncCall(func, scope, args) {
 	setTimeout(bind(func, scope, args), 0);
 }
@@ -104,20 +118,6 @@ function asyncProxy(func) {
 		asyncCall(func, this, arguments);
 	};
 }
-
-function extendFn(func, extension) {
-	if (! func) {
-		return extension;
-	}
-
-	return function() {
-		asyncCall(func, this, arguments);
-
-		extension.apply(this, arguments);
-	};
-}
-
-function emptyFn() { return; };
 
 function buildURL(path, parameters) {
 	var query = [];

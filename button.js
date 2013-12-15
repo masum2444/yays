@@ -57,6 +57,6 @@ Button.prototype = {
 		return this._node;
 	},
 
-	handler: emptyFn,
-	display: emptyFn
+	handler: noop,
+	display: noop
 };

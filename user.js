@@ -137,7 +137,7 @@ function onPlayerReady() {
 	}
 }
 
-unsafeWindow.onYouTubePlayerReady = extendFn(unsafeWindow.onYouTubePlayerReady, asyncProxy(onPlayerReady));
+unsafeWindow.onYouTubePlayerReady = intercept(unsafeWindow.onYouTubePlayerReady, asyncProxy(onPlayerReady));
 
 onPlayerReady();
 

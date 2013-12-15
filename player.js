@@ -68,7 +68,7 @@ Player.prototype = {
 		this.onStateChange(state);
 	},
 
-	onStateChange: emptyFn,
+	onStateChange: noop,
 
 	getArgument: function(name) {
 		return;

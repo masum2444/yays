@@ -18,8 +18,8 @@ PlayerOption.prototype = {
 		Config.set(this._key, Number(value));
 	},
 
-	apply: emptyFn,
-	cease: emptyFn
+	apply: noop,
+	cease: noop
 };
 
 /**
