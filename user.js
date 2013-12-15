@@ -117,7 +117,7 @@ function findPlayerNode() {
 					return node;
 				}
 			}
-			while (node = node.parentNode);
+			while ((node = node.parentNode) && node.nodeType == DH.ELEMENT_NODE);
 		}
 
 		return null;
