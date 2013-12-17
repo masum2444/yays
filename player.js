@@ -10,8 +10,7 @@ function Player(element) {
 
 	this._muted = Number(this.isMuted());
 
-	Context.onPlayerStateChange = asyncProxy(bind(this._onStateChange, this));
-	this.addEventListener('onStateChange', Context.ns + '.onPlayerStateChange');
+	this._addStateChangeListener();
 }
 
 merge(Player, {
@@ -62,10 +61,37 @@ Player.prototype = {
 		}, this);
 	},
 
+	_unexportApiInterface: function() {
+		each(this._element.getApiInterface(), function(i, method) {
+			if (this.hasOwnProperty(method)) {
+				delete this[method];
+			}
+		}, this);
+	},
+
 	_onStateChange: function(state) {
 		Console.debug('State changed to', ['unstarted', 'ended', 'playing', 'paused', 'buffering', undefined, 'cued'][state + 1]);
 
 		this.onStateChange(state);
+	},
+
+	_addStateChangeListener: function() {
+		Context.onPlayerStateChange = asyncProxy(bind(this._onStateChange, this));
+		this.addEventListener('onStateChange', Context.ns + '.onPlayerStateChange');
+	},
+
+	_removeStateChangeListener: function() {
+		Context.onPlayerStateChange = noop;
+		this.removeEventListener('onStateChange', Context.ns + '.onPlayerStateChange');
+	},
+
+	invalidate: function() {
+		this._removeStateChangeListener();
+		this._unexportApiInterface();
+
+		this._element = null;
+
+		Console.debug('Player invalidated');
 	},
 
 	onStateChange: noop,

@@ -66,14 +66,9 @@ function onReady(player) {
 			videoQuality.cease();
 			videoPlayback.cease();
 
-			if (currentVideo) {
-				previousVideo = currentVideo;
+			player.invalidate();
 
-				asyncCall(onReady, null, [player]);
-			}
-			else {
-				asyncCall(onPlayerReady);
-			}
+			asyncCall(onPlayerReady);
 		}
 	};
 
