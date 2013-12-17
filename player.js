@@ -96,14 +96,6 @@ Player.prototype = {
 
 	onStateChange: noop,
 
-	getArgument: function(name) {
-		return;
-	},
-
-	isAutoPlaying: function() {
-		return (this.getArgument('autoplay') || '1') == 1;
-	},
-
 	isPlayerState: function() {
 		return Array.prototype.indexOf.call(arguments, this.getPlayerState()) > -1;
 	},
@@ -161,11 +153,6 @@ FlashPlayer.prototype = extend(Player, {
 		catch (e) {
 			throw 'Player not loaded yet';
 		}
-	},
-
-	getArgument: function(name) {
-		var match = new RegExp('(?:^|&)' + name + '=(.+?)(?:&|$)').exec(this._element.getAttribute('flashvars') || '');
-		return match ? decodeURIComponent(match[1]) : undefined;
 	}
 });
 
@@ -189,15 +176,6 @@ HTML5Player.prototype = extend(Player, {
 
 	getPlayerState: function() {
 		return this._state;
-	},
-
-	getArgument: function(name) {
-		try {
-			return unsafeWindow.ytplayer.config.args[name];
-		}
-		catch (e) {
-			return;
-		}
 	},
 
 	playVideo: function() {

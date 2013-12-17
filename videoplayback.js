@@ -4,7 +4,7 @@
 function VideoPlayback(player) {
 	SilentPlayerOption.call(this, player, 'video_playback');
 
-	if (player.isVideoLoaded() && player.isAutoPlaying()) {
+	if (player.isVideoLoaded()) {
 		switch (this.get()) {
 			case 0: // PLAY
 				this._applied = true;
