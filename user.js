@@ -80,33 +80,35 @@ function onReady(player) {
 	videoQuality.apply();
 	videoPlayback.apply();
 
-	var page = DH.id('page');
+	DH.ready(function() {
+		var page = DH.id('page');
 
-	if (page) {
-		if (DH.hasClass(page, 'watch')) {
-			var playerSize = new PlayerSize(player);
+		if (page) {
+			if (DH.hasClass(page, 'watch')) {
+				var playerSize = new PlayerSize(player);
 
-			playerSize.apply();
+				playerSize.apply();
 
-			UI.initialize(WatchUI, [
+				UI.initialize(WatchUI, [
+					new VideoQuality.Button(videoQuality),
+					new PlayerSize.Button(playerSize),
+					new VideoPlayback.Button(videoPlayback)
+				]);
+			}
+			else if (DH.hasClass(page, 'channel')) {
+				UI.initialize(ChannelUI, [
+					new VideoQuality.Button(videoQuality),
+					new VideoPlayback.Button(videoPlayback)
+				]);
+			}
+		}
+		else {
+			UI.initialize(FeatherUI, [
 				new VideoQuality.Button(videoQuality),
-				new PlayerSize.Button(playerSize),
 				new VideoPlayback.Button(videoPlayback)
 			]);
 		}
-		else if (DH.hasClass(page, 'channel')) {
-			UI.initialize(ChannelUI, [
-				new VideoQuality.Button(videoQuality),
-				new VideoPlayback.Button(videoPlayback)
-			]);
-		}
-	}
-	else {
-		UI.initialize(FeatherUI, [
-			new VideoQuality.Button(videoQuality),
-			new VideoPlayback.Button(videoPlayback)
-		]);
-	}
+	});
 }
 
 function findPlayerNode() {
@@ -152,7 +154,7 @@ if (window.top === window.self) {
 		node.setAttribute('type', 'text/javascript');
 		node.text = '(' + YAYS.toString() + ')(window);';
 
-		document.body.appendChild(node);
-		document.body.removeChild(node);
+		document.documentElement.appendChild(node);
+		document.documentElement.removeChild(node);
 	}
 }

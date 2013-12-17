@@ -131,5 +131,20 @@ var DH = {
 		}
 
 		return node;
+	},
+
+	ready: function(listener) {
+		var document = unsafeWindow.document;
+
+		if (document.readyState == 'loading') {
+			DH.on(document, 'readystatechange', function onStateChange() {
+				DH.un(document, 'readystatechange', onStateChange);
+
+				listener();
+			});
+		}
+		else {
+			listener();
+		}
 	}
 };
