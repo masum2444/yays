@@ -71,7 +71,13 @@ SilentPlayerOption.prototype = extend(PlayerOption, {
 
 	mute: function(state) {
 		if (this._muted != state) {
-			this._player[state ? 'mute' : 'unMute']();
+			if (state) {
+				this._player.mute();
+			}
+			else {
+				this._player.unMute();
+			}
+
 			this._muted = state;
 		}
 	},
