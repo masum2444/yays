@@ -22,8 +22,6 @@ VideoQuality.prototype = extend(SilentPlayerOption, {
 				if (quality != this._player.getPlaybackQuality()) {
 					this._player.seekToStart(true);
 					this._player.setPlaybackQuality(quality);
-
-					Console.debug('Quality changed to', quality);
 				}
 
 				asyncCall(this.apply, this);

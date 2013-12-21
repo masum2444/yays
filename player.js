@@ -128,13 +128,41 @@ Player.prototype = {
 	mute: function() {
 		if (! this._muted++) {
 			this._element.mute();
+
+			Console.debug('Player muted');
 		}
 	},
 
 	unMute: function() {
 		if (! --this._muted) {
 			this._element.unMute();
+
+			Console.debug('Player unmuted');
 		}
+	},
+
+	playVideo: function() {
+		this._element.playVideo();
+
+		Console.debug('Playback started');
+	},
+
+	pauseVideo: function() {
+		this._element.pauseVideo();
+
+		Console.debug('Playback paused');
+	},
+
+	stopVideo: function() {
+		this._element.stopVideo();
+
+		Console.debug('Playback stopped');
+	},
+
+	setPlaybackQuality: function(quality) {
+		this._element.setPlaybackQuality(quality);
+
+		Console.debug('Quality changed to', quality);
 	}
 };
 
@@ -179,25 +207,25 @@ HTML5Player.prototype = extend(Player, {
 	},
 
 	playVideo: function() {
-		this._element.playVideo();
+		Player.prototype.playVideo.call(this);
 
 		this._state = Player.PLAYING;
 	},
 
 	pauseVideo: function() {
-		this._element.pauseVideo();
+		Player.prototype.pauseVideo.call(this);
 
 		this._state = Player.PAUSED;
 	},
 
 	stopVideo: function() {
-		this._element.stopVideo();
+		Player.prototype.stopVideo.call(this);
 
 		this._state = Player.CUED;
 	},
 
 	setPlaybackQuality: function(quality) {
-		this._element.setPlaybackQuality(quality);
+		Player.prototype.setPlaybackQuality.call(this, quality);
 
 		asyncCall(function() {
 			if (this.isPlayerState(Player.PLAYING, Player.BUFFERING)) {

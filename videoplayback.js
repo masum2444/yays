@@ -49,7 +49,7 @@ VideoPlayback.prototype = extend(SilentPlayerOption, {
 						else {
 							this._applied = true;
 
-							Console.debug('Player become visible, playback not affected');
+							Console.debug('Playback not affected');
 
 							this.mute(false);
 						}
@@ -89,13 +89,9 @@ VideoPlayback.prototype = extend(SilentPlayerOption, {
 
 				if (this.get() % 2) { // (AUTO) PAUSE
 					this._player.pauseVideo();
-
-					Console.debug('Playback paused');
 				}
 				else { // (AUTO) STOP
 					this._player.stopVideo();
-
-					Console.debug('Playback stopped');
 				}
 
 				this.mute(false);
