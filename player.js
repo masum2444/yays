@@ -21,9 +21,7 @@ merge(Player, {
 	BUFFERING: 3,
 	CUED: 5,
 
-	instance: {
-		_element: null
-	},
+	instance: null,
 
 	create: function(element) {
 		switch (element.tagName) {
@@ -41,8 +39,12 @@ merge(Player, {
 			throw 'Invalid player element';
 		}
 
-		if (this.instance._element === element) {
-			throw 'Player already initialized';
+		if (this.instance) {
+			if (this.instance._element === element) {
+				throw 'Player already initialized';
+			}
+
+			this.instance.invalidate();
 		}
 
 		return this.instance = this.create(element);
@@ -89,9 +91,12 @@ Player.prototype = {
 		this._removeStateChangeListener();
 		this._unexportApiInterface();
 
-		this._element = null;
+		delete this.onStateChange;
+		delete this._element;
 
 		Console.debug('Player invalidated');
+
+		this.invalidate = noop;
 	},
 
 	onStateChange: noop,
@@ -113,12 +118,12 @@ Player.prototype = {
 		}
 	},
 
-	seekToStart: function(ahead) {
+	restartPlayback: function() {
 		var
 			code = (location.hash + location.search).match(/\bt=(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s?)?/) || new Array(4),
 			seconds = (Number(code[1]) || 0) * 3600 + (Number(code[2]) || 0) * 60 + (Number(code[3]) || 0);
 
-		this.seekTo(seconds, ahead);
+		this.seekTo(seconds, true);
 	},
 
 	resetState: function() {
@@ -179,7 +184,25 @@ FlashPlayer.prototype = extend(Player, {
 			Player.prototype._exportApiInterface.call(this);
 		}
 		catch (e) {
-			throw 'Player not loaded yet';
+			throw 'Player has not loaded yet';
+		}
+	},
+
+	_unexportApiInterface: function() {
+		try {
+			Player.prototype._unexportApiInterface.call(this);
+		}
+		catch (e) {
+			Console.debug('Player has unloaded');
+		}
+	},
+
+	_removeStateChangeListener: function() {
+		try {
+			Player.prototype._removeStateChangeListener.call(this);
+		}
+		catch (e) {
+			Console.debug('Player has unloaded');
 		}
 	}
 });
@@ -204,6 +227,12 @@ HTML5Player.prototype = extend(Player, {
 
 	getPlayerState: function() {
 		return this._state;
+	},
+
+	restartPlayback: function() {
+		Player.prototype.restartPlayback.call(this);
+
+		this.restartPlayback = noop;
 	},
 
 	playVideo: function() {

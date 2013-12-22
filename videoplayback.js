@@ -85,7 +85,7 @@ VideoPlayback.prototype = extend(SilentPlayerOption, {
 			if (this._player.isPlayerState(Player.PLAYING)) {
 				this._applied = true;
 
-				this._player.seekToStart(true);
+				this._player.restartPlayback();
 
 				if (this.get() % 2) { // (AUTO) PAUSE
 					this._player.pauseVideo();

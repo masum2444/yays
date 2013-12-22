@@ -56,16 +56,21 @@ function onReady(player) {
 	var videoPlayback = new VideoPlayback(player), videoQuality = new VideoQuality(player), previousVideo = player.getVideoId();
 
 	player.onStateChange = function(state) {
-		var currentVideo = player.getVideoId();
+		try {
+			var currentVideo = player.getVideoId();
 
-		if (currentVideo == previousVideo) {
-			videoQuality.apply();
-			videoPlayback.apply();
+			if (currentVideo == previousVideo) {
+				videoQuality.apply();
+				videoPlayback.apply();
+			}
+			else {
+				videoQuality.cease();
+				videoPlayback.cease();
+
+				throw null;
+			}
 		}
-		else {
-			videoQuality.cease();
-			videoPlayback.cease();
-
+		catch (e) {
 			player.invalidate();
 
 			asyncCall(onPlayerReady);
