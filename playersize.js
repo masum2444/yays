@@ -52,11 +52,16 @@ PlayerSize.prototype = extend(PlayerOption, {
 						'}'
 					]
 				});
+
 				// no break;
 
 			case 1: // WIDE
-				DH.addClass(DH.id('watch7-container'), 'watch-wide');
-				DH.addClass(DH.id('player'), 'watch-medium watch-playlist-collapsed');
+				var container = DH.id('watch7-container'), player = DH.id('player');
+
+				DH.addClass(container, 'watch-wide');
+				DH.delClass(player, 'watch-small');
+				DH.addClass(player, 'watch-medium watch-playlist-collapsed');
+
 				break;
 
 			default:
