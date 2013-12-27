@@ -45,5 +45,12 @@ function_re = re.compile(r'(' + '|'.join(functions.keys()) + ')\((.+)')
 def process(text):
 	return function_re.sub(substitute, text)
 
+blank = True
+
 for line in sys.stdin:
-	sys.stdout.write(process(line))
+	line = line.rstrip()
+
+	if line or not blank:
+		sys.stdout.write(process(line) + '\n')
+
+	blank = not line
