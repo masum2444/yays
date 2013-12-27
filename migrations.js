@@ -40,6 +40,15 @@
 
 				Config.del('auto_play');
 			}
+		},
+		{
+			// Added "1440p" to the quality levels.
+			MIGRATION(1.10) {
+				var videoQuality = Number(Config.get('video_quality'));
+				if (videoQuality > 6) {
+					Config.set('video_quality', ++videoQuality);
+				}
+			}
 		}
 	], function(i, migration) {
 		var migrationVersion = map(Number, migration.version.split('.'));
