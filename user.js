@@ -30,9 +30,9 @@ var Context = unsafeWindow[Meta.ns] = {
 
 #include "console.js"
 
-#include "i18n.js"
-
 #include "dom.js"
+
+#include "i18n.js"
 
 #include "config.js"
 
@@ -146,7 +146,7 @@ onPlayerReady();
 } // YAYS
 
 if (window.top === window.self) {
-	if (this['unsafeWindow']) { // Greasemonkey.
+	if (this.unsafeWindow) { // Greasemonkey.
 		YAYS(unsafeWindow);
 	}
 	else {

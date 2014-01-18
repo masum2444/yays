@@ -4,8 +4,10 @@
 
 var _ = (function() {
 #include "i18n/vocabulary.js"
-	var dictionary = combine(vocabulary, (function() {
-		switch ((document.documentElement.lang || 'en').substr(0, 2)) {
+	var dictionary = {};
+
+	function translation(language) {
+		switch (language) {
 #include "i18n/hu.js"
 #include "i18n/nl.js"
 #include "i18n/es.js"
@@ -23,7 +25,17 @@ var _ = (function() {
 		}
 
 		return [];
-	})());
+	}
 
-	return function(text) { return dictionary[text] || text; };
+	function TranslationMixin(text) {
+		this.toString = this.valueOf = function() { return dictionary[text] || text; };
+	}
+
+	DH.ready(function() {
+		dictionary = combine(vocabulary, translation((document.documentElement.lang || 'en').substr(0, 2)));
+	});
+
+	return function(text) {
+		return merge(new String(text), new TranslationMixin(text));
+	};
 })();
