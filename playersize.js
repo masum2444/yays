@@ -28,11 +28,12 @@ PlayerSize.prototype = extend(PlayerOption, {
 						'type': 'text/css'
 					},
 					children: [
+						'.watch-medium,',
 						'.watch-medium .player-width {',
-							CONCATENATE('width: ', CONTENT_WIDTH, 'px;'),
+							CONCATENATE('width: ', CONTENT_WIDTH, 'px !important;'),
 						'}',
 						'.watch-medium .player-height {',
-							CONCATENATE('height: ', EVALUATE(CONTENT_WIDTH / (PLAYER_WIDTH / PLAYER_HEIGHT) + CONTROL_HEIGHT), 'px;'),
+							CONCATENATE('height: ', EVALUATE(CONTENT_WIDTH / (PLAYER_WIDTH / PLAYER_HEIGHT) + CONTROL_HEIGHT), 'px !important;'),
 						'}',
 						'.watch-medium .watch7-playlist-bar-left {',
 							CONCATENATE('width: ', EVALUATE(CONTENT_WIDTH - PLAYLIST_WIDTH), 'px;'),
